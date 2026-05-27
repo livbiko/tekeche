@@ -10,6 +10,9 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Pull latest changes
+        shell: powershell
         run: |
-          cd C:\inetpub\wwwroot\tekeche
+          Set-Location "C:\inetpub\wwwroot\tekeche"
+          git config --global --add safe.directory "C:/inetpub/wwwroot/tekeche"
           git pull origin main
+          Write-Host "Deploy complete at $(Get-Date)"
