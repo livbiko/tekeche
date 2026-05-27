@@ -1,0 +1,15 @@
+name: Deploy to IIS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Pull latest changes
+        run: |
+          cd C:\inetpub\wwwroot\tekeche
+          git pull origin main
