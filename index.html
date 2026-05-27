@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <meta name="description" content="Tekeche — L'application de transport la plus sécurisée de Côte d'Ivoire. VTC, moto-taxi et livraison à Abidjan.">
+  <meta property="og:title" content="Tekeche — Transport Sécurisé à Abidjan">
+  <meta property="og:description" content="Votre trajet, votre sécurité. La meilleure app de transport de Côte d'Ivoire.">
+  <meta property="og:type" content="website">
+  <title>Tekeche — Transport Sécurisé à Abidjan</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav-inner container">
+      <a href="index.html" class="nav-logo">Tekeche</a>
+      <div class="nav-links">
+        <a href="#services">Services</a>
+        <a href="#securite">Sécurité</a>
+        <a href="#tarifs">Tarifs</a>
+        <a href="chauffeur.html">Devenir Chauffeur</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <a href="#telecharger" class="btn-nav">Télécharger l'app</a>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#services" onclick="closeMobile()">Services</a>
+      <a href="#securite" onclick="closeMobile()">Sécurité</a>
+      <a href="#tarifs" onclick="closeMobile()">Tarifs</a>
+      <a href="chauffeur.html">Devenir Chauffeur</a>
+      <a href="contact.html">Contact</a>
+      <a href="#telecharger" class="btn-mobile-dl" onclick="closeMobile()">Télécharger l'app</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="map-grid"></div>
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+      <div class="float-car c1" aria-hidden="true">🚗</div>
+      <div class="float-car c2" aria-hidden="true">🛵</div>
+      <div class="float-car c3" aria-hidden="true">🚗</div>
+      <div class="float-car c4" aria-hidden="true">🚐</div>
+    </div>
+    <div class="container hero-layout">
+      <div class="hero-text" data-animate>
+        <div class="hero-badge">
+          <span class="live-dot"></span> 3 chauffeurs disponibles près de vous
+        </div>
+        <h1>Votre trajet,<br><em>votre sécurité.</em></h1>
+        <p class="hero-sub">L'application de transport la plus sécurisée de Côte d'Ivoire. VTC, moto-taxi, livraison — à Abidjan en quelques secondes.</p>
+        <div class="hero-btns">
+          <a href="#telecharger" class="btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Télécharger gratuitement
+          </a>
+          <a href="#services" class="btn-outline">Nos services →</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hstat"><strong>500+</strong><span>Chauffeurs vérifiés</span></div>
+          <div class="hstat-div"></div>
+          <div class="hstat"><strong>4.9★</strong><span>Note moyenne</span></div>
+          <div class="hstat-div"></div>
+          <div class="hstat"><strong>&lt;5 min</strong><span>Temps d'attente</span></div>
+          <div class="hstat-div"></div>
+          <div class="hstat"><strong>24/7</strong><span>Disponible</span></div>
+        </div>
+      </div>
+      <div class="hero-mockup" data-animate data-delay="200">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-map">
+              <div class="ps-road h" style="top:42%"></div>
+              <div class="ps-road h" style="top:65%"></div>
+              <div class="ps-road v" style="left:35%"></div>
+              <div class="ps-road v" style="left:68%"></div>
+              <div class="ps-label" style="top:28%;left:10%">Cocody</div>
+              <div class="ps-label" style="top:68%;left:55%">Plateau</div>
+              <div class="ps-pin you">📍</div>
+              <div class="ps-pin d1">🚗</div>
+              <div class="ps-pin d2">🚗</div>
+              <div class="ps-eta">4 min</div>
+            </div>
+            <div class="ps-panel">
+              <div class="ps-ptitle">Choisir votre véhicule</div>
+              <div class="ps-ride active">
+                <span>🚗</span>
+                <div><strong>IvoireGo</strong><small>3 500 FCFA · 4 min</small></div>
+                <span class="ps-check">✓</span>
+              </div>
+              <div class="ps-ride">
+                <span>🛵</span>
+                <div><strong>MotoRapide</strong><small>1 800 FCFA · 2 min</small></div>
+              </div>
+              <div class="ps-book">Réserver maintenant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-wave"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="var(--white)"/></svg></div>
+  </section>
+
+  <!-- ══════════════════ TRUST BAR ══════════════════ -->
+  <section class="trust-bar">
+    <div class="container trust-inner">
+      <div class="trust-item"><span>🛡️</span> KYC chauffeurs certifié</div>
+      <div class="trust-div"></div>
+      <div class="trust-item"><span>💳</span> Paiement Orange Money & MTN</div>
+      <div class="trust-div"></div>
+      <div class="trust-item"><span>📍</span> Suivi GPS en temps réel</div>
+      <div class="trust-div"></div>
+      <div class="trust-item"><span>🚨</span> Bouton SOS d'urgence</div>
+      <div class="trust-div"></div>
+      <div class="trust-item"><span>⭐</span> Prix fixe garanti</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ SERVICES ══════════════════ -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Nos services</div>
+        <h2>Un véhicule pour chaque besoin</h2>
+        <p>Que vous soyez seul, en famille ou que vous ayez un colis à livrer — Tekeche s'adapte à votre situation.</p>
+      </div>
+      <div class="services-grid">
+
+        <div class="srv-card srv-featured">
+          <div class="srv-badge">⚡ Populaire</div>
+          <div class="srv-icon">🚗</div>
+          <h3>IvoireGo</h3>
+          <p>Voiture standard confortable pour 1 à 4 passagers. Idéal pour vos déplacements quotidiens à Abidjan.</p>
+          <div class="srv-from">À partir de <strong>1 500 FCFA</strong></div>
+          <ul class="srv-feats">
+            <li>✓ Climatisé</li>
+            <li>✓ Prix fixe garanti</li>
+            <li>✓ Chauffeur vérifié</li>
+            <li>✓ Suivi GPS</li>
+          </ul>
+          <a href="#telecharger" class="srv-btn">Réserver</a>
+        </div>
+
+        <div class="srv-card">
+          <div class="srv-icon">🛵</div>
+          <h3>MotoRapide</h3>
+          <p>Évitez les embouteillages d'Abidjan avec nos moto-taxis rapides et sécurisés.</p>
+          <div class="srv-from">À partir de <strong>600 FCFA</strong></div>
+          <ul class="srv-feats">
+            <li>✓ Casque fourni</li>
+            <li>✓ Le plus rapide</li>
+            <li>✓ Idéal Plateau/Adjamé</li>
+          </ul>
+          <a href="#telecharger" class="srv-btn">Réserver</a>
+        </div>
+
+        <div class="srv-card">
+          <div class="srv-icon">🚙</div>
+          <h3>IvoireComfort</h3>
+          <p>Berlines premium pour rendez-vous importants, l'aéroport ou vos sorties en soirée.</p>
+          <div class="srv-from">À partir de <strong>2 500 FCFA</strong></div>
+          <ul class="srv-feats">
+            <li>✓ Berline premium</li>
+            <li>✓ Eau offerte</li>
+            <li>✓ Chauffeur en costume</li>
+          </ul>
+          <a href="#telecharger" class="srv-btn">Réserver</a>
+        </div>
+
+        <div class="srv-card">
+          <div class="srv-icon">🚐</div>
+          <h3>IvoireXL</h3>
+          <p>Minivans pour 5 à 7 passagers. Parfait pour les familles et les groupes d'amis.</p>
+          <div class="srv-from">À partir de <strong>3 500 FCFA</strong></div>
+          <ul class="srv-feats">
+            <li>✓ 7 places</li>
+            <li>✓ Grand coffre</li>
+            <li>✓ Idéal aéroport</li>
+          </ul>
+          <a href="#telecharger" class="srv-btn">Réserver</a>
+        </div>
+
+        <div class="srv-card">
+          <div class="srv-icon">📦</div>
+          <h3>Livraison Express</h3>
+          <p>Envoyez vos colis, documents ou repas n'importe où à Abidjan en moins d'une heure.</p>
+          <div class="srv-from">À partir de <strong>800 FCFA</strong></div>
+          <ul class="srv-feats">
+            <li>✓ Suivi en direct</li>
+            <li>✓ Photo de livraison</li>
+            <li>✓ Signature électronique</li>
+          </ul>
+          <a href="#telecharger" class="srv-btn">Commander</a>
+        </div>
+
+        <div class="srv-card srv-soon">
+          <div class="srv-badge soon-badge">⏳ Bientôt</div>
+          <div class="srv-icon">✈️</div>
+          <h3>Aéroport FHB</h3>
+          <p>Transferts dédiés vers et depuis l'aéroport Félix Houphouët-Boigny. Prix fixe garanti.</p>
+          <div class="srv-from">Tarif fixe <strong>à venir</strong></div>
+          <ul class="srv-feats">
+            <li>⏳ En préparation</li>
+          </ul>
+          <a href="contact.html" class="srv-btn srv-btn-ghost">M'alerter</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ HOW IT WORKS ══════════════════ -->
+  <section class="section how-section">
+    <div class="container">
+      <div class="sec-head light">
+        <div class="sec-label">Comment ça marche</div>
+        <h2>Réservez en 3 étapes simples</h2>
+      </div>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-num">01</div>
+          <div class="how-icon">📱</div>
+          <h3>Téléchargez l'app</h3>
+          <p>Disponible gratuitement sur Android et iOS. Créez votre compte en 30 secondes avec votre numéro ivoirien via un code SMS.</p>
+        </div>
+        <div class="how-arrow">→</div>
+        <div class="how-card">
+          <div class="how-num">02</div>
+          <div class="how-icon">📍</div>
+          <h3>Entrez votre destination</h3>
+          <p>Indiquez votre départ et arrivée. Choisissez votre véhicule et voyez le prix fixe avant de confirmer. Aucune négociation.</p>
+        </div>
+        <div class="how-arrow">→</div>
+        <div class="how-card">
+          <div class="how-num">03</div>
+          <div class="how-icon">🎉</div>
+          <h3>Voyagez en sécurité</h3>
+          <p>Suivez votre chauffeur en temps réel. Payez par Orange Money, MTN MoMo, Wave ou espèces. Notez votre expérience.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ SECURITY ══════════════════ -->
+  <section class="section" id="securite">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Sécurité</div>
+        <h2>Votre sécurité,<br>notre priorité absolue</h2>
+        <p>Tekeche intègre les fonctionnalités de sécurité les plus avancées du marché africain du transport.</p>
+      </div>
+      <div class="security-layout">
+        <div class="sec-cards">
+          <div class="sec-card">
+            <div class="sec-ic">🚨</div>
+            <div>
+              <h4>Bouton SOS d'urgence</h4>
+              <p>Visible en permanence pendant chaque trajet. En un seul appui, vos contacts d'urgence reçoivent un SMS avec votre position exacte, le nom du chauffeur et la plaque d'immatriculation.</p>
+            </div>
+          </div>
+          <div class="sec-card">
+            <div class="sec-ic">✅</div>
+            <div>
+              <h4>Chauffeurs vérifiés KYC</h4>
+              <p>Chaque chauffeur passe par une vérification biométrique complète (Smile Identity), contrôle du permis, de la carte grise et du casier judiciaire. Zéro compromis.</p>
+            </div>
+          </div>
+          <div class="sec-card">
+            <div class="sec-ic">📍</div>
+            <div>
+              <h4>Partage de trajet en direct</h4>
+              <p>Partagez votre trajet avec vos proches en un clic. Ils suivent votre position en temps réel jusqu'à votre arrivée.</p>
+            </div>
+          </div>
+          <div class="sec-card">
+            <div class="sec-ic">🤖</div>
+            <div>
+              <h4>Surveillance IA des trajets</h4>
+              <p>Notre IA analyse chaque trajet en temps réel pour détecter les anomalies : déviation de route, arrêt suspect, trajet trop long. Alerte automatique de notre équipe.</p>
+            </div>
+          </div>
+          <div class="sec-card">
+            <div class="sec-ic">🎙️</div>
+            <div>
+              <h4>Enregistrement audio optionnel</h4>
+              <p>Activez l'enregistrement audio pendant votre trajet. Les données sont chiffrées et stockées 48h. Disponibles uniquement sur demande officielle.</p>
+            </div>
+          </div>
+          <div class="sec-card">
+            <div class="sec-ic">👥</div>
+            <div>
+              <h4>Contacts d'urgence</h4>
+              <p>Ajoutez jusqu'à 5 contacts d'urgence. Alertes SMS automatiques avec localisation GPS précise en cas d'activation du SOS.</p>
+            </div>
+          </div>
+        </div>
+        <div class="sec-visual">
+          <div class="sec-phone">
+            <div class="sph-map-preview">
+              <div class="sph-route-line"></div>
+              <div class="sph-pin-a">📍</div>
+              <div class="sph-pin-b">🏁</div>
+              <div class="sph-car">🚗</div>
+            </div>
+            <div class="sph-driver-card">
+              <div class="sph-avatar">KT</div>
+              <div class="sph-info">
+                <strong>Kouassi Théodore</strong>
+                <span>⭐ 4.92 · 1 247 trajets</span>
+                <span class="sph-plate">AB 1234 CI</span>
+              </div>
+            </div>
+            <div class="sph-safety-bar">
+              <span>🛡 Trajet sécurisé actif</span>
+              <div class="sos-pill">🚨 SOS</div>
+            </div>
+            <div class="sph-progress"><div class="sph-prog-fill"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ PAYMENT ══════════════════ -->
+  <section class="section pay-section" id="paiement">
+    <div class="container">
+      <div class="pay-layout">
+        <div class="pay-text">
+          <div class="sec-label light">Paiement</div>
+          <h2 class="light">Payez comme<br>vous voulez</h2>
+          <p class="light-p">Tous les moyens de paiement locaux acceptés. Prix fixe garanti — aucune surprise.</p>
+          <div class="pay-methods">
+            <div class="pm"><div class="pm-ic">📱</div><div><strong>Orange Money</strong><small>Paiement direct depuis l'app</small></div></div>
+            <div class="pm"><div class="pm-ic">💚</div><div><strong>MTN MoMo</strong><small>Mobile Money MTN CI</small></div></div>
+            <div class="pm"><div class="pm-ic">🌊</div><div><strong>Wave</strong><small>Transfert instantané</small></div></div>
+            <div class="pm"><div class="pm-ic">💰</div><div><strong>Portefeuille Tekeche</strong><small>Rechargez et payez en 1 clic</small></div></div>
+            <div class="pm"><div class="pm-ic">💵</div><div><strong>Espèces</strong><small>Toujours disponible</small></div></div>
+          </div>
+        </div>
+        <div class="receipt-card">
+          <div class="rc-head"><span>📄 Reçu de course</span><span class="rc-paid">✅ Payé</span></div>
+          <div class="rc-route">
+            <div class="rc-stop"><div class="rc-dot g"></div><span>Cocody Riviera 3</span></div>
+            <div class="rc-line"></div>
+            <div class="rc-stop"><div class="rc-dot o"></div><span>Plateau du Commerce</span></div>
+          </div>
+          <div class="rc-rows">
+            <div class="rc-row"><span>Distance</span><span>5,4 km</span></div>
+            <div class="rc-row"><span>Durée</span><span>18 min</span></div>
+            <div class="rc-row"><span>Véhicule</span><span>IvoireGo</span></div>
+            <div class="rc-row"><span>Chauffeur</span><span>⭐ 4.92</span></div>
+          </div>
+          <div class="rc-total"><span>Total</span><strong>3 500 FCFA</strong></div>
+          <div class="rc-method">Payé via Orange Money 📱</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ TESTIMONIALS ══════════════════ -->
+  <section class="section" id="avis">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Témoignages</div>
+        <h2>Ce que disent nos utilisateurs</h2>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p>"Enfin une application de transport vraiment sécurisée à Abidjan ! Le bouton SOS m'a beaucoup rassurée. Les chauffeurs sont polis et très professionnels."</p>
+          <div class="testi-by">
+            <div class="tav" style="background:#E8701A">AK</div>
+            <div><strong>Amina Konaté</strong><small>Cocody, Abidjan</small></div>
+          </div>
+        </div>
+        <div class="testi-card testi-big">
+          <div class="testi-stars">★★★★★</div>
+          <p>"Le prix est fixé avant la course — plus de négociation avec le chauffeur ! Et le paiement Orange Money directement dans l'app, c'est vraiment pratique. Je recommande à toute ma famille."</p>
+          <div class="testi-by">
+            <div class="tav" style="background:#1A9E58">DB</div>
+            <div><strong>David Brou</strong><small>Marcory, Abidjan</small></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars">★★★★★</div>
+          <p>"Je prends Tekeche tous les jours pour aller au bureau. Les moto-taxis évitent les embouteillages du Plateau. Je ne pourrais plus m'en passer !"</p>
+          <div class="testi-by">
+            <div class="tav" style="background:#3B82F6">SY</div>
+            <div><strong>Seydou Yao</strong><small>Adjamé, Abidjan</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ PRICING ══════════════════ -->
+  <section class="section pricing-section" id="tarifs">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Tarifs</div>
+        <h2>Prix fixes, sans surprise</h2>
+        <p>Le prix est calculé et affiché avant votre confirmation. Jamais de surprises.</p>
+      </div>
+      <div class="pricing-table">
+        <div class="pt-head">
+          <div>Véhicule</div><div>Base</div><div>Par km</div><div>Par min</div><div>Minimum</div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-veh"><span>🛵</span> MotoRapide</div>
+          <div>300 FCFA</div><div>200 FCFA</div><div>15 FCFA</div><div>600 FCFA</div>
+        </div>
+        <div class="pt-row pt-pop">
+          <div class="pt-veh"><span>🚗</span> IvoireGo <span class="pop-tag">Populaire</span></div>
+          <div>500 FCFA</div><div>400 FCFA</div><div>30 FCFA</div><div>1 000 FCFA</div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-veh"><span>🚙</span> IvoireComfort</div>
+          <div>1 000 FCFA</div><div>700 FCFA</div><div>50 FCFA</div><div>2 000 FCFA</div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-veh"><span>🚐</span> IvoireXL</div>
+          <div>1 500 FCFA</div><div>800 FCFA</div><div>60 FCFA</div><div>3 000 FCFA</div>
+        </div>
+        <div class="pt-row">
+          <div class="pt-veh"><span>📦</span> Livraison</div>
+          <div>300 FCFA</div><div>250 FCFA</div><div>15 FCFA</div><div>800 FCFA</div>
+        </div>
+      </div>
+      <p class="pt-note">* Multiplicateur ×1.3 possible aux heures de pointe (7h–9h / 17h–19h), toujours annoncé avant confirmation.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ DRIVER CTA ══════════════════ -->
+  <section class="section driver-section">
+    <div class="container">
+      <div class="driver-layout">
+        <div class="driver-text">
+          <div class="sec-label light">Rejoignez-nous</div>
+          <h2 class="light">Devenez chauffeur<br>Tekeche</h2>
+          <p class="light-p">Gagnez jusqu'à <strong style="color:#E8701A">450 000 FCFA/mois</strong> en conduisant selon votre propre emploi du temps. Vous gardez 85% de chaque course.</p>
+          <div class="driver-perks">
+            <div>✓ Revenus quotidiens garantis</div>
+            <div>✓ Vous choisissez vos heures</div>
+            <div>✓ Support 24h/7j</div>
+            <div>✓ Inscription 100% gratuite</div>
+            <div>✓ Paiement chaque soir</div>
+            <div>✓ Formation offerte</div>
+          </div>
+          <a href="chauffeur.html" class="btn-primary" style="margin-top:2rem;display:inline-flex;">Commencer maintenant →</a>
+        </div>
+        <div class="earn-calc">
+          <h3>Calculez vos revenus</h3>
+          <div class="calc-group">
+            <label>Heures par jour : <strong id="h-val">8h</strong></label>
+            <input type="range" min="4" max="12" value="8" id="h-slider">
+          </div>
+          <div class="calc-group">
+            <label>Jours par semaine : <strong id="d-val">5j</strong></label>
+            <input type="range" min="3" max="7" value="5" id="d-slider">
+          </div>
+          <div class="calc-result">
+            <div class="calc-monthly"><span id="monthly">306 000</span><small>FCFA / mois estimé</small></div>
+            <div class="calc-breakdown">
+              <div>Quotidien: <strong id="daily">~14 000 FCFA</strong></div>
+              <div>Hebdo: <strong id="weekly">~70 000 FCFA</strong></div>
+            </div>
+          </div>
+          <div class="calc-note">Basé sur ~3 500 FCFA/course · 5 courses/h · 85% revient au chauffeur</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ DOWNLOAD ══════════════════ -->
+  <section class="section dl-section" id="telecharger">
+    <div class="container">
+      <div class="dl-layout">
+        <div class="dl-text">
+          <div class="sec-label light">Téléchargez l'app</div>
+          <h2 class="light">Prêt à voyager autrement ?</h2>
+          <p class="light-p">Rejoignez des milliers d'Abidjanais qui font confiance à Tekeche chaque jour.</p>
+          <div class="dl-btns">
+            <a href="#" class="dl-btn">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.14-2.19 1.28-2.17 3.82.03 3.02 2.65 4.03 2.68 4.04l-.07.26zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              <div><small>Télécharger sur</small><strong>App Store</strong></div>
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=com.tekeche.app" class="dl-btn dl-btn-badge" target="_blank" rel="noopener">
+              <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Disponible sur Google Play" height="58" style="margin:-6px 0;">
+            </a>
+          </div>
+          <p class="light-p" style="margin-top:1.5rem;font-size:.9rem;">Bientôt disponible · Entrez votre email pour être notifié :</p>
+          <div class="notif-form">
+            <input type="email" placeholder="votre@email.com" id="notif-email">
+            <button onclick="submitNotif()">M'avertir</button>
+          </div>
+          <p class="notif-msg" id="notif-msg"></p>
+        </div>
+        <div class="dl-phones">
+          <div class="dl-ph ph1">
+            <div class="dl-ph-screen">
+              <div class="dlps-map"></div>
+              <div class="dlps-panel">
+                <div class="dlpsp-title">IvoireGo · 4 min</div>
+                <div class="dlpsp-price">3 500 FCFA</div>
+                <div class="dlpsp-btn">Réserver</div>
+              </div>
+            </div>
+          </div>
+          <div class="dl-ph ph2">
+            <div class="dl-ph-screen">
+              <div class="dlps-driver">
+                <div class="dld-av">KT</div>
+                <div>
+                  <div class="dld-name">Kouassi Théodore</div>
+                  <div class="dld-stars">⭐ 4.92 · Vérifié ✓</div>
+                  <div class="dld-plate">AB 1234 CI</div>
+                </div>
+              </div>
+              <div class="dlps-sos">🚨 SOS</div>
+              <div class="dlps-progress"><div class="dlps-prog-fill"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ ZONES ══════════════════ -->
+  <section class="section" id="zones">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Zones desservies</div>
+        <h2>Disponible dans toutes les communes d'Abidjan</h2>
+      </div>
+      <div class="zones-grid">
+        <div class="zone on">✓ Cocody</div>
+        <div class="zone on">✓ Plateau</div>
+        <div class="zone on">✓ Marcory</div>
+        <div class="zone on">✓ Adjamé</div>
+        <div class="zone on">✓ Yopougon</div>
+        <div class="zone on">✓ Treichville</div>
+        <div class="zone on">✓ Abobo</div>
+        <div class="zone on">✓ Attécoubé</div>
+        <div class="zone on">✓ Koumassi</div>
+        <div class="zone on">✓ Port-Bouët</div>
+        <div class="zone soon">⏳ Bingerville</div>
+        <div class="zone soon">⏳ Grand-Bassam</div>
+      </div>
+      <p class="zones-note"><span style="color:var(--green)">✓</span> Disponible maintenant &nbsp;·&nbsp; <span style="color:#F59E0B">⏳</span> Bientôt</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ FAQ ══════════════════ -->
+  <section class="section faq-section" id="faq">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">FAQ</div>
+        <h2>Questions fréquentes</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment télécharger Tekeche ? <span>↓</span></button><div class="faq-a"><p>Tekeche est disponible gratuitement sur Google Play Store (Android) et l'App Store (iOS). Créez votre compte en 30 secondes avec votre numéro de téléphone ivoirien via un code OTP par SMS.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment sont vérifiés les chauffeurs ? <span>↓</span></button><div class="faq-a"><p>Chaque chauffeur passe par une vérification biométrique complète (Smile Identity), contrôle du permis de conduire, de la carte grise, et examen du casier judiciaire. Seuls les chauffeurs approuvés peuvent conduire.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Quels moyens de paiement sont acceptés ? <span>↓</span></button><div class="faq-a"><p>Nous acceptons Orange Money, MTN Mobile Money, Wave, le portefeuille Tekeche et les espèces. Le paiement mobile est sécurisé via CinetPay, le principal opérateur de paiement de Côte d'Ivoire.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Que faire en cas d'urgence pendant un trajet ? <span>↓</span></button><div class="faq-a"><p>Appuyez sur le bouton SOS rouge visible sur l'écran de suivi. Vos contacts d'urgence reçoivent immédiatement un SMS avec votre position GPS, le nom du chauffeur et la plaque d'immatriculation. Notre équipe sécurité est également alertée.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Les prix peuvent-ils changer en cours de route ? <span>↓</span></button><div class="faq-a"><p>Non. Le prix est calculé et affiché avant que vous confirmiez. Un multiplicateur ×1.3 peut s'appliquer aux heures de pointe, mais il est toujours annoncé AVANT votre confirmation. Jamais de surprises.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment annuler une course ? <span>↓</span></button><div class="faq-a"><p>Vous pouvez annuler gratuitement dans les 2 minutes suivant la réservation. Au-delà, des frais d'annulation de 500 FCFA peuvent s'appliquer selon le temps d'attente du chauffeur.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ FOOTER ══════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Tekeche</div>
+          <p>L'application de transport la plus sécurisée de Côte d'Ivoire. Disponible à Abidjan.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" width="18" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+            <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></a>
+          </div>
+          <div class="footer-badges" style="margin:1rem 0;">
+            <a href="https://play.google.com/store/apps/details?id=com.tekeche.app" target="_blank" rel="noopener">
+              <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Disponible sur Google Play" height="48">
+            </a>
+          </div>
+          <div class="footer-contact">
+            <div>📧 contact@tekeche.com</div>
+            <div>📞 +225 07 00 00 00</div>
+            <div>📍 Cocody, Abidjan, CI</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <a href="#services">IvoireGo</a>
+          <a href="#services">MotoRapide</a>
+          <a href="#services">IvoireComfort</a>
+          <a href="#services">IvoireXL</a>
+          <a href="#services">Livraison Express</a>
+        </div>
+        <div class="footer-col">
+          <h4>Entreprise</h4>
+          <a href="a-propos.html">À propos</a>
+          <a href="chauffeur.html">Devenir chauffeur</a>
+          <a href="#securite">Sécurité</a>
+          <a href="blog.html">Blog</a>
+          <a href="presse.html">Presse</a>
+        </div>
+        <div class="footer-col">
+          <h4>Aide & Légal</h4>
+          <a href="contact.html">Centre d'aide</a>
+          <a href="contact.html">Nous contacter</a>
+          <a href="cgu.html">CGU</a>
+          <a href="confidentialite.html">Confidentialité</a>
+          <a href="cookies.html">Cookies</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Tekeche SARL — Enregistré au RCCM d'Abidjan — Tous droits réservés</p>
+        <p>Opérateur agréé OSER · Licence VTC Côte d'Ivoire · Données protégées ARTCI</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

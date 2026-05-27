@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <meta name="description" content="Devenez chauffeur Tekeche — Gagnez jusqu'à 450 000 FCFA/mois à Abidjan. Inscription gratuite.">
+  <title>Devenir Chauffeur — Tekeche</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/chauffeur.css">
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner container">
+      <a href="index.html" class="nav-logo">Tekeche</a>
+      <div class="nav-links">
+        <a href="index.html">Accueil</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#securite">Sécurité</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <a href="#inscription" class="btn-nav">S'inscrire gratuitement</a>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="index.html">Accueil</a>
+      <a href="index.html#services">Services</a>
+      <a href="contact.html">Contact</a>
+      <a href="#inscription" class="btn-mobile-dl" onclick="closeMobile()">S'inscrire gratuitement</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="drv-hero">
+    <div class="drv-hero-bg">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+    </div>
+    <div class="container drv-hero-layout">
+      <div class="drv-hero-text">
+        <div class="sec-label" style="margin-bottom:16px">Rejoignez Tekeche</div>
+        <h1>Conduisez.<br>Gagnez.<br><em>Vivez libre.</em></h1>
+        <p class="hero-sub" style="margin-top:20px">Devenez chauffeur Tekeche et gagnez jusqu'à <strong style="color:var(--orange)">450 000 FCFA par mois</strong> en conduisant selon votre propre emploi du temps à Abidjan.</p>
+        <div class="drv-mini-stats">
+          <div class="dms"><strong>85%</strong><span>de chaque course</span></div>
+          <div class="dms"><strong>0 FCFA</strong><span>d'inscription</span></div>
+          <div class="dms"><strong>Quotidien</strong><span>paiement chaque soir</span></div>
+        </div>
+        <a href="#inscription" class="btn-primary" style="margin-top:2rem">Commencer gratuitement →</a>
+      </div>
+      <div class="drv-earnings-preview">
+        <div class="dep-card">
+          <div class="dep-title">Exemple de journée type</div>
+          <div class="dep-timeline">
+            <div class="dep-trip"><span class="dep-time">08:00</span><div><strong>Cocody → Plateau</strong><span>4 200 FCFA · 15 min</span></div></div>
+            <div class="dep-trip"><span class="dep-time">09:30</span><div><strong>Treichville → Marcory</strong><span>2 800 FCFA · 12 min</span></div></div>
+            <div class="dep-trip"><span class="dep-time">11:00</span><div><strong>Abobo → Adjamé</strong><span>3 100 FCFA · 18 min</span></div></div>
+            <div class="dep-trip"><span class="dep-time">14:30</span><div><strong>Yopougon → Plateau</strong><span>5 500 FCFA · 22 min</span></div></div>
+            <div class="dep-trip"><span class="dep-time">17:00</span><div><strong>Cocody → Riviera</strong><span>2 900 FCFA · 10 min</span></div></div>
+          </div>
+          <div class="dep-total">
+            <span>Total brut journée</span>
+            <strong>18 500 FCFA</strong>
+          </div>
+          <div class="dep-cut">
+            <span>Votre part (85%)</span>
+            <strong style="color:var(--green)">15 725 FCFA</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REQUIREMENTS -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Conditions d'inscription</div>
+        <h2>Ce qu'il vous faut pour démarrer</h2>
+        <p>Les conditions sont simples. Si vous remplissez ces critères, vous pouvez démarrer en moins de 48h.</p>
+      </div>
+      <div class="req-grid">
+        <div class="req-card">
+          <div class="req-icon">🪪</div>
+          <h3>Carte d'identité valide</h3>
+          <p>CNI, passeport ou titre de séjour en cours de validité. La vérification est effectuée par notre système KYC en moins de 5 minutes.</p>
+        </div>
+        <div class="req-card">
+          <div class="req-icon">🚗</div>
+          <h3>Permis de conduire valide</h3>
+          <p>Permis de conduire ivoirien valide, catégorie B minimum. Permis obtenu depuis au moins 2 ans requis.</p>
+        </div>
+        <div class="req-card">
+          <div class="req-icon">📄</div>
+          <h3>Carte grise du véhicule</h3>
+          <p>Votre véhicule doit avoir moins de 12 ans. Carte grise au nom du chauffeur ou document de procuration si location.</p>
+        </div>
+        <div class="req-card">
+          <div class="req-icon">🏥</div>
+          <h3>Assurance tous risques</h3>
+          <p>Assurance automobile valide couvrant le transport de personnes. Nous vous aidons à trouver la meilleure offre si nécessaire.</p>
+        </div>
+        <div class="req-card">
+          <div class="req-icon">📱</div>
+          <h3>Smartphone Android ou iOS</h3>
+          <p>Un téléphone Android 8+ ou iPhone iOS 13+ avec connexion internet (carte SIM avec data requise).</p>
+        </div>
+        <div class="req-card">
+          <div class="req-icon">✅</div>
+          <h3>Casier judiciaire vierge</h3>
+          <p>Extrait de casier judiciaire bulletin n°3 datant de moins de 3 mois. Obtenu au Tribunal de Première Instance.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="section how-section">
+    <div class="container">
+      <div class="sec-head light">
+        <div class="sec-label">Processus d'inscription</div>
+        <h2 style="color:#fff">Démarrez en 4 étapes</h2>
+      </div>
+      <div class="proc-grid">
+        <div class="proc-card">
+          <div class="proc-num">01</div>
+          <div class="proc-icon">📱</div>
+          <h3>Téléchargez l'app chauffeur</h3>
+          <p>Téléchargez l'application Tekeche Chauffeur sur Android ou iOS. Créez votre compte avec votre numéro de téléphone.</p>
+          <a href="https://play.google.com/store/apps/details?id=com.tekechedrivefr.app" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;">
+            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Disponible sur Google Play" height="48">
+          </a>
+          <div class="proc-time">⏱ 5 minutes</div>
+        </div>
+        <div class="proc-arrow">→</div>
+        <div class="proc-card">
+          <div class="proc-num">02</div>
+          <div class="proc-icon">📷</div>
+          <h3>Soumettez vos documents</h3>
+          <p>Prenez en photo vos documents directement dans l'app. Notre IA vérifie l'authenticité en temps réel.</p>
+          <div class="proc-time">⏱ 15 minutes</div>
+        </div>
+        <div class="proc-arrow">→</div>
+        <div class="proc-card">
+          <div class="proc-num">03</div>
+          <div class="proc-icon">✅</div>
+          <h3>Vérification KYC</h3>
+          <p>Votre identité est vérifiée par biométrie (selfie + pièce d'identité). Résultat en moins de 48h ouvrées.</p>
+          <div class="proc-time">⏱ Moins de 48h</div>
+        </div>
+        <div class="proc-arrow">→</div>
+        <div class="proc-card">
+          <div class="proc-num">04</div>
+          <div class="proc-icon">🚀</div>
+          <h3>Commencez à conduire !</h3>
+          <p>Compte activé ! Passez en ligne, acceptez vos premières courses et recevez votre paiement dès le soir.</p>
+          <div class="proc-time">⏱ Immédiat</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRIVER PERKS -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Avantages chauffeurs</div>
+        <h2>Pourquoi choisir Tekeche ?</h2>
+      </div>
+      <div class="perks-grid">
+        <div class="perk-card">
+          <div class="perk-icon">💰</div>
+          <h3>85% de chaque course</h3>
+          <p>La commission la plus faible du marché. Vous gardez 85% de chaque trajet, payés directement sur votre compte chaque soir.</p>
+        </div>
+        <div class="perk-card perk-featured">
+          <div class="perk-icon">⏰</div>
+          <h3>Vous décidez de vos heures</h3>
+          <p>Travaillez quand vous voulez, aussi longtemps que vous voulez. Aucun minimum d'heures requis. Vous êtes votre propre patron.</p>
+        </div>
+        <div class="perk-card">
+          <div class="perk-icon">📞</div>
+          <h3>Support 24h/7j</h3>
+          <p>Notre équipe est disponible à toute heure pour vous aider. Chat dans l'app, ligne téléphonique dédiée et WhatsApp.</p>
+        </div>
+        <div class="perk-card">
+          <div class="perk-icon">🛡️</div>
+          <h3>Assurance voyage incluse</h3>
+          <p>Chaque trajet est couvert par notre assurance accidents. Vous et vos passagers êtes protégés à tout moment.</p>
+        </div>
+        <div class="perk-card">
+          <div class="perk-icon">📈</div>
+          <h3>Bonus et primes</h3>
+          <p>Débloquez des primes pour les heures de pointe, atteignez des paliers hebdomadaires et participez aux challenges mensuels.</p>
+        </div>
+        <div class="perk-card">
+          <div class="perk-icon">🎓</div>
+          <h3>Formation offerte</h3>
+          <p>Session de formation gratuite en présentiel à Abidjan pour maîtriser l'application et optimiser vos revenus dès le premier jour.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIGNUP FORM -->
+  <section class="section drv-form-section" id="inscription">
+    <div class="container">
+      <div class="drv-form-layout">
+        <div class="drv-form-text">
+          <div class="sec-label light">Inscription gratuite</div>
+          <h2 class="light">Prêt à commencer ?</h2>
+          <p class="light-p">Remplissez ce formulaire et notre équipe vous contactera dans les 24 heures pour finaliser votre inscription.</p>
+          <div class="form-benefits">
+            <div>✓ Inscription 100% gratuite</div>
+            <div>✓ Réponse sous 24h</div>
+            <div>✓ Formation incluse</div>
+            <div>✓ Paiement dès le premier jour</div>
+          </div>
+        </div>
+        <form class="drv-form" id="driver-form" onsubmit="submitDriverForm(event)">
+          <h3>Formulaire d'inscription chauffeur</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Prénom *</label>
+              <input type="text" placeholder="Kouassi" required>
+            </div>
+            <div class="form-group">
+              <label>Nom *</label>
+              <input type="text" placeholder="Théodore" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Numéro de téléphone *</label>
+            <div class="phone-input-wrap">
+              <span class="phone-prefix">🇨🇮 +225</span>
+              <input type="tel" placeholder="07 12 34 56 78" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="votre@email.com">
+          </div>
+          <div class="form-group">
+            <label>Commune de résidence *</label>
+            <select required>
+              <option value="">Sélectionnez votre commune</option>
+              <option>Cocody</option><option>Plateau</option><option>Marcory</option>
+              <option>Adjamé</option><option>Yopougon</option><option>Treichville</option>
+              <option>Abobo</option><option>Attécoubé</option><option>Koumassi</option>
+              <option>Port-Bouët</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Type de véhicule *</label>
+            <select required>
+              <option value="">Type de votre véhicule</option>
+              <option>Voiture standard (IvoireGo)</option>
+              <option>Berline premium (IvoireComfort)</option>
+              <option>Minivan 7 places (IvoireXL)</option>
+              <option>Moto (MotoRapide)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Marque et modèle du véhicule</label>
+            <input type="text" placeholder="ex: Toyota Corolla 2018">
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="cgv" required>
+            <label for="cgv">J'accepte les <a href="cgu.html">conditions générales d'utilisation</a> et la <a href="confidentialite.html">politique de confidentialité</a> d'Tekeche.</label>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;justify-content:center;padding:16px;">
+            Soumettre ma candidature →
+          </button>
+          <div class="form-success" id="form-success">
+            🎉 Merci ! Notre équipe vous contactera dans les 24 heures.
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ CHAUFFEURS -->
+  <section class="section faq-section">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">FAQ Chauffeurs</div>
+        <h2>Questions fréquentes des chauffeurs</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Quand est-ce que je reçois mon argent ? <span>↓</span></button><div class="faq-a"><p>Vous recevez le paiement de vos courses chaque soir directement sur votre compte Orange Money ou MTN MoMo. Les fonds sont disponibles immédiatement après le virement.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Est-ce que je peux conduire avec mon propre véhicule ? <span>↓</span></button><div class="faq-a"><p>Oui, Tekeche accepte les chauffeurs avec leur propre véhicule. Votre voiture doit avoir moins de 12 ans, être en bon état et assurée tous risques incluant le transport de personnes.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Puis-je travailler à temps partiel ? <span>↓</span></button><div class="faq-a"><p>Absolument. Il n'y a aucun minimum d'heures. Vous pouvez conduire 2 heures ou 12 heures selon vos disponibilités. Beaucoup de nos chauffeurs combinent Tekeche avec un autre emploi.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Que se passe-t-il en cas d'accident ? <span>↓</span></button><div class="faq-a"><p>Chaque trajet Tekeche est couvert par notre assurance partenaire. En cas d'incident, appelez immédiatement notre ligne d'urgence chauffeur disponible 24h/7j. Un représentant vous accompagne dans toutes les démarches.</p></div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment fonctionne l'application chauffeur ? <span>↓</span></button><div class="faq-a"><p>L'application chauffeur est simple : vous vous connectez, passez en ligne et recevez des propositions de courses avec la destination, le prix et la distance du passager. Vous acceptez ou refusez en un seul appui. Formation gratuite incluse à l'inscription.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Tekeche</div>
+          <p>L'application de transport la plus sécurisée de Côte d'Ivoire.</p>
+          <div class="footer-badges" style="margin:1rem 0;">
+            <a href="https://play.google.com/store/apps/details?id=com.tekechedrivefr.app" target="_blank" rel="noopener">
+              <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Disponible sur Google Play" height="48">
+            </a>
+          </div>
+          <div class="footer-contact">
+            <div>📧 chauffeurs@tekeche.com</div>
+            <div>📞 +225 07 00 00 01 (ligne chauffeurs)</div>
+            <div>📍 Cocody, Abidjan, CI</div>
+          </div>
+        </div>
+        <div class="footer-col"><h4>Navigation</h4><a href="index.html">Accueil</a><a href="index.html#services">Services</a><a href="index.html#securite">Sécurité</a><a href="contact.html">Contact</a></div>
+        <div class="footer-col"><h4>Chauffeurs</h4><a href="#inscription">S'inscrire</a><a href="#requirements">Conditions</a><a href="#perks">Avantages</a><a href="contact.html">Support chauffeur</a></div>
+        <div class="footer-col"><h4>Légal</h4><a href="cgu.html">CGU</a><a href="confidentialite.html">Confidentialité</a><a href="cookies.html">Cookies</a></div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Tekeche SARL — Tous droits réservés</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    function submitDriverForm(e) {
+      e.preventDefault();
+      document.getElementById('form-success').style.display = 'block';
+      e.target.querySelector('button[type=submit]').disabled = true;
+      e.target.querySelector('button[type=submit]').textContent = '✅ Candidature envoyée !';
+    }
+  </script>
+</body>
+</html>

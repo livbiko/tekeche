@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <title>Suppression de compte — Tekeche</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .legal-hero { background: var(--dark); padding: 120px 0 60px; }
+    .legal-hero h1 { color: #fff; font-size: 2.5rem; }
+    .legal-hero p { color: rgba(255,255,255,.6); margin-top: 10px; }
+    .legal-body { max-width: 800px; margin: 0 auto; padding: 60px 24px 80px; }
+    .legal-body h2 { font-size: 1.4rem; color: var(--dark); margin: 40px 0 14px; border-bottom: 2px solid var(--orange); padding-bottom: 8px; display: inline-block; }
+    .legal-body p, .legal-body li { color: var(--gray-600); line-height: 1.85; font-size: .97rem; margin-bottom: 12px; }
+    .legal-body ul { margin-left: 24px; margin-bottom: 16px; }
+    .legal-body strong { color: var(--dark); }
+    .legal-body a { color: var(--orange); }
+    .highlight-box { background: rgba(232,112,26,.07); border-left: 4px solid var(--orange); border-radius: 4px; padding: 16px 20px; margin: 20px 0; }
+    .delete-form { background: var(--gray-50); border-radius: 16px; padding: 32px; margin: 32px 0; }
+    .delete-form label { display: block; font-weight: 600; color: var(--dark); margin-bottom: 6px; font-size: .95rem; }
+    .delete-form input, .delete-form select, .delete-form textarea {
+      width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-100);
+      border-radius: 8px; font-family: inherit; font-size: .95rem;
+      color: var(--dark); background: #fff; margin-bottom: 20px; box-sizing: border-box;
+    }
+    .delete-form textarea { min-height: 100px; resize: vertical; }
+    .delete-form input:focus, .delete-form select:focus, .delete-form textarea:focus {
+      outline: none; border-color: var(--orange);
+    }
+    .btn-delete { background: #d32f2f; color: #fff; border: none; padding: 14px 32px;
+      border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background .2s; }
+    .btn-delete:hover { background: #b71c1c; }
+    .success-msg { display: none; background: #e8f5e9; border-left: 4px solid #2e7d32;
+      border-radius: 4px; padding: 16px 20px; color: #1b5e20; font-weight: 600; margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV (minimal) -->
+  <header style="position:fixed;top:0;left:0;right:0;z-index:100;background:var(--dark);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <img src="assets/logo.svg" alt="Tekeche" style="height:32px;" onerror="this.style.display='none'">
+      <span style="color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;">Tekeche</span>
+    </a>
+    <a href="/" style="color:rgba(255,255,255,.7);font-size:.9rem;text-decoration:none;">← Retour à l'accueil</a>
+  </header>
+
+  <section class="legal-hero">
+    <div class="container" style="max-width:800px;margin:0 auto;padding:0 24px;">
+      <h1>Suppression de compte</h1>
+      <p>Demandez la suppression de votre compte et de vos données personnelles.</p>
+    </div>
+  </section>
+
+  <div class="legal-body">
+
+    <div class="highlight-box">
+      <strong>Vos droits :</strong> Conformément au RGPD et aux lois ivoiriennes sur la protection des données, vous avez le droit de demander la suppression de votre compte et de toutes les données associées à tout moment.
+    </div>
+
+    <h2>Données supprimées</h2>
+    <p>Lors de la suppression de votre compte, les données suivantes seront définitivement effacées :</p>
+    <ul>
+      <li>Votre numéro de téléphone et informations de profil</li>
+      <li>Votre historique de courses</li>
+      <li>Vos informations de paiement et solde de portefeuille</li>
+      <li>Vos documents KYC (pour les chauffeurs)</li>
+      <li>Vos préférences et paramètres</li>
+    </ul>
+    <p>Certaines données peuvent être conservées pendant 90 jours à des fins légales et de prévention de la fraude, puis supprimées définitivement.</p>
+
+    <h2>Faire une demande</h2>
+    <p>Remplissez le formulaire ci-dessous. Nous traiterons votre demande dans un délai de <strong>7 jours ouvrables</strong> et vous enverrons une confirmation par email.</p>
+
+    <div class="delete-form">
+      <form id="deleteForm" onsubmit="submitRequest(event)">
+        <label for="phone">Numéro de téléphone lié au compte *</label>
+        <input type="tel" id="phone" name="phone" placeholder="+225 07 XX XX XX XX" required>
+
+        <label for="email">Email de contact (pour la confirmation) *</label>
+        <input type="email" id="email" name="email" placeholder="votre@email.com" required>
+
+        <label for="type">Type de compte *</label>
+        <select id="type" name="type" required>
+          <option value="">Sélectionnez…</option>
+          <option value="passenger">Passager</option>
+          <option value="driver">Chauffeur</option>
+        </select>
+
+        <label for="reason">Raison de la suppression (optionnel)</label>
+        <textarea id="reason" name="reason" placeholder="Indiquez la raison si vous le souhaitez…"></textarea>
+
+        <button type="submit" class="btn-delete">Soumettre la demande de suppression</button>
+      </form>
+      <div class="success-msg" id="successMsg">
+        ✅ Votre demande a bien été reçue. Vous recevrez une confirmation à l'adresse email fournie dans les 7 jours ouvrables.
+      </div>
+    </div>
+
+    <h2>Contact direct</h2>
+    <p>Vous pouvez également envoyer votre demande directement par email à : <a href="mailto:support@tekeche.com?subject=Demande%20de%20suppression%20de%20compte">support@tekeche.com</a></p>
+
+  </div>
+
+  <footer style="background:var(--dark);padding:32px 24px;text-align:center;">
+    <p style="color:rgba(255,255,255,.4);font-size:.85rem;margin:0;">© 2026 Tekeche. Tous droits réservés. · <a href="/confidentialite.html" style="color:rgba(255,255,255,.4);">Politique de confidentialité</a></p>
+  </footer>
+
+  <script>
+    function submitRequest(e) {
+      e.preventDefault();
+      const form = document.getElementById('deleteForm');
+      const phone = document.getElementById('phone').value;
+      const email = document.getElementById('email').value;
+      const type  = document.getElementById('type').value;
+      const reason = document.getElementById('reason').value;
+
+      // Send via mailto as fallback (works without a backend)
+      const subject = encodeURIComponent('Demande de suppression de compte Tekeche');
+      const body = encodeURIComponent(
+        'Numéro de téléphone : ' + phone + '\n' +
+        'Email : ' + email + '\n' +
+        'Type de compte : ' + type + '\n' +
+        'Raison : ' + (reason || 'Non précisée')
+      );
+      window.location.href = 'mailto:support@tekeche.com?subject=' + subject + '&body=' + body;
+
+      form.style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
