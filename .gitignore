@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# env files
+.env
+.env.local
+.env*.local
+
+# credentials
+*.pem
+*.key
+*.pfx
+*.p12
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.cursor/
+.claude/
+.idea/
+
+# logs
+*.log
+logs/
+
+# submodules (managed as separate repos)
+tekeche-api/
+tekeche-mobile/
