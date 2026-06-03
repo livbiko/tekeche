@@ -7,7 +7,7 @@ require('C:/inetpub/wwwroot/tekeche/tekeche-api/node_modules/dotenv').config({ p
 
 const SA = JSON.parse(fs.readFileSync('C:/inetpub/wwwroot/tekeche/tekeche-mobile/google-service-account.json'));
 
-const NEW_TESTER = 'Kefiacre@gmail.com';
+const NEW_TESTER = 'emikouame@gmail.com';
 
 const ALL_TESTERS = [
   'tamayazagence@gmail.com',
@@ -28,6 +28,7 @@ const ALL_TESTERS = [
   'florenceclaireb@gmail.com',
   'adjouaangeledjaha@gmail.com',
   'Kefiacre@gmail.com',
+  'emikouame@gmail.com',
 ];
 
 const APPS = [
