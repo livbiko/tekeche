@@ -8,26 +8,38 @@ const nodemailer = require('C:/inetpub/wwwroot/tekeche/tekeche-api/node_modules/
 const { execSync } = require('child_process');
 
 const BUILD_IDS = {
-  passenger: '996b4bd3-afe9-41e4-9cc5-e5c62f7322e9',
-  driver:    'd4b18efa-3e57-4582-b2fb-b558487a02a2',
+  passenger: '14880eed-ad21-4c04-a56c-3c7f030c2407',
+  driver:    '169a5003-071e-4922-918b-f20d68d7258b',
 };
 
 const TESTERS = [
+  'zagocky@gmail.com',
+  'welemathias0@gmail.com',
   'tamayazagence@gmail.com',
+  'pralph2007@gmail.com',
+  'mihiakouameepsemourad@gmail.com',
+  'manousaha@gmail.com',
+  'macribell@gmail.com',
   'louismartialb@gmail.com',
+  'kerneluchiha@gmail.com',
+  'honvolionel@gmail.com',
+  'hirmineguehi233@gmail.com',
+  'florenceclaireb@gmail.com',
+  'flobehibro@gmail.com',
   'ettienehoussoumichel3@gmail.com',
   'binanlouismartial@gmail.com',
-  'zagocky@gmail.com',
-  'lindaamani16@gmail.com',
   'bilerebecca@gmail.com',
-  'flobehibro@gmail.com',
-  'hervemalindo@outlook.com',
-  'macribell@gmail.com',
-  'manousaha@gmail.com',
-  'welemathias0@gmail.com',
+  'angelofat78@gmail.com',
   'albankouakou@gmail.com',
-  'honvolionel@gmail.com',
+  'adjouaangeledjaha@gmail.com',
   'adjouaangeled@gmail.com',
+  'abojeany07@gmail.com',
+  'tapialatestere@gmail.com',
+  'sergeskore5@gmail.com',
+  'lindaamani16@gmail.com',
+  'kefiacre@gmail.com',
+  'hervemalindo@outlook.com',
+  '2tbpdsarl@gmail.com',
 ];
 
 const POLL_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
@@ -35,7 +47,7 @@ const SUBMISSION_GRACE_MS = 3 * 60 * 1000; // 3 min after builds finish before e
 
 function getBuildStatuses() {
   const out = execSync(
-    'eas build:list --platform android --limit 6 --non-interactive',
+    'eas build:list --platform android --limit 12 --non-interactive',
     { cwd: 'C:/inetpub/wwwroot/tekeche/tekeche-mobile', encoding: 'utf8', timeout: 30000 }
   );
   const statuses = {};
@@ -55,15 +67,17 @@ const html = `
 
   <p style="margin:0 0 24px">
     Une nouvelle version de <strong>Tekeche</strong> est disponible sur le Play Store.
-    Cette mise &agrave; jour apporte des corrections importantes sur la connexion OTP et des am&eacute;liorations g&eacute;n&eacute;rales.
+    Cette mise &agrave; jour regroupe la livraison de <strong>repas</strong> et de <strong>produits</strong> dans un service unifié, et introduit l&apos;espace <strong>Fournisseur</strong> pour les restaurants et boutiques.
   </p>
 
   <div style="background:#1A1A1A;border-left:4px solid #E8701A;padding:16px;border-radius:0 8px 8px 0;margin:0 0 20px">
     <p style="margin:0 0 12px;color:#E8701A;font-weight:700">Nouveaut&eacute;s dans cette version</p>
     <ul style="margin:0;color:#D1D5DB;font-size:14px;padding-left:20px;line-height:2">
-      <li><strong style="color:#FFFFFF">Connexion OTP corrig&eacute;e</strong> &mdash; le code arrive maintenant par email si le SMS n&apos;est pas disponible</li>
-      <li><strong style="color:#FFFFFF">Connexion automatique</strong> &mdash; l&apos;app vous reconnait apr&egrave;s votre premi&egrave;re connexion</li>
-      <li><strong style="color:#FFFFFF">Stabilit&eacute; am&eacute;lior&eacute;e</strong> &mdash; corrections de bugs divers</li>
+      <li><strong style="color:#FFFFFF">Service Livraison unifi&eacute;</strong> &mdash; repas et produits regroupés dans une seule section</li>
+      <li><strong style="color:#FFFFFF">Espace Fournisseur</strong> &mdash; tableau de bord pour restaurants et boutiques</li>
+      <li><strong style="color:#FFFFFF">Gestion des commandes en temps r&eacute;el</strong> &mdash; confirmer, pr&eacute;parer, marquer comme pr&ecirc;t</li>
+      <li><strong style="color:#FFFFFF">Menu &amp; Catalogue</strong> &mdash; ajout, modification et disponibilit&eacute; des plats/produits</li>
+      <li><strong style="color:#FFFFFF">Mise &agrave; jour automatique</strong> &mdash; l&apos;app signale les nouvelles versions disponibles</li>
     </ul>
   </div>
 
@@ -108,7 +122,7 @@ async function sendNotifications() {
       await transporter.sendMail({
         from: '"Tekeche" <assalehervekouame@gmail.com>',
         to,
-        subject: 'Tekeche — Nouvelle version disponible (OTP + connexion automatique)',
+        subject: 'Tekeche — Nouvelle version disponible (Livraison repas & produits)',
         html,
       });
       console.log('  OK  ' + to);
@@ -121,13 +135,36 @@ async function sendNotifications() {
   console.log(`\nDone. Sent: ${sent}, Failed: ${failed}`);
 }
 
+const READY_FLAG    = 'C:/Users/Administrator/notify-ready.json';
+const CONFIRM_FLAG  = 'C:/Users/Administrator/notify-confirmed.json';
+const fs = require('fs');
+
+// Remove stale flags from a previous run
+try { fs.unlinkSync(READY_FLAG);   } catch {}
+try { fs.unlinkSync(CONFIRM_FLAG); } catch {}
+
 async function poll() {
   let bothFinished = false;
   let finishedAt = null;
+  let waitingConfirm = false;
 
   while (true) {
     const now = new Date().toISOString();
     try {
+      // Once ready, just wait for the confirmation flag
+      if (waitingConfirm) {
+        if (fs.existsSync(CONFIRM_FLAG)) {
+          console.log('Confirmation received — sending notifications...');
+          fs.unlinkSync(CONFIRM_FLAG);
+          fs.unlinkSync(READY_FLAG);
+          await sendNotifications();
+          process.exit(0);
+        }
+        console.log(`[${now}] Awaiting your confirmation...`);
+        await new Promise(r => setTimeout(r, 30 * 1000));
+        continue;
+      }
+
       const statuses = getBuildStatuses();
       const ps = statuses[BUILD_IDS.passenger] || 'unknown';
       const ds = statuses[BUILD_IDS.driver]    || 'unknown';
@@ -140,9 +177,16 @@ async function poll() {
           console.log(`Both builds finished. Waiting ${SUBMISSION_GRACE_MS / 1000}s for Play Store submission...`);
         }
         if (Date.now() - finishedAt >= SUBMISSION_GRACE_MS) {
-          console.log('Grace period elapsed — sending notifications...');
-          await sendNotifications();
-          process.exit(0);
+          // Write ready flag and wait for manual confirmation
+          fs.writeFileSync(READY_FLAG, JSON.stringify({
+            readyAt: now,
+            passenger: BUILD_IDS.passenger,
+            driver:    BUILD_IDS.driver,
+            testers:   TESTERS.length,
+          }));
+          console.log(`READY_FOR_CONFIRMATION — waiting for your go-ahead.`);
+          waitingConfirm = true;
+          continue;
         }
       }
 
