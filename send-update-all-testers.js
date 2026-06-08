@@ -33,28 +33,28 @@ const TESTERS = [
 
 const html = `
 <div style="font-family:-apple-system,Arial,sans-serif;max-width:560px;margin:0 auto;background:#0A0A0A;color:#FFFFFF;padding:32px;border-radius:16px">
-  <h2 style="color:#E8701A;margin:0 0 4px">Tekeche &mdash; Correction de bug &#x2705;</h2>
-  <p style="color:#A0A0A0;font-size:14px;margin:0 0 24px">Mise &agrave; jour serveur &mdash; aucune action requise</p>
+  <h2 style="color:#E8701A;margin:0 0 4px">Tekeche &mdash; Corrections serveur &#x2705;</h2>
+  <p style="color:#A0A0A0;font-size:14px;margin:0 0 24px">Mises &agrave; jour serveur &mdash; aucune action requise</p>
 
   <p style="margin:0 0 24px">
-    Un bug pouvant provoquer une erreur <strong>&laquo;&nbsp;Acc&egrave;s refus&eacute;&nbsp;&raquo;</strong> lors de la saisie d&apos;une destination ou de l&apos;affichage des restaurants a &eacute;t&eacute; corrig&eacute;.
-    Si vous avez rencontr&eacute; ce probl&egrave;me, il est r&eacute;solu &mdash; <strong>sans mise &agrave; jour de l&apos;app</strong>.
+    Deux corrections ont &eacute;t&eacute; d&eacute;ploy&eacute;es aujourd&apos;hui. Si vous avez rencontr&eacute; l&apos;un de ces probl&egrave;mes, il est r&eacute;solu sans mise &agrave; jour de l&apos;app.
   </p>
 
   <div style="background:#1A1A1A;border-left:4px solid #16A34A;padding:16px;border-radius:0 8px 8px 0;margin:0 0 20px">
-    <p style="margin:0 0 12px;color:#16A34A;font-weight:700">Ce qui a &eacute;t&eacute; corrig&eacute;</p>
+    <p style="margin:0 0 12px;color:#16A34A;font-weight:700">Corrections apport&eacute;es</p>
     <ul style="margin:0;color:#D1D5DB;font-size:14px;padding-left:20px;line-height:2">
-      <li><strong style="color:#FFFFFF">Erreur &laquo;&nbsp;Acc&egrave;s refus&eacute;&nbsp;&raquo; lors de la saisie d&apos;une destination</strong> &mdash; corrig&eacute;</li>
-      <li><strong style="color:#FFFFFF">Erreur sur la liste des restaurants &amp; commandes</strong> &mdash; corrig&eacute;</li>
-      <li><strong style="color:#FFFFFF">Compatible avec toutes les versions install&eacute;es</strong> &mdash; pas besoin de mettre &agrave; jour</li>
+      <li><strong style="color:#FFFFFF">Erreur &laquo;&nbsp;Acc&egrave;s refus&eacute;&nbsp;&raquo; lors de la saisie d&apos;une destination</strong> &mdash; corrig&eacute;e</li>
+      <li><strong style="color:#FFFFFF">Erreur sur la liste des restaurants &amp; commandes</strong> &mdash; corrig&eacute;e</li>
+      <li><strong style="color:#FFFFFF">Connexion &agrave; l&apos;Espace Fournisseur bloqu&eacute;e</strong> &mdash; corrig&eacute;e, le portail est accessible</li>
+      <li><strong style="color:#FFFFFF">Menu Chez Kouam&eacute;</strong> &mdash; 32 plats disponibles (soupes, grillades, desserts&hellip;)</li>
     </ul>
   </div>
 
   <div style="background:#1A1A1A;border-radius:8px;padding:14px;margin:0 0 24px;border:1px solid #333333">
     <p style="margin:0 0 6px;color:#A0A0A0;font-size:13px;font-weight:700">Que faire ?</p>
     <p style="margin:0;color:#A0A0A0;font-size:13px;line-height:1.6">
-      <strong style="color:#FFFFFF">Rien</strong> &mdash; la correction est d&eacute;j&agrave; active. Relancez simplement l&apos;app si elle &eacute;tait ouverte.
-      Si le probl&egrave;me persiste, r&eacute;pondez &agrave; cet email.
+      <strong style="color:#FFFFFF">Rien</strong> &mdash; les corrections sont d&eacute;j&agrave; actives. Relancez simplement l&apos;app si elle &eacute;tait ouverte.
+      Si un probl&egrave;me persiste, r&eacute;pondez directement &agrave; cet email.
     </p>
   </div>
 
@@ -88,7 +88,7 @@ async function send() {
       await t.sendMail({
         from: '"Tekeche" <assalehervekouame@gmail.com>',
         to,
-        subject: 'Tekeche — Correction bug "Accès refusé" (destination & restaurants)',
+        subject: 'Tekeche — Corrections serveur (destination, restaurants, portail fournisseur)',
         html,
       });
       console.log('  OK  ' + to);
