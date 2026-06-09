@@ -23,26 +23,33 @@
     .highlight-box { background: rgba(232,112,26,.07); border-left: 4px solid var(--orange); border-radius: 4px; padding: 16px 20px; margin: 20px 0; }
     .delete-form { background: var(--gray-50); border-radius: 16px; padding: 32px; margin: 32px 0; }
     .delete-form label { display: block; font-weight: 600; color: var(--dark); margin-bottom: 6px; font-size: .95rem; }
-    .delete-form input, .delete-form select, .delete-form textarea {
+    .delete-form input, .delete-form select {
       width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-100);
       border-radius: 8px; font-family: inherit; font-size: .95rem;
       color: var(--dark); background: #fff; margin-bottom: 20px; box-sizing: border-box;
     }
-    .delete-form textarea { min-height: 100px; resize: vertical; }
-    .delete-form input:focus, .delete-form select:focus, .delete-form textarea:focus {
+    .delete-form input:focus, .delete-form select:focus {
       outline: none; border-color: var(--orange);
     }
     .btn-delete { background: #d32f2f; color: #fff; border: none; padding: 14px 32px;
       border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: background .2s; }
+      font-family: inherit; transition: background .2s; width: 100%; }
     .btn-delete:hover { background: #b71c1c; }
-    .success-msg { display: none; background: #e8f5e9; border-left: 4px solid #2e7d32;
-      border-radius: 4px; padding: 16px 20px; color: #1b5e20; font-weight: 600; margin-top: 16px; }
+    .btn-delete:disabled { background: #aaa; cursor: not-allowed; }
+    .btn-secondary { background: #374151; color: #fff; border: none; padding: 12px 24px;
+      border-radius: 8px; font-size: .9rem; font-weight: 600; cursor: pointer;
+      font-family: inherit; margin-top: 8px; }
+    .btn-secondary:hover { background: #1f2937; }
+    .alert { border-radius: 6px; padding: 14px 18px; margin: 16px 0; font-size: .95rem; font-weight: 500; }
+    .alert-error { background: #fdecea; border-left: 4px solid #d32f2f; color: #b71c1c; }
+    .alert-success { background: #e8f5e9; border-left: 4px solid #2e7d32; color: #1b5e20; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .otp-hint { font-size: .88rem; color: var(--gray-600); margin-top: -12px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
 
-  <!-- NAV (minimal) -->
   <header style="position:fixed;top:0;left:0;right:0;z-index:100;background:var(--dark);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;">
     <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
       <img src="assets/logo.svg" alt="Tekeche" style="height:32px;" onerror="this.style.display='none'">
@@ -54,7 +61,7 @@
   <section class="legal-hero">
     <div class="container" style="max-width:800px;margin:0 auto;padding:0 24px;">
       <h1>Suppression de compte</h1>
-      <p>Demandez la suppression de votre compte et de vos données personnelles.</p>
+      <p>Demandez la suppression définitive de votre compte et de vos données personnelles.</p>
     </div>
   </section>
 
@@ -67,44 +74,62 @@
     <h2>Données supprimées</h2>
     <p>Lors de la suppression de votre compte, les données suivantes seront définitivement effacées :</p>
     <ul>
-      <li>Votre numéro de téléphone et informations de profil</li>
-      <li>Votre historique de courses</li>
-      <li>Vos informations de paiement et solde de portefeuille</li>
+      <li>Votre adresse email et numéro de téléphone</li>
+      <li>Votre profil et informations personnelles</li>
+      <li>Votre portefeuille et solde</li>
+      <li>Vos adresses enregistrées</li>
+      <li>Vos contacts d'urgence</li>
       <li>Vos documents KYC (pour les chauffeurs)</li>
-      <li>Vos préférences et paramètres</li>
     </ul>
-    <p>Certaines données peuvent être conservées pendant 90 jours à des fins légales et de prévention de la fraude, puis supprimées définitivement.</p>
+    <p>Certaines données de transaction peuvent être conservées pendant 90 jours à des fins légales, puis supprimées définitivement.</p>
 
-    <h2>Faire une demande</h2>
-    <p>Remplissez le formulaire ci-dessous. Nous traiterons votre demande dans un délai de <strong>7 jours ouvrables</strong> et vous enverrons une confirmation par email.</p>
+    <h2>Supprimer votre compte</h2>
+    <p>Cette action est <strong>irréversible</strong>. Entrez votre email pour recevoir un code de confirmation.</p>
 
     <div class="delete-form">
-      <form id="deleteForm" onsubmit="submitRequest(event)">
-        <label for="phone">Numéro de téléphone lié au compte *</label>
-        <input type="tel" id="phone" name="phone" placeholder="+225 07 XX XX XX XX" required>
 
-        <label for="email">Email de contact (pour la confirmation) *</label>
-        <input type="email" id="email" name="email" placeholder="votre@email.com" required>
+      <!-- Step 1: Enter email + account type -->
+      <div class="step active" id="step1">
+        <label for="email">Adresse email liée au compte *</label>
+        <input type="email" id="email" placeholder="votre@email.com" required autocomplete="email">
 
-        <label for="type">Type de compte *</label>
-        <select id="type" name="type" required>
+        <label for="accountType">Type de compte *</label>
+        <select id="accountType" required>
           <option value="">Sélectionnez…</option>
           <option value="passenger">Passager</option>
           <option value="driver">Chauffeur</option>
         </select>
 
-        <label for="reason">Raison de la suppression (optionnel)</label>
-        <textarea id="reason" name="reason" placeholder="Indiquez la raison si vous le souhaitez…"></textarea>
-
-        <button type="submit" class="btn-delete">Soumettre la demande de suppression</button>
-      </form>
-      <div class="success-msg" id="successMsg">
-        ✅ Votre demande a bien été reçue. Vous recevrez une confirmation à l'adresse email fournie dans les 7 jours ouvrables.
+        <div id="error1" class="alert alert-error" style="display:none"></div>
+        <button type="button" class="btn-delete" id="btnRequest" onclick="requestOTP()">Envoyer le code de confirmation</button>
       </div>
+
+      <!-- Step 2: Enter OTP -->
+      <div class="step" id="step2">
+        <p style="color:var(--gray-600);margin-bottom:20px;">Un code à 6 chiffres a été envoyé à <strong id="emailDisplay"></strong>. Entrez-le ci-dessous pour confirmer la suppression.</p>
+
+        <label for="otpCode">Code de confirmation *</label>
+        <input type="text" id="otpCode" placeholder="123456" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+        <p class="otp-hint">Vérifiez votre boîte de réception (et les spams). Valable 10 minutes.</p>
+
+        <div id="error2" class="alert alert-error" style="display:none"></div>
+        <button type="button" class="btn-delete" id="btnConfirm" onclick="confirmDeletion()">Confirmer la suppression définitive</button>
+        <br>
+        <button type="button" class="btn-secondary" onclick="goBack()">← Modifier l'email</button>
+      </div>
+
+      <!-- Step 3: Success -->
+      <div class="step" id="step3">
+        <div class="alert alert-success">
+          ✅ <strong>Compte supprimé.</strong> Toutes vos données ont été définitivement effacées. Vous allez être déconnecté de l'application.
+        </div>
+        <p style="color:var(--gray-600);margin-top:16px;">Merci d'avoir utilisé Tekeche. Si vous souhaitez nous rejoindre à nouveau, vous pouvez créer un nouveau compte à tout moment.</p>
+      </div>
+
     </div>
 
     <h2>Contact direct</h2>
-    <p>Vous pouvez également envoyer votre demande directement par email à : <a href="mailto:support@tekeche.com?subject=Demande%20de%20suppression%20de%20compte">support@tekeche.com</a></p>
+    <p>Vous pouvez également envoyer votre demande par email à : <a href="mailto:support@tekeche.com?subject=Demande%20de%20suppression%20de%20compte">support@tekeche.com</a></p>
 
   </div>
 
@@ -113,26 +138,84 @@
   </footer>
 
   <script>
-    function submitRequest(e) {
-      e.preventDefault();
-      const form = document.getElementById('deleteForm');
-      const phone = document.getElementById('phone').value;
-      const email = document.getElementById('email').value;
-      const type  = document.getElementById('type').value;
-      const reason = document.getElementById('reason').value;
+    const API = 'https://api.tekeche.com';
 
-      // Send via mailto as fallback (works without a backend)
-      const subject = encodeURIComponent('Demande de suppression de compte Tekeche');
-      const body = encodeURIComponent(
-        'Numéro de téléphone : ' + phone + '\n' +
-        'Email : ' + email + '\n' +
-        'Type de compte : ' + type + '\n' +
-        'Raison : ' + (reason || 'Non précisée')
-      );
-      window.location.href = 'mailto:support@tekeche.com?subject=' + subject + '&body=' + body;
+    function showStep(n) {
+      document.querySelectorAll('.step').forEach((s, i) => s.classList.toggle('active', i + 1 === n));
+    }
 
-      form.style.display = 'none';
-      document.getElementById('successMsg').style.display = 'block';
+    function setError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.style.display = msg ? 'block' : 'none';
+    }
+
+    function setLoading(btnId, loading, defaultText) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      btn.textContent = loading ? 'Chargement…' : defaultText;
+    }
+
+    async function requestOTP() {
+      const email = document.getElementById('email').value.trim();
+      const accountType = document.getElementById('accountType').value;
+      setError('error1', '');
+
+      if (!email || !accountType) {
+        return setError('error1', 'Veuillez remplir tous les champs.');
+      }
+
+      setLoading('btnRequest', true, 'Envoyer le code de confirmation');
+      try {
+        const r = await fetch(API + '/api/auth/delete-account/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, accountType }),
+        });
+        const data = await r.json();
+        if (!data.success) {
+          return setError('error1', data.message || 'Erreur. Vérifiez votre email et réessayez.');
+        }
+        document.getElementById('emailDisplay').textContent = email;
+        showStep(2);
+      } catch {
+        setError('error1', 'Impossible de contacter le serveur. Réessayez.');
+      } finally {
+        setLoading('btnRequest', false, 'Envoyer le code de confirmation');
+      }
+    }
+
+    async function confirmDeletion() {
+      const email = document.getElementById('email').value.trim();
+      const accountType = document.getElementById('accountType').value;
+      const code = document.getElementById('otpCode').value.trim();
+      setError('error2', '');
+
+      if (!code) return setError('error2', 'Entrez le code reçu par email.');
+
+      setLoading('btnConfirm', true, 'Confirmer la suppression définitive');
+      try {
+        const r = await fetch(API + '/api/auth/delete-account/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code, accountType }),
+        });
+        const data = await r.json();
+        if (!data.success) {
+          return setError('error2', data.message || 'Code incorrect. Réessayez.');
+        }
+        showStep(3);
+      } catch {
+        setError('error2', 'Impossible de contacter le serveur. Réessayez.');
+      } finally {
+        setLoading('btnConfirm', false, 'Confirmer la suppression définitive');
+      }
+    }
+
+    function goBack() {
+      setError('error2', '');
+      document.getElementById('otpCode').value = '';
+      showStep(1);
     }
   </script>
 
