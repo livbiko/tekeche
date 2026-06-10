@@ -33,31 +33,31 @@ const TESTERS = [
 
 const html = `
 <div style="font-family:-apple-system,Arial,sans-serif;max-width:560px;margin:0 auto;background:#0A0A0A;color:#FFFFFF;padding:32px;border-radius:16px">
-  <h2 style="color:#E8701A;margin:0 0 4px">Tekeche &mdash; Commande de repas disponible &#x1F37D;&#xFE0F;</h2>
-  <p style="color:#A0A0A0;font-size:14px;margin:0 0 24px">Testez la livraison de repas depuis l&apos;app</p>
+  <h2 style="color:#E8701A;margin:0 0 4px">Tekeche &mdash; Passez votre premi&egrave;re commande &#x1F6D5;</h2>
+  <p style="color:#A0A0A0;font-size:14px;margin:0 0 24px">La livraison de repas est op&eacute;rationnelle &mdash; testez-la maintenant</p>
 
-  <p style="margin:0 0 24px">
-    Le service de <strong>livraison de repas</strong> est maintenant op&eacute;rationnel.
-    Vous pouvez passer une commande chez <strong>Chez Kouam&eacute;</strong> directement depuis la section <strong>Livraison</strong> de l&apos;app.
+  <p style="margin:0 0 20px">
+    La commande de repas est <strong>confirm&eacute;e fonctionnelle</strong>. Photos, menu complet, panier et paiement &mdash; tout est pr&ecirc;t.
+    On a besoin de vos retours sur l&apos;exp&eacute;rience compl&egrave;te de commande.
   </p>
 
   <div style="background:#1A1A1A;border-left:4px solid #E8701A;padding:16px;border-radius:0 8px 8px 0;margin:0 0 20px">
-    <p style="margin:0 0 12px;color:#E8701A;font-weight:700">Chez Kouam&eacute; &mdash; Cuisine locale, Cocody Abidjan</p>
+    <p style="margin:0 0 10px;color:#E8701A;font-weight:700">Chez Kouam&eacute; &mdash; Cuisine locale, Cocody Abidjan</p>
     <ul style="margin:0;color:#D1D5DB;font-size:14px;padding-left:20px;line-height:2">
-      <li><strong style="color:#FFFFFF">32 plats au menu</strong> &mdash; Garba, Kedjenou, Foutou, Attiék&eacute;&hellip;</li>
-      <li><strong style="color:#FFFFFF">Grillades</strong> &mdash; Poulet, Poisson, Pintade, Tilapia</li>
-      <li><strong style="color:#FFFFFF">Soupes, Desserts &amp; Boissons</strong> &mdash; Bissap, Gnamakoudji, Beignets&hellip;</li>
-      <li><strong style="color:#FFFFFF">Livraison &agrave; partir de 500 FCFA</strong> &mdash; commande minimum 1&nbsp;000 FCFA</li>
+      <li><strong style="color:#FFFFFF">32 plats avec photos</strong> &mdash; Garba, Kedjenou, Foutou, Grillades&hellip;</li>
+      <li><strong style="color:#FFFFFF">Livraison 500 FCFA</strong> &mdash; commande minimum 1&nbsp;000 FCFA</li>
+      <li><strong style="color:#FFFFFF">Paiement</strong> &mdash; Espèces, Orange Money, MTN MoMo, Wave, Portefeuille</li>
     </ul>
   </div>
 
   <div style="background:#1A1A1A;border-radius:8px;padding:14px;margin:0 0 24px;border:1px solid #333333">
-    <p style="margin:0 0 6px;color:#E8701A;font-size:13px;font-weight:700">Comment tester ?</p>
+    <p style="margin:0 0 6px;color:#E8701A;font-size:13px;font-weight:700">Comment passer une commande ?</p>
     <ol style="margin:0;color:#A0A0A0;font-size:13px;line-height:2;padding-left:18px">
       <li>Ouvrez Tekeche &rarr; section <strong style="color:#FFFFFF">Livraison</strong></li>
       <li>S&eacute;lectionnez <strong style="color:#FFFFFF">Chez Kouam&eacute;</strong></li>
-      <li>Ajoutez des plats et passez commande</li>
-      <li>Signalez tout bug en r&eacute;pondant &agrave; cet email</li>
+      <li>Ajoutez des plats au panier et appuyez sur <strong style="color:#FFFFFF">Commander</strong></li>
+      <li>Entrez votre adresse de livraison et choisissez le paiement</li>
+      <li>Signalez tout bug ou probl&egrave;me en r&eacute;pondant &agrave; cet email</li>
     </ol>
   </div>
 
@@ -91,7 +91,7 @@ async function send() {
       await t.sendMail({
         from: '"Tekeche" <assalehervekouame@gmail.com>',
         to,
-        subject: 'Tekeche — Commandez vos repas chez Chez Kouamé 🍽️',
+        subject: 'Tekeche — Passez votre première commande 🛵',
         html,
       });
       console.log('  OK  ' + to);
