@@ -31,6 +31,15 @@ async function main() {
   const db = client.db('tekeche');
   pass('MongoDB connected');
 
+  // Clean up any stale trips from previous failed test runs
+  const passenger = await db.collection('users').findOne({ email: PASS_EMAIL });
+  if (passenger) {
+    const stale = await db.collection('trips').deleteMany({
+      passenger: passenger._id, status: { $in: ['searching', 'accepted', 'driver_arriving', 'in_progress'] },
+    });
+    if (stale.deletedCount) pass(`Cleaned up ${stale.deletedCount} stale trip(s) from previous run`);
+  }
+
   step(1, 'Finding an online+available standard driver...');
   const driver = await db.collection('drivers').findOne({
     isOnline: true, isAvailable: true, socketId: { $ne: null },
@@ -75,6 +84,10 @@ async function main() {
   const dbDriver = await db.collection('drivers').findOne({ _id: driver._id });
   if (!dbDriver.isOnline) fail('Driver not marked online after socket connect');
   pass(`isOnline=${dbDriver.isOnline} isAvailable=${dbDriver.isAvailable}`);
+
+  // Set driver location to Abidjan so dispatch $near query finds them
+  await http('PUT', '/api/drivers/location', { lat: 5.3488, lng: -4.0169 }, driverToken);
+  pass('Driver location set to Abidjan (5.3488, -4.0169)');
 
   step(5, 'Connecting passenger socket...');
   const pSocket = io(BASE, { auth: { token: passengerToken }, transports: ['websocket'], timeout: 8000 });
