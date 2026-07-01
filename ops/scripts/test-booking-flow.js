@@ -7,7 +7,6 @@ const { MongoClient, ObjectId } = require('C:/inetpub/wwwroot/tekeche/tekeche-ap
 const BASE      = 'http://127.0.0.1:5000';   // production API
 const MONGO_URI = 'mongodb://tekeche:6eY7EvTt57HM2dgmPgrsr64u@127.0.0.1:27017/tekeche';
 const PASS_EMAIL   = 'assalehervekouame+passager1@gmail.com';
-const DRIVER_EMAIL = 'honvolionel@gmail.com';
 
 const pass = (msg) => console.log(`  ✅  ${msg}`);
 const fail = (msg) => { console.error(`  ❌  ${msg}`); process.exit(1); };
@@ -32,13 +31,13 @@ async function main() {
   const db = client.db('tekeche');
   pass('MongoDB connected');
 
-  step(1, `Checking driver: ${DRIVER_EMAIL}`);
-  const driver = await db.collection('drivers').findOne({ email: DRIVER_EMAIL });
-  if (!driver) fail(`Driver ${DRIVER_EMAIL} not found`);
-  if (!driver.isOnline)    fail(`Driver is offline — open Tekeche Driver app first`);
-  if (!driver.isAvailable) fail(`Driver is not available (mid-dispatch)`);
-  if (!driver.socketId)    fail(`Driver has no socket connection — check driver app`);
-  pass(`${driver.name} | ${driver.vehicleType} | kyc=${driver.kycStatus} | socket=${driver.socketId.slice(0,8)}...`);
+  step(1, 'Finding an online+available standard driver...');
+  const driver = await db.collection('drivers').findOne({
+    isOnline: true, isAvailable: true, socketId: { $ne: null },
+    vehicleType: 'standard', kycStatus: { $in: ['verified', 'approved'] },
+  });
+  if (!driver) fail('No online+available standard driver found — open Tekeche Driver app and go online first');
+  pass(`${driver.name} (${driver.email}) | kyc=${driver.kycStatus} | socket=${driver.socketId.slice(0,8)}...`);
 
   step(2, `Authenticating passenger via OTP: ${PASS_EMAIL}`);
   await db.collection('otps').deleteMany({ email: PASS_EMAIL, role: 'passenger' });
