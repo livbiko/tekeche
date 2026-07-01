@@ -51,13 +51,13 @@ async function main() {
   const passengerToken = pRes.token;
   pass(`Passenger: "${pRes.user.name}" id=${pRes.user._id}`);
 
-  step(3, `Authenticating driver via OTP: ${DRIVER_EMAIL}`);
-  await db.collection('otps').deleteMany({ email: DRIVER_EMAIL, role: 'driver' });
+  step(3, `Authenticating driver via OTP: ${driver.email}`);
+  await db.collection('otps').deleteMany({ email: driver.email, role: 'driver' });
   await db.collection('otps').insertOne({
-    email: DRIVER_EMAIL, code: '222222', role: 'driver',
+    email: driver.email, code: '222222', role: 'driver',
     attempts: 0, expiresAt: new Date(Date.now() + 5 * 60_000), createdAt: new Date(),
   });
-  const dRes = await http('POST', '/api/auth/verify-otp', { email: DRIVER_EMAIL, code: '222222', role: 'driver' });
+  const dRes = await http('POST', '/api/auth/verify-otp', { email: driver.email, code: '222222', role: 'driver' });
   if (!dRes.token) fail(`No driver token: ${JSON.stringify(dRes)}`);
   const driverToken = dRes.token;
   pass(`Driver: "${dRes.user.name}" role=${dRes.role}`);
