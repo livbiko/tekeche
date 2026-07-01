@@ -54,3 +54,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Push notification fix: re-register token on app foreground — driver OTA live
 
+
+## Build #7 â€” 2026-07-01 22:56
+
+- **API commit**: c5236d5c (master)
+- **Mobile commit**: 33a32c06
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fix lastSeen field: add to Driver schema and update on socket connect
+
