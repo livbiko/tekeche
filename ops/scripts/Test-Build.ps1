@@ -126,8 +126,8 @@ if (Test-Path $TEST_SCRIPT) {
 # ── 9. No recent crashes in logs ──────────────────────────────────────────────
 Check "No crashes in last 10 min of logs" {
     $since = (Get-Date).AddMinutes(-10).ToString("yyyy-MM-dd HH:")
-    $crashes = Get-Content "C:\logs\tekeche-api-error-7.log" -Tail 200 |
-        Where-Object { $_ -match 'FATAL|uncaughtException|SIGTERM' -and $_ -match $since }
+    $crashes = @(Get-Content "C:\logs\tekeche-api-error-7.log" -Tail 200 -ErrorAction SilentlyContinue |
+        Where-Object { $_ -match 'FATAL|uncaughtException|SIGTERM' -and $_ -match $since })
     $crashes.Count -eq 0
 }
 
