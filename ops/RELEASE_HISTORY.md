@@ -34,3 +34,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Woyo tab navigates to service page; OTA pipeline targets Windows runner explicitly. All prior session fixes included.
 
+
+## Build #5 â€” 2026-07-01 20:18
+
+- **API commit**: da4caccb (master)
+- **Mobile commit**: 9ccf438a
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Passenger OTA confirmed: Woyo tab opens service page — both passenger and driver OTAs deployed and live
+
+
+## Build #6 â€” 2026-07-01 21:31
+
+- **API commit**: da4caccb (master)
+- **Mobile commit**: 33a32c06
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Push notification fix: re-register token on app foreground — driver OTA live
+

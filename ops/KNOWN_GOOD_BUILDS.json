@@ -50,5 +50,31 @@
         "productionSafe":  true,
         "testResults":  "skipped",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  5,
+        "dateCreated":  "2026-07-01T20:18:06.4124370+01:00",
+        "apiCommit":  "da4caccbcc1286c4faa9112d5e2ff518e971fc44",
+        "apiBranch":  "master",
+        "mobileCommit":  "9ccf438ad99e66e261192c5db80030a0da7bf76a",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Passenger OTA confirmed: Woyo tab opens service page — both passenger and driver OTAs deployed and live",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  6,
+        "dateCreated":  "2026-07-01T21:31:10.1773063+01:00",
+        "apiCommit":  "da4caccbcc1286c4faa9112d5e2ff518e971fc44",
+        "apiBranch":  "master",
+        "mobileCommit":  "33a32c067815f0ba2a06b8a3d88da3b2f8e804bc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Push notification fix: re-register token on app foreground — driver OTA live",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
