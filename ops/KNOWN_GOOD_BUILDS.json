@@ -1,0 +1,54 @@
+﻿[
+    {
+        "buildNumber":  1,
+        "dateCreated":  "2026-06-28T13:00:00.000Z",
+        "apiCommit":  "a9bb2f85df4a2da95385722188b933918bb364ac",
+        "apiBranch":  "master",
+        "mobileCommit":  "4bd03c3768d2699ad4babccd935bda60fdd2331b",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Booking flow fixes: KYC filter, startup availability reset, dispatch lifecycle logging. Automated booking flow test passed on production (port 5000). OTP rate limit raised to 10/min per-IP, 15/10min per-identifier.",
+        "productionSafe":  true,
+        "testResults":  "automated-passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  2,
+        "dateCreated":  "2026-06-30T21:40:36.3914118+01:00",
+        "apiCommit":  "6c442086425d97fa0247b86d809baac9ba32f2f4",
+        "apiBranch":  "master",
+        "mobileCommit":  "3c359eae3c7456185125eb2012a611c53851d86f",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Produits screen activated, Woyo bottom nav added, OTA pipeline refactored to single-job (no matrix). API health=ok db=connected.",
+        "productionSafe":  true,
+        "testResults":  "skipped",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  3,
+        "dateCreated":  "2026-07-01T15:36:04.2956641+01:00",
+        "apiCommit":  "da4caccbcc1286c4faa9112d5e2ff518e971fc44",
+        "apiBranch":  "master",
+        "mobileCommit":  "3c359eae3c7456185125eb2012a611c53851d86f",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "GET /api/drivers/status added; stale socket disconnect fix; Test-Build.ps1 encoding + all 6 checks fixed; OTA pipeline refactored to single-job. 8/9 checks pass; booking flow skipped (requires live driver).",
+        "productionSafe":  true,
+        "testResults":  "skipped",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  4,
+        "dateCreated":  "2026-07-01T19:57:41.1838309+01:00",
+        "apiCommit":  "da4caccbcc1286c4faa9112d5e2ff518e971fc44",
+        "apiBranch":  "master",
+        "mobileCommit":  "9ccf438ad99e66e261192c5db80030a0da7bf76a",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Woyo tab navigates to service page; OTA pipeline targets Windows runner explicitly. All prior session fixes included.",
+        "productionSafe":  true,
+        "testResults":  "skipped",
+        "deployStatus":  "deployed"
+    }
+]
