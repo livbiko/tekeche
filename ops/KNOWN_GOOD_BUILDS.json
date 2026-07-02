@@ -102,5 +102,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  9,
+        "dateCreated":  "2026-07-02T10:13:07.9695131+01:00",
+        "apiCommit":  "a8568928d8bef8319cfa6470d27cd719004d1a5f",
+        "apiBranch":  "master",
+        "mobileCommit":  "bea25cfea978a644d29b4e481cebdcd23a2ce4b1",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "SMS dispatch fallback, 120s timeout, socket reconnection tuning, Woyo tab removed",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

@@ -74,3 +74,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Passenger OTA confirmed: push notification fix live on both apps
 
+
+## Build #9 â€” 2026-07-02 10:13
+
+- **API commit**: a8568928 (master)
+- **Mobile commit**: bea25cfe
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: SMS dispatch fallback, 120s timeout, socket reconnection tuning, Woyo tab removed
+
