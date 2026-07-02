@@ -128,5 +128,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  11,
+        "dateCreated":  "2026-07-02T15:42:33.2846123+01:00",
+        "apiCommit":  "a8568928d8bef8319cfa6470d27cd719004d1a5f",
+        "apiBranch":  "master",
+        "mobileCommit":  "24976781ae12f94f3bf2f0b67a415fec4091489d",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Driver OTA in progress — re-verifying Build #10 state",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

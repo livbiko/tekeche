@@ -94,3 +94,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Woyo card navigates directly to booking form, no bottom tab, no intermediate page
 
+
+## Build #11 â€” 2026-07-02 15:42
+
+- **API commit**: a8568928 (master)
+- **Mobile commit**: 24976781
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Driver OTA in progress — re-verifying Build #10 state
+
