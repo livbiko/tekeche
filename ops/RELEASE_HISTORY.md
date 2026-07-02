@@ -64,3 +64,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fix lastSeen field: add to Driver schema and update on socket connect
 
+
+## Build #8 â€” 2026-07-02 00:31
+
+- **API commit**: c5236d5c (master)
+- **Mobile commit**: 33a32c06
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Passenger OTA confirmed: push notification fix live on both apps
+
