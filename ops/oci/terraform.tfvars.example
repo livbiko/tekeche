@@ -1,0 +1,30 @@
+# Copy this file to terraform.tfvars and fill in your values
+# NEVER commit terraform.tfvars — it contains secrets
+
+# ── OCI Auth (from OCI Console → Profile → API Keys) ─────────────────────────
+tenancy_ocid     = "ocid1.tenancy.oc1..aaaa..."
+user_ocid        = "ocid1.user.oc1..aaaa..."
+fingerprint      = "aa:bb:cc:dd:..."
+private_key_path = "~/.oci/oci_api_key.pem"
+region           = "eu-paris-1"
+compartment_id   = "ocid1.compartment.oc1..aaaa..."
+
+# ── On-prem ───────────────────────────────────────────────────────────────────
+onprem_public_ip   = "41.x.x.x"      # your public IP at BikoDC
+onprem_cidr        = "192.168.1.0/24"
+onprem_nlb_vip     = "192.168.1.100"
+onprem_api_port    = 443
+
+# ── VPN ───────────────────────────────────────────────────────────────────────
+# Generate with: openssl rand -base64 32
+vpn_shared_secret  = "CHANGE_ME_strong_random_secret"
+cpe_vendor         = "Microsoft"   # Windows RRAS
+
+# ── Compute ───────────────────────────────────────────────────────────────────
+# Find Ubuntu 22.04 image OCID at: https://docs.oracle.com/iaas/images/
+standby_image_id   = "ocid1.image.oc1.eu-paris-1.aaaa..."
+ssh_public_key     = "ssh-rsa AAAA..."
+
+# ── DNS ───────────────────────────────────────────────────────────────────────
+dns_zone_name      = "tekeche.com"
+api_hostname       = "api"
