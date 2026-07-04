@@ -44,8 +44,23 @@ resource "oci_kms_key" "app_key" {
 # The cloud_init.tpl script fetches it with `oci secrets secret-bundle get`.
 
 # ── IAM Dynamic Group — lets the standby VM read secrets ──────────────────────
+# ── Service policy — compute and blockstorage may use the KMS key ─────────────
+# Required for encrypted boot volumes; must be tenancy-level for service grants.
+resource "oci_identity_policy" "kms_service_access" {
+  compartment_id = var.tenancy_ocid
+  name           = "${var.project_name}-kms-service-policy"
+  description    = "Allow OCI compute and block storage services to use tekeche KMS keys"
+
+  statements = [
+    "Allow service compute_management to use key-delegate in compartment id ${var.compartment_id}",
+    "Allow service blockstorage to use key-delegate in compartment id ${var.compartment_id}",
+    "Allow service compute_management to use keys in compartment id ${var.compartment_id}",
+    "Allow service blockstorage to use keys in compartment id ${var.compartment_id}",
+  ]
+}
+
 resource "oci_identity_dynamic_group" "standby_vm" {
-  compartment_id = var.compartment_id   # must be tenancy root for identity resources
+  compartment_id = var.tenancy_ocid
   name           = "${var.project_name}-standby-dg"
   description    = "OCI instances that run the tekeche-api standby"
 
@@ -54,7 +69,7 @@ resource "oci_identity_dynamic_group" "standby_vm" {
 
 # ── IAM Policy — standby VM can read secrets from the vault ───────────────────
 resource "oci_identity_policy" "standby_vault_read" {
-  compartment_id = var.compartment_id
+  compartment_id = var.tenancy_ocid
   name           = "${var.project_name}-standby-vault-policy"
   description    = "Allow standby VM to read app secrets from Vault"
 

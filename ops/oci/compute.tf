@@ -24,9 +24,9 @@ locals {
       dbPath: /var/lib/mongodb
     net:
       port: 27017
-      bindIp: 127.0.0.1,${standby_private_ip}
+      bindIp: 127.0.0.1,${var.standby_private_ip}
     replication:
-      replSetName: "${rs_name}"
+      replSetName: "${var.mongodb_rs_name}"
     security:
       authorization: enabled
     MONGOCFG
@@ -35,29 +35,28 @@ locals {
 
     # ── Redis (replica of on-prem) ────────────────────────────────────────────
     apt-get install -y redis-server
-    sed -i 's/^bind .*/bind 127.0.0.1 ${standby_private_ip}/' /etc/redis/redis.conf
-    echo "replicaof ${onprem_nlb_vip} 6379" >> /etc/redis/redis.conf
-    echo "replica-read-only yes"            >> /etc/redis/redis.conf
+    sed -i "s/^bind .*/bind 127.0.0.1 ${var.standby_private_ip}/" /etc/redis/redis.conf
+    echo "replicaof ${var.onprem_nlb_vip} 6379" >> /etc/redis/redis.conf
+    echo "replica-read-only yes"                 >> /etc/redis/redis.conf
     systemctl enable redis-server && systemctl restart redis-server
 
     # ── Clone tekeche-api ─────────────────────────────────────────────────────
-    git clone ${github_repo} /opt/tekeche-api
+    git clone ${var.github_repo_url} /opt/tekeche-api
     cd /opt/tekeche-api
     npm ci --omit=dev
 
-    %{ if env_secret_id != "" }
+    %{ if var.app_env_secret_id != "" }
     # Pull .env from OCI Vault
     apt-get install -y -qq python3-pip
     pip3 install -q oci-cli
-    oci secrets secret-bundle get --secret-id "${env_secret_id}" \
+    oci secrets secret-bundle get --secret-id "${var.app_env_secret_id}" \
       --query "data.\"secret-bundle-content\".content" --raw-output \
       | base64 -d > /opt/tekeche-api/.env
     %{ else }
-    # Placeholder .env — replace with real values
     cat > /opt/tekeche-api/.env <<'ENVCFG'
     NODE_ENV=production
     PORT=5000
-    MONGO_URI=mongodb://${standby_private_ip}:27017/tekeche?replicaSet=${rs_name}
+    MONGO_URI=mongodb://${var.standby_private_ip}:27017/tekeche?replicaSet=${var.mongodb_rs_name}
     ENVCFG
     %{ endif }
 
@@ -93,7 +92,6 @@ locals {
       ssl_protocols       TLSv1.2 TLSv1.3;
       ssl_ciphers         HIGH:!aNULL:!MD5;
 
-      # socket.io
       location /socket.io/ {
         proxy_pass         http://api;
         proxy_http_version 1.1;
@@ -122,20 +120,12 @@ locals {
 
     echo "Tekeche standby ready" > /var/log/tekeche-init.log
   EOT
-
-  cloud_init_rendered = templatefile("${path.module}/cloud_init.tpl", {
-    standby_private_ip = var.standby_private_ip
-    rs_name            = var.mongodb_rs_name
-    onprem_nlb_vip     = var.onprem_nlb_vip
-    github_repo        = var.github_repo_url
-    env_secret_id      = var.app_env_secret_id
-  })
 }
 
 # ── Hot standby compute instance ──────────────────────────────────────────────
 resource "oci_core_instance" "standby" {
   compartment_id      = var.compartment_id
-  availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
+  availability_domain = var.availability_domain != "" ? var.availability_domain : data.oci_identity_availability_domains.ads.availability_domains[0].name
   display_name        = "${var.project_name}-standby"
   shape               = var.standby_shape
 
@@ -146,8 +136,9 @@ resource "oci_core_instance" "standby" {
 
   source_details {
     source_type             = "image"
-    source_id               = coalesce(var.standby_image_id, data.oci_core_images.ubuntu2204.images[0].id)
+    source_id               = var.standby_image_id != "" ? var.standby_image_id : data.oci_core_images.ubuntu2204.images[0].id
     boot_volume_size_in_gbs = 50
+    kms_key_id              = oci_kms_key.app_key.id
   }
 
   create_vnic_details {
@@ -168,32 +159,17 @@ resource "oci_core_instance" "standby" {
     role    = "hot-standby"
   }
 
-  # Prevent accidental replacement of the standby
   lifecycle {
     ignore_changes = [source_details[0].source_id]
   }
 }
 
-# ── Boot volume backup policy ──────────────────────────────────────────────────
-resource "oci_core_volume_backup_policy_assignment" "standby_boot" {
-  asset_id  = oci_core_instance.standby.boot_volume_id
-  policy_id = data.oci_core_volume_backup_policies.bronze.volume_backup_policies[0].id
-}
-
-data "oci_core_volume_backup_policies" "bronze" {
-  filter {
-    name   = "display_name"
-    values = ["Bronze"]
-  }
-}
-
 data "oci_identity_availability_domains" "ads" {
-  compartment_id = var.compartment_id
+  compartment_id = var.tenancy_ocid
 }
 
-# Auto-discover latest Canonical Ubuntu 22.04 image for the region
 data "oci_core_images" "ubuntu2204" {
-  compartment_id           = var.compartment_id
+  compartment_id           = var.tenancy_ocid
   operating_system         = "Canonical Ubuntu"
   operating_system_version = "22.04"
   shape                    = var.standby_shape
@@ -201,3 +177,4 @@ data "oci_core_images" "ubuntu2204" {
   sort_order               = "DESC"
   state                    = "AVAILABLE"
 }
+

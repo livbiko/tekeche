@@ -10,14 +10,9 @@ output "standby_private_ip" {
   value       = oci_core_instance.standby.private_ip
 }
 
-output "vpn_tunnel1_ip" {
-  description = "OCI IPSec tunnel 1 IP — configure as VPN peer on Windows RRAS"
-  value       = data.oci_core_ipsec_connection_tunnels.main.ip_sec_connection_tunnels[0].vpn_ip
-}
-
-output "vpn_tunnel2_ip" {
-  description = "OCI IPSec tunnel 2 IP — redundant peer"
-  value       = data.oci_core_ipsec_connection_tunnels.main.ip_sec_connection_tunnels[1].vpn_ip
+output "vpn_tunnel_ips_note" {
+  description = "Where to find VPN tunnel IPs after apply"
+  value       = "After apply: OCI Console → Networking → Site-to-Site VPN → tekeche-ipsec → Tunnels. Tunnel IPs are also emitted by vpn_tunnels.tf after second apply."
 }
 
 output "bastion_id" {

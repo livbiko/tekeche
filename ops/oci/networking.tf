@@ -1,6 +1,11 @@
+locals {
+  # Public resources (VCN, IGW, LB) go here — no security zone
+  pub_cid = oci_identity_compartment.pub.id
+}
+
 # ── VCN ───────────────────────────────────────────────────────────────────────
 resource "oci_core_vcn" "tekeche" {
-  compartment_id = var.compartment_id
+  compartment_id = local.pub_cid
   cidr_block     = var.vcn_cidr
   display_name   = "${var.project_name}-vcn"
   dns_label      = var.project_name
@@ -8,7 +13,7 @@ resource "oci_core_vcn" "tekeche" {
 
 # ── Gateways ──────────────────────────────────────────────────────────────────
 resource "oci_core_internet_gateway" "igw" {
-  compartment_id = var.compartment_id
+  compartment_id = local.pub_cid
   vcn_id         = oci_core_vcn.tekeche.id
   display_name   = "${var.project_name}-igw"
   enabled        = true
@@ -36,7 +41,7 @@ resource "oci_core_drg_attachment" "drg_vcn" {
 
 # ── Route Tables ──────────────────────────────────────────────────────────────
 resource "oci_core_route_table" "public" {
-  compartment_id = var.compartment_id
+  compartment_id = local.pub_cid
   vcn_id         = oci_core_vcn.tekeche.id
   display_name   = "${var.project_name}-public-rt"
 
@@ -74,14 +79,20 @@ resource "oci_core_security_list" "public" {
     protocol    = "6" # TCP
     source      = "0.0.0.0/0"
     description = "HTTPS from internet"
-    tcp_options { min = 443; max = 443 }
+    tcp_options {
+      max = 443
+      min = 443
+    }
   }
 
   ingress_security_rules {
     protocol    = "6"
     source      = "0.0.0.0/0"
     description = "HTTP redirect"
-    tcp_options { min = 80; max = 80 }
+    tcp_options {
+      max = 80
+      min = 80
+    }
   }
 
   egress_security_rules {
@@ -101,14 +112,20 @@ resource "oci_core_security_list" "private" {
     protocol    = "6"
     source      = var.public_subnet_cidr
     description = "From LB subnet"
-    tcp_options { min = 443; max = 443 }
+    tcp_options {
+      max = 443
+      min = 443
+    }
   }
 
   ingress_security_rules {
     protocol    = "6"
     source      = var.public_subnet_cidr
     description = "API port from LB"
-    tcp_options { min = 5000; max = 5000 }
+    tcp_options {
+      max = 5000
+      min = 5000
+    }
   }
 
   # Allow on-prem (via VPN) to reach MongoDB and Redis on standby
@@ -116,14 +133,20 @@ resource "oci_core_security_list" "private" {
     protocol    = "6"
     source      = var.onprem_cidr
     description = "MongoDB RS replication from on-prem"
-    tcp_options { min = 27017; max = 27017 }
+    tcp_options {
+      max = 27017
+      min = 27017
+    }
   }
 
   ingress_security_rules {
     protocol    = "6"
     source      = var.onprem_cidr
     description = "Redis replication from on-prem"
-    tcp_options { min = 6379; max = 6379 }
+    tcp_options {
+      max = 6379
+      min = 6379
+    }
   }
 
   # SSH from VCN only (use Bastion for external access)
@@ -131,7 +154,10 @@ resource "oci_core_security_list" "private" {
     protocol    = "6"
     source      = var.vcn_cidr
     description = "SSH within VCN"
-    tcp_options { min = 22; max = 22 }
+    tcp_options {
+      max = 22
+      min = 22
+    }
   }
 
   egress_security_rules {
@@ -143,7 +169,7 @@ resource "oci_core_security_list" "private" {
 
 # ── Subnets ────────────────────────────────────────────────────────────────────
 resource "oci_core_subnet" "public" {
-  compartment_id             = var.compartment_id
+  compartment_id             = local.pub_cid
   vcn_id                     = oci_core_vcn.tekeche.id
   cidr_block                 = var.public_subnet_cidr
   display_name               = "${var.project_name}-public-subnet"
