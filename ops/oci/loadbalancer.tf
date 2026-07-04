@@ -17,32 +17,21 @@ resource "oci_load_balancer_load_balancer" "main" {
   }
 }
 
-# ── Backend Set — single set, on-prem primary + OCI standby backup ─────────────
-# OCI LB automatically routes to the backup backend only when all primary
-# backends fail their health checks. No manual intervention needed for failover.
+# ── Backend Set — TCP passthrough, on-prem primary + OCI standby backup ────────
+# TLS is terminated at the backend (on-prem IIS / OCI standby Nginx).
+# Health check on port 443 (TCP) — TCP connect confirms backend is reachable.
+# ROUND_ROBIN required for backup backend support.
 resource "oci_load_balancer_backend_set" "main" {
   load_balancer_id = oci_load_balancer_load_balancer.main.id
   name             = "main-backends"
   policy           = "ROUND_ROBIN"
 
   health_checker {
-    protocol            = "HTTP"
-    url_path            = "/health"
-    port                = var.onprem_api_port
-    return_code         = 200
-    interval_ms         = 10000
-    timeout_in_millis   = 5000
-    retries             = 2
-    response_body_regex = ".*\"status\":\"ok\".*"
-  }
-
-  session_persistence_configuration {
-    cookie_name      = "X-TEKECHE-LB"
-    disable_fallback = false
-  }
-
-  ssl_configuration {
-    verify_peer_certificate = false
+    protocol          = "TCP"
+    port              = 443
+    interval_ms       = 10000
+    timeout_in_millis = 5000
+    retries           = 2
   }
 }
 
@@ -51,14 +40,14 @@ resource "oci_load_balancer_backend" "onprem_nlb" {
   load_balancer_id = oci_load_balancer_load_balancer.main.id
   backendset_name  = oci_load_balancer_backend_set.main.name
   ip_address       = var.onprem_nlb_vip
-  port             = var.onprem_api_port
+  port             = 443
   weight           = 1
   drain            = false
   backup           = false
   offline          = false
 }
 
-# Backup backend: OCI standby VM (only activated when on-prem is unhealthy)
+# Backup backend: OCI standby VM (activated when on-prem health check fails)
 resource "oci_load_balancer_backend" "standby_vm" {
   load_balancer_id = oci_load_balancer_load_balancer.main.id
   backendset_name  = oci_load_balancer_backend_set.main.name
@@ -70,64 +59,30 @@ resource "oci_load_balancer_backend" "standby_vm" {
   offline          = false
 }
 
-# ── Listener: HTTPS/443 ───────────────────────────────────────────────────────
-locals {
-  use_managed_cert = var.lb_cert_id != ""
-}
-
+# ── Listener: TCP passthrough on 443 ──────────────────────────────────────────
+# TLS is end-to-end from client to backend; no cert management at LB level.
 resource "oci_load_balancer_listener" "https" {
   load_balancer_id         = oci_load_balancer_load_balancer.main.id
   name                     = "https-443"
   default_backend_set_name = oci_load_balancer_backend_set.main.name
   port                     = 443
-  protocol                 = "HTTP"
+  protocol                 = "TCP"
 
   connection_configuration {
-    idle_timeout_in_seconds            = 300
-    backend_tcp_proxy_protocol_version = 0
+    idle_timeout_in_seconds = 300
   }
-
-  dynamic "ssl_configuration" {
-    for_each = local.use_managed_cert ? [1] : []
-    content {
-      certificate_ids         = [var.lb_cert_id]
-      verify_peer_certificate = false
-      server_order_preference = "ENABLED"
-      protocols               = ["TLSv1.2", "TLSv1.3"]
-      cipher_suite_name       = "oci-default-ssl-cipher-suite-v1"
-    }
-  }
-
-  rule_set_names = []
 }
 
-# ── HTTP → HTTPS redirect listener ────────────────────────────────────────────
-resource "oci_load_balancer_listener" "http_redirect" {
+# ── Listener: TCP passthrough on 80 ───────────────────────────────────────────
+# On-prem IIS returns HTTP 301 → HTTPS; no redirect rule needed at LB level.
+resource "oci_load_balancer_listener" "http" {
   load_balancer_id         = oci_load_balancer_load_balancer.main.id
-  name                     = "http-80-redirect"
+  name                     = "http-80"
   default_backend_set_name = oci_load_balancer_backend_set.main.name
   port                     = 80
-  protocol                 = "HTTP"
+  protocol                 = "TCP"
 
-  rule_set_names = [oci_load_balancer_rule_set.http_to_https.name]
-}
-
-# ── Rule set: HTTP → HTTPS redirect ───────────────────────────────────────────
-resource "oci_load_balancer_rule_set" "http_to_https" {
-  load_balancer_id = oci_load_balancer_load_balancer.main.id
-  name             = "http_to_https"
-
-  items {
-    action = "REDIRECT"
-    conditions {
-      attribute_name  = "PATH"
-      attribute_value = "/"
-      operator        = "PREFIX_MATCH"
-    }
-    redirect_uri {
-      protocol = "HTTPS"
-      port     = 443
-    }
-    response_code = 301
+  connection_configuration {
+    idle_timeout_in_seconds = 60
   }
 }

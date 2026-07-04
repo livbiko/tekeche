@@ -1,18 +1,13 @@
 # ── Key outputs after `terraform apply` ───────────────────────────────────────
 
 output "lb_public_ip" {
-  description = "OCI Load Balancer public IP — point api.tekeche.com DNS here (or let dns.tf manage it)"
+  description = "OCI Load Balancer public IP — point api.tekeche.com DNS here"
   value       = oci_load_balancer_load_balancer.main.ip_address_details[0].ip_address
 }
 
 output "standby_private_ip" {
   description = "OCI hot-standby VM private IP (VPN reachable from on-prem)"
   value       = oci_core_instance.standby.private_ip
-}
-
-output "vpn_tunnel_ips_note" {
-  description = "Where to find VPN tunnel IPs after apply"
-  value       = "After apply: OCI Console → Networking → Site-to-Site VPN → tekeche-ipsec → Tunnels. Tunnel IPs are also emitted by vpn_tunnels.tf after second apply."
 }
 
 output "bastion_id" {
@@ -26,7 +21,7 @@ output "vault_management_endpoint" {
 }
 
 output "vault_ocid" {
-  description = "Vault OCID — needed when uploading secrets via oci-cli"
+  description = "Vault OCID — needed when uploading secrets"
   value       = oci_kms_vault.main.id
 }
 
@@ -41,50 +36,47 @@ output "dns_zone_id" {
 }
 
 output "health_monitor_id" {
-  description = "HTTP health monitor OCID for the OCI LB"
+  description = "OCI health monitor OCID for the LB"
   value       = oci_health_checks_http_monitor.lb_health.id
 }
 
-# ── Post-apply checklist ───────────────────────────────────────────────────────
+output "vpn_tunnel1_ip" {
+  description = "OCI IPSec tunnel 1 IP — configure as VPN peer on Windows RRAS"
+  value       = "140.238.94.206"
+}
+
+output "vpn_tunnel2_ip" {
+  description = "OCI IPSec tunnel 2 IP — redundant peer"
+  value       = "152.67.132.125"
+}
+
 output "next_steps" {
-  description = "Manual steps required after terraform apply"
+  description = "Remaining manual steps"
   value       = <<-EOT
 
-    ── POST-APPLY CHECKLIST ──────────────────────────────────────────────────────
+    ── REMAINING STEPS ───────────────────────────────────────────────────────────
 
-    1. VPN — configure Windows RRAS on-prem:
-       Add-VpnS2SInterface -Name "OCI-Tunnel1" -Destination <vpn_tunnel1_ip>
-       Add-VpnS2SInterface -Name "OCI-Tunnel2" -Destination <vpn_tunnel2_ip>
-       (use shared secret from var.vpn_shared_secret)
-       New-NetRoute -DestinationPrefix "10.0.0.0/16" -InterfaceAlias "OCI-Tunnel1"
+    1. RRAS + VPN (HIGH RISK — reboot required, ~10 min downtime):
+       Install-WindowsFeature RemoteAccess, DirectAccess-VPN, Routing -IncludeManagementTools -Restart
+       # After reboot:
+       Install-RemoteAccess -VpnType VpnS2S
+       Add-VpnS2SInterface -Name "OCI-Tunnel1" -Destination "140.238.94.206" -Protocol IKEv2 -AuthenticationMethod PSKOnly -SharedSecret "VfdTacUMLJBj8rE96DbKku70ngNAxWHezSORCPp1" -IdleDisconnectSeconds 0 -NumberOfTries 0
+       Add-VpnS2SInterface -Name "OCI-Tunnel2" -Destination "152.67.132.125" -Protocol IKEv2 -AuthenticationMethod PSKOnly -SharedSecret "VfdTacUMLJBj8rE96DbKku70ngNAxWHezSORCPp1" -IdleDisconnectSeconds 0 -NumberOfTries 0
+       New-NetRoute -DestinationPrefix "10.0.0.0/16" -InterfaceAlias "OCI-Tunnel1" -RouteMetric 1
+       Connect-VpnS2SInterface -Name "OCI-Tunnel1"
+       Connect-VpnS2SInterface -Name "OCI-Tunnel2"
 
-    2. MongoDB RS — add OCI standby as replica member from on-prem mongosh:
+    2. MongoDB RS (after VPN is UP):
        rs.add({ host: "10.0.2.10:27017", priority: 0, votes: 0 })
 
-    3. Vault secret — upload tekeche-api .env:
-       base64 -w 0 /path/to/.env > /tmp/env_b64.txt
-       oci vault secret create-base64 \
-         --compartment-id <compartment_ocid> \
-         --secret-name tekeche-api-env \
-         --vault-id <vault_ocid> \
-         --key-id <master_key_ocid> \
-         --secret-content-content $(cat /tmp/env_b64.txt)
-       Then set app_env_secret_id = "<secret_ocid>" in terraform.tfvars and re-apply.
-
-    4. DNS — if not using OCI DNS, point api.tekeche.com A record to lb_public_ip
-       at your registrar (TTL 30s).
-
-    5. LB cert — obtain cert for api.tekeche.com in OCI Certificates service,
-       set lb_cert_id = "<cert_ocid>" in terraform.tfvars and re-apply.
-
-    6. Verify:
+    3. Verify end-to-end:
        curl https://api.tekeche.com/health
-       # expect: {"status":"ok"}
+       # expect: {"status":"ok","db":"connected"}
 
-    7. Failover test:
-       # Un-drain OCI standby in LB console, stop on-prem app,
-       # verify /health still returns 200 from OCI standby.
-       # Then re-drain standby and restart on-prem.
+    4. Failover test:
+       # From OCI Console: LB → Backend Sets → set on-prem backend to drain
+       # Verify /health still returns 200 (served from OCI standby)
+       # Then un-drain and confirm traffic returns to on-prem
 
   EOT
 }
