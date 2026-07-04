@@ -146,7 +146,7 @@ resource "oci_core_instance" "standby" {
 
   source_details {
     source_type             = "image"
-    source_id               = var.standby_image_id
+    source_id               = coalesce(var.standby_image_id, data.oci_core_images.ubuntu2204.images[0].id)
     boot_volume_size_in_gbs = 50
   }
 
@@ -189,4 +189,15 @@ data "oci_core_volume_backup_policies" "bronze" {
 
 data "oci_identity_availability_domains" "ads" {
   compartment_id = var.compartment_id
+}
+
+# Auto-discover latest Canonical Ubuntu 22.04 image for the region
+data "oci_core_images" "ubuntu2204" {
+  compartment_id           = var.compartment_id
+  operating_system         = "Canonical Ubuntu"
+  operating_system_version = "22.04"
+  shape                    = var.standby_shape
+  sort_by                  = "TIMECREATED"
+  sort_order               = "DESC"
+  state                    = "AVAILABLE"
 }

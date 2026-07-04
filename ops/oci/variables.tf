@@ -28,7 +28,7 @@ variable "cpe_vendor"           { default = "Microsoft" description = "CPE devic
 variable "standby_shape"        { default = "VM.Standard.E4.Flex" }
 variable "standby_ocpus"        { default = 1 }
 variable "standby_memory_gb"    { default = 8 }
-variable "standby_image_id"     { description = "Ubuntu 22.04 image OCID for your region — find at https://docs.oracle.com/iaas/images/" }
+variable "standby_image_id"     { default = "" description = "Ubuntu 22.04 image OCID — leave empty to auto-discover latest for the region" }
 variable "ssh_public_key"       { description = "SSH public key to access the standby VM" }
 variable "standby_private_ip"   { default = "10.0.2.10" }
 

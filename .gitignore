@@ -28,3 +28,9 @@ logs/
 # submodules (managed as separate repos)
 tekeche-api/
 tekeche-mobile/
+
+# OCI Terraform secrets
+ops/oci/terraform.tfvars
+ops/oci/.terraform/
+ops/oci/*.tfstate
+ops/oci/*.tfstate.backup
