@@ -104,3 +104,43 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Driver OTA in progress — re-verifying Build #10 state
 
+
+## Build #12 â€” 2026-07-02 22:03
+
+- **API commit**: 25d5cc21 (master)
+- **Mobile commit**: 24976781
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OTA 304 fix: manifest now returns 200 always, no ETag
+
+
+## Build #13 â€” 2026-07-02 22:14
+
+- **API commit**: 25d5cc21 (master)
+- **Mobile commit**: 24976781
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OTA 304 fix: manifest now returns 200 always, no ETag — 9/9 verified
+
+
+## Build #14 â€” 2026-07-03 17:10
+
+- **API commit**: 25d5cc21 (master)
+- **Mobile commit**: 5da31bf1
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Added 56 Côte d'Ivoire cities to localites — 69 total zones at 250 FCFA default fare. Booking flow skipped: no live driver (device connectivity issue, not code).
+
+
+## Build #15 â€” 2026-07-03 17:30
+
+- **API commit**: 25d5cc21 (master)
+- **Mobile commit**: 864942b1
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: 4 UI changes: service icons +20%, Woyo car icon, GPS zone auto-detect, Wave/MTN/Especes payment. OTA push triggered.
+

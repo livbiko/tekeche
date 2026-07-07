@@ -141,5 +141,57 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  12,
+        "dateCreated":  "2026-07-02T22:03:50.8754701+01:00",
+        "apiCommit":  "25d5cc21b061a2e0a4a2a2c28761f007960ac788",
+        "apiBranch":  "master",
+        "mobileCommit":  "24976781ae12f94f3bf2f0b67a415fec4091489d",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OTA 304 fix: manifest now returns 200 always, no ETag",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  13,
+        "dateCreated":  "2026-07-02T22:14:42.5428562+01:00",
+        "apiCommit":  "25d5cc21b061a2e0a4a2a2c28761f007960ac788",
+        "apiBranch":  "master",
+        "mobileCommit":  "24976781ae12f94f3bf2f0b67a415fec4091489d",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OTA 304 fix: manifest now returns 200 always, no ETag — 9/9 verified",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  14,
+        "dateCreated":  "2026-07-03T17:10:33.6147517+01:00",
+        "apiCommit":  "25d5cc21b061a2e0a4a2a2c28761f007960ac788",
+        "apiBranch":  "master",
+        "mobileCommit":  "5da31bf1a6dfc08af3fc8b7fc417a11c52ae2066",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Added 56 Côte d\u0027Ivoire cities to localites — 69 total zones at 250 FCFA default fare. Booking flow skipped: no live driver (device connectivity issue, not code).",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  15,
+        "dateCreated":  "2026-07-03T17:30:24.0078819+01:00",
+        "apiCommit":  "25d5cc21b061a2e0a4a2a2c28761f007960ac788",
+        "apiBranch":  "master",
+        "mobileCommit":  "864942b1e9356b0b6e61548d6af537d8c74224a3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "4 UI changes: service icons +20%, Woyo car icon, GPS zone auto-detect, Wave/MTN/Especes payment. OTA push triggered.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
