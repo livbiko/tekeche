@@ -27,6 +27,21 @@ variable "onprem_nlb_vip" {
   default     = "192.168.1.100"
   description = "On-prem NLB VIP (BikoDC1+BikoDC)"
 }
+
+# ── Meraki MX68 site (separate LAN, same public IP/site as on-prem) ───────────
+variable "mx68_public_ip" {
+  default     = "81.130.238.41"
+  description = "Public IP of the site hosting the Meraki MX68 (same as onprem_public_ip -- same building/internet connection)"
+}
+variable "mx68_lan_cidr" {
+  default     = "192.168.128.0/24"
+  description = "LAN behind the Meraki MX68 (separate from onprem_cidr)"
+}
+variable "mx68_vpn_shared_secret" {
+  default     = ""
+  sensitive   = true
+  description = "Pre-shared key for the MX68 <-> OCI IPSec connection"
+}
 variable "onprem_public_ip" { description = "Public IP of on-prem router/firewall for IPSec CPE" }
 variable "onprem_api_port" {
   default     = 443
@@ -73,9 +88,19 @@ variable "dns_ttl"       { default = 30 }
 
 # ── App ───────────────────────────────────────────────────────────────────────
 variable "github_repo_url" { default = "https://github.com/livbiko/tekeche-api" }
+variable "github_pat" {
+  default     = ""
+  sensitive   = true
+  description = "GitHub fine-grained PAT (read-only, scoped to tekeche-api) for cloning the private repo during standby cloud-init. Leave empty for public repos."
+}
 variable "app_env_secret_id" {
   default     = ""
   description = "OCI Vault secret OCID containing the .env file content"
 }
 variable "mongodb_rs_name" { default = "rs0" }
+variable "mongodb_keyfile_content" {
+  default     = ""
+  sensitive   = true
+  description = "Shared MongoDB replica-set keyFile content -- must be byte-identical to the on-prem keyfile (C:\\Program Files\\MongoDB\\Server\\8.3\\keyfile.txt)"
+}
 variable "project_name"    { default = "tekeche" }

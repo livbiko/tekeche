@@ -49,6 +49,19 @@ resource "oci_core_route_table" "public" {
     destination       = "0.0.0.0/0"
     network_entity_id = oci_core_internet_gateway.igw.id
   }
+
+  # On-prem traffic via VPN/DRG — needed so the LB's health checks and
+  # proxied traffic can reach the on-prem backend (192.168.1.0/24)
+  route_rules {
+    destination       = var.onprem_cidr
+    network_entity_id = oci_core_drg.drg.id
+  }
+
+  # Meraki MX68 site LAN (separate from on-prem, same building/DRG)
+  route_rules {
+    destination       = var.mx68_lan_cidr
+    network_entity_id = oci_core_drg.drg.id
+  }
 }
 
 resource "oci_core_route_table" "private" {
@@ -65,6 +78,12 @@ resource "oci_core_route_table" "private" {
   # On-prem traffic via VPN/DRG
   route_rules {
     destination       = var.onprem_cidr
+    network_entity_id = oci_core_drg.drg.id
+  }
+
+  # Meraki MX68 site LAN (separate from on-prem, same building/DRG)
+  route_rules {
+    destination       = var.mx68_lan_cidr
     network_entity_id = oci_core_drg.drg.id
   }
 }
@@ -158,6 +177,15 @@ resource "oci_core_security_list" "private" {
       max = 22
       min = 22
     }
+  }
+
+  # Meraki MX68 site LAN — broad reachability to the whole private subnet
+  # (unscoped, unlike the narrowly-scoped on-prem rules above -- revisit if
+  # the actual traffic pattern turns out to need less than "everything")
+  ingress_security_rules {
+    protocol    = "all"
+    source      = var.mx68_lan_cidr
+    description = "MX68 site LAN — full access"
   }
 
   egress_security_rules {

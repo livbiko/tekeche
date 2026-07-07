@@ -1,5 +1,7 @@
 # ── Cloud-init script for the hot standby VM ──────────────────────────────────
 locals {
+  github_clone_url = var.github_pat != "" ? replace(var.github_repo_url, "https://", "https://x-access-token:${var.github_pat}@") : var.github_repo_url
+
   cloud_init = <<-EOT
     #!/bin/bash
     set -e
@@ -15,9 +17,21 @@ locals {
     npm install -g pm2
 
     # ── MongoDB 8 (replica set member, never primary) ─────────────────────────
+    # Must match on-prem's version (8.3.4) -- replica sets can't tolerate much
+    # version skew between members; a 8.0 vs 8.3 gap caused every replication
+    # auth handshake to be abandoned by the primary.
     curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
-    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-8.0.list
+    echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.3 multiverse" > /etc/apt/sources.list.d/mongodb-org-8.3.list
     apt-get update -qq && apt-get install -y mongodb-org
+
+    # Replica set members need a shared keyFile for internal cluster auth --
+    # mongod refuses to start with authorization+replication enabled without
+    # one. Must be byte-identical to on-prem's keyfile (same replica set).
+    cat > /etc/mongo-keyfile <<'KEYFILE'
+    ${var.mongodb_keyfile_content}
+    KEYFILE
+    chown mongodb:mongodb /etc/mongo-keyfile
+    chmod 600 /etc/mongo-keyfile
 
     cat > /etc/mongod.conf <<'MONGOCFG'
     storage:
@@ -29,6 +43,7 @@ locals {
       replSetName: "${var.mongodb_rs_name}"
     security:
       authorization: enabled
+      keyFile: /etc/mongo-keyfile
     MONGOCFG
 
     systemctl enable mongod && systemctl start mongod
@@ -41,7 +56,7 @@ locals {
     systemctl enable redis-server && systemctl restart redis-server
 
     # ── Clone tekeche-api ─────────────────────────────────────────────────────
-    git clone ${var.github_repo_url} /opt/tekeche-api
+    git clone ${local.github_clone_url} /opt/tekeche-api
     cd /opt/tekeche-api
     npm ci --omit=dev
 
@@ -49,7 +64,7 @@ locals {
     # Pull .env from OCI Vault
     apt-get install -y -qq python3-pip
     pip3 install -q oci-cli
-    oci secrets secret-bundle get --secret-id "${var.app_env_secret_id}" \
+    oci secrets secret-bundle get --auth instance_principal --secret-id "${var.app_env_secret_id}" \
       --query "data.\"secret-bundle-content\".content" --raw-output \
       | base64 -d > /opt/tekeche-api/.env
     %{ else }
@@ -61,10 +76,16 @@ locals {
     %{ endif }
 
     # ── PM2 ───────────────────────────────────────────────────────────────────
+    # Not using ecosystem.config.js here: it hardcodes Windows paths for the
+    # on-prem cwd/log files and also defines staging/local apps that have no
+    # business running on this standby.
     cd /opt/tekeche-api
-    pm2 start ecosystem.config.js --env production
+    pm2 start server.js --name tekeche-api
     pm2 save
-    pm2 startup systemd -u root --hp /root | tail -1 | bash
+    # Best-effort: sets up auto-start-on-reboot. Not fatal if the piped
+    # suggested command doesn't parse cleanly -- app is already running,
+    # and nginx below still needs to start regardless.
+    pm2 startup systemd -u root --hp /root | tail -1 | bash || true
 
     # ── Nginx reverse proxy ───────────────────────────────────────────────────
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -117,6 +138,19 @@ locals {
     ln -sf /etc/nginx/sites-available/tekeche /etc/nginx/sites-enabled/tekeche
     rm -f /etc/nginx/sites-enabled/default
     nginx -t && systemctl enable nginx && systemctl restart nginx
+
+    # ── Open the OS firewall ────────────────────────────────────────────────────
+    # Oracle's default image ships iptables with only port 22 allowed inbound
+    # and a catch-all REJECT for everything else -- OCI Security Lists are a
+    # separate outer layer and don't override this. Without these rules, traffic
+    # that Security Lists correctly allow (LB health checks on 443, on-prem
+    # MongoDB/Redis replication on 27017/6379) still gets rejected at the OS
+    # level even though the actual service is up and listening.
+    iptables -I INPUT -p tcp --dport 443 -j ACCEPT
+    iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+    iptables -I INPUT -p tcp --dport 27017 -j ACCEPT
+    iptables -I INPUT -p tcp --dport 6379 -j ACCEPT
+    netfilter-persistent save || true
 
     echo "Tekeche standby ready" > /var/log/tekeche-init.log
   EOT

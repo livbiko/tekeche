@@ -27,7 +27,7 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel1" {
   phase_two_details {
     is_custom_phase_two_config      = true
     custom_authentication_algorithm = "HMAC_SHA2_256_128"
-    custom_encryption_algorithm     = "AES_256_GCM"
+    custom_encryption_algorithm     = "AES_256_CBC"
     lifetime                        = 3600
     is_pfs_enabled                  = true
     dh_group                        = "GROUP14"
@@ -54,7 +54,7 @@ resource "oci_core_ipsec_connection_tunnel_management" "tunnel2" {
   phase_two_details {
     is_custom_phase_two_config      = true
     custom_authentication_algorithm = "HMAC_SHA2_256_128"
-    custom_encryption_algorithm     = "AES_256_GCM"
+    custom_encryption_algorithm     = "AES_256_CBC"
     lifetime                        = 3600
     is_pfs_enabled                  = true
     dh_group                        = "GROUP14"

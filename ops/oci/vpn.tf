@@ -14,6 +14,11 @@ resource "oci_core_ipsec" "onprem" {
   drg_id         = oci_core_drg.drg.id
   display_name   = "${var.project_name}-ipsec"
   static_routes  = [var.onprem_cidr]
+
+  # RRAS is behind NAT; it sends IKE identity = its LAN IP (192.168.1.101),
+  # not the public IP (81.130.238.41). Tell OCI to expect the LAN IP.
+  cpe_local_identifier      = "192.168.1.101"
+  cpe_local_identifier_type = "IP_ADDRESS"
 }
 
 # ── Tunnel configuration ──────────────────────────────────────────────────────
