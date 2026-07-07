@@ -31,6 +31,14 @@ tekeche-mobile/
 
 # OCI Terraform secrets
 ops/oci/terraform.tfvars
+ops/oci/terraform.tfvars.bak*
 ops/oci/.terraform/
 ops/oci/*.tfstate
 ops/oci/*.tfstate.backup
+
+# OCI Terraform run artifacts (plan/apply logs, saved plans)
+ops/oci/tfplan*
+ops/oci/*.tfplan
+ops/oci/apply-*.txt
+ops/oci/plan-*.txt
+ops/oci/PktMon.txt
