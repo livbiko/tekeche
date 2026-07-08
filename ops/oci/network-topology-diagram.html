@@ -654,6 +654,90 @@
     </div>
   </div>
 
+  <div class="flow-section">
+    <p class="flow-title">Active Directory DNS Flow</p>
+    <h2 class="flow-heading">How OCI resolves livbiko.local, and reaches the DCs</h2>
+
+    <div class="flow-row">
+      <div class="flow-step">
+        <div class="num">1</div>
+        <div class="flow-name">OCI resource</div>
+        <div class="flow-meta">Any VNIC in the VCN — queries its default resolver</div>
+      </div>
+
+      <div class="flow-arrow-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h14M13 6l6 6-6 6"/></svg></div>
+
+      <div class="flow-step">
+        <div class="num">2</div>
+        <div class="flow-name">VCN Resolver</div>
+        <div class="flow-ip mono">169.254.169.254</div>
+        <div class="flow-meta">Matches qname <span class="mono">livbiko.local.</span> → forwards</div>
+      </div>
+
+      <div class="flow-arrow-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h14M13 6l6 6-6 6"/></svg></div>
+
+      <div class="flow-step">
+        <div class="num">3</div>
+        <div class="flow-name">Resolver Endpoint</div>
+        <div class="flow-ip mono">10.0.2.41</div>
+        <div class="flow-meta"><span class="mono">onprem_ad_forward</span> · private subnet, forwarding-only</div>
+      </div>
+
+      <div class="flow-arrow-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h14M13 6l6 6-6 6"/></svg></div>
+
+      <div class="flow-step">
+        <div class="num">4</div>
+        <div class="flow-name">DRG → RRAS tunnel</div>
+        <div class="flow-ip mono">tekeche-ipsec</div>
+        <div class="flow-meta">Same working tunnel used for app traffic — IKE + ESP up</div>
+      </div>
+
+      <div class="flow-arrow-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h14M13 6l6 6-6 6"/></svg></div>
+
+      <div class="flow-fork">
+        <div class="flow-branch primary">
+          <div class="flow-arrow-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h10M10 6l6 6-6 6"/></svg></div>
+          <div class="flow-step">
+            <span class="flow-tag">Forward rule 1</span>
+            <div class="flow-name">BIKODC1</div>
+            <div class="flow-ip mono">192.168.1.102</div>
+            <div class="flow-meta">On-prem domain controller</div>
+          </div>
+        </div>
+        <div class="flow-branch primary">
+          <div class="flow-arrow-h"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h10M10 6l6 6-6 6"/></svg></div>
+          <div class="flow-step">
+            <span class="flow-tag">Forward rule 2</span>
+            <div class="flow-name">BIKODC2</div>
+            <div class="flow-ip mono">192.168.1.103</div>
+            <div class="flow-meta">On-prem domain controller</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="below" style="margin-top:20px">
+      <div class="card">
+        <h3>Ports opened for this flow</h3>
+        <ul>
+          <li><span class="k" style="background:var(--accent)"></span><span>DNS 53, Kerberos 88 (TCP+UDP), LDAP 389, LDAPS 636, SMB 445, Global Catalog 3268/3269, RPC 135 + dynamic range 49152–65535, W32Time 123 — ingress on the private security list, source <span class="mono">192.168.1.0/24</span></span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Verified working</h3>
+        <ul>
+          <li><span class="k" style="background:var(--ok)"></span><span>Tested 2026-07-08 from the OCI standby instance: <span class="mono">_ldap._tcp.dc._msdcs.livbiko.local SRV</span> correctly resolved all three DCs — the actual record Windows domain-join relies on.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>BIKODC excluded (for now)</h3>
+        <ul>
+          <li><span class="k" style="background:var(--faint)"></span><span>Third DC, <span class="mono">192.168.1.100</span> (PDC Emulator), isn't a forwarding target yet — BIKODC1/BIKODC2 alone are sufficient for resolution. Purely a scope choice, not a health issue.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
   <div class="below">
     <div class="card">
       <h3>Legend</h3>
