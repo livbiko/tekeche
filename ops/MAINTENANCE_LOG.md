@@ -119,3 +119,16 @@ Format: Date | Type | Duration | Description | Outcome
 - **Downtime**: None additional — this tunnel wasn't carrying traffic before removal either.
 - **Affected**: None functionally. Combined with the earlier RRAS removal the same day, **OCI now has zero site-to-site VPN connections of any kind** — on-prem↔OCI connectivity is fully down with no active recovery path in progress, pending a decision on what to build next.
 - **Notes**: `networking.tf` still has route-table and security-list rules referencing `var.mx68_lan_cidr` (`192.168.128.0/24`) — now orphaned (no tunnel routes that CIDR), left in place since not explicitly requested to remove. The Meraki support case doc (`Desktop\Tekeche infrastructure\meraki-support-case-mx68-vpn.md`) still describes the now-deleted tunnel — worth closing or updating with Meraki if the case is still open.
+
+## 2026-07-08 (later) — Rebuild MX68 ↔ OCI VPN fresh from scratch (identical result)
+
+- **Type**: Planned maintenance
+- **Duration**: ~10 minutes (restore config from git, recreate 4 OCI resources, recreate 2 Meraki peers, poll ~3.5 min)
+- **Risk level**: Low — pure recreation of previously-removed, non-functional resources; no impact to anything else (nothing else depends on this tunnel).
+- **Changes made**: Restored `vpn_mx68.tf`/`vpn_mx68_tunnels.tf` from git history (commit `eccc579`), recreated `oci_core_cpe.mx68`, `oci_core_ipsec.mx68`, both tunnel management resources (`terraform apply`, confirmed `4 to add`). Recreated both Meraki non-Meraki VPN peers with new endpoint IPs (`152.67.131.20`, `132.145.67.60` — different from the original pair, since new OCIDs got new public IPs) and identical crypto/secret.
+- **Why**: User asked to try again fresh — no new information suggesting the underlying issue was fixed, explicitly acknowledged.
+- **Recovery point**: N/A (this was itself a recreation from a recovery point; nothing new to protect against).
+- **Outcome**: Identical to every prior attempt. IKE established immediately (no reboot needed this time). ESP never established across 10 checks over ~3.5 minutes. Meraki `reachability: unknown` for both peers throughout.
+- **Downtime**: None (this tunnel carries no traffic regardless of its state).
+- **Affected**: None. On-prem↔OCI connectivity remains fully down (no working tunnel of any kind, matching the state since the RRAS removal earlier the same day).
+- **Notes**: Important confirmation — a fully fresh rebuild (new OCIDs, new public IPs, new tunnel objects both sides) hit the exact same wall as the original. Rules out stale state/config drift as a cause. Root cause is confirmed structural, not incidental — don't attempt another blind rebuild without new information from Meraki TAC. See `project_meraki_mx68_vpn.md` memory for the full attempt history (now 5+ independent attempts).
