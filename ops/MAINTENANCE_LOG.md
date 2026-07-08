@@ -132,3 +132,15 @@ Format: Date | Type | Duration | Description | Outcome
 - **Downtime**: None (this tunnel carries no traffic regardless of its state).
 - **Affected**: None. On-prem↔OCI connectivity remains fully down (no working tunnel of any kind, matching the state since the RRAS removal earlier the same day).
 - **Notes**: Important confirmation — a fully fresh rebuild (new OCIDs, new public IPs, new tunnel objects both sides) hit the exact same wall as the original. Rules out stale state/config drift as a cause. Root cause is confirmed structural, not incidental — don't attempt another blind rebuild without new information from Meraki TAC. See `project_meraki_mx68_vpn.md` memory for the full attempt history (now 5+ independent attempts).
+
+## 2026-07-08 (even later) — Force NAT-T on MX68 tunnels (test, ruled out)
+
+- **Type**: Planned maintenance (diagnostic test)
+- **Duration**: ~5 minutes (change + ~3 min poll)
+- **Risk level**: Low — isolated attribute change on 2 already-non-functional tunnel resources.
+- **Changes made**: `nat_translation_enabled` changed from `AUTO` to `ENABLED` on both `oci_core_ipsec_connection_tunnel_management.mx68_tunnel1`/`mx68_tunnel2` (`terraform apply`, confirmed `2 to change` scoped diff).
+- **Why**: New hypothesis — OCI's NAT auto-detection during IKE_SA_INIT could be misfiring for this specific NATed peer, causing ESP to be sent as raw protocol-50 instead of UDP/4500 NAT-T-encapsulated, which would explain Phase 1 succeeding (plain UDP 500) while Phase 2 data-plane packets get lost at the NAT device.
+- **Outcome**: No effect — both tunnels remained `DOWN`/`is-esp-established: false` across 8 checks over ~3 minutes post-change.
+- **Downtime**: None.
+- **Affected**: None.
+- **Notes**: This exhausts essentially every self-service hypothesis worth testing blindly (see `project_meraki_mx68_vpn.md` for the full tally: crypto, traffic selectors, firewall/NAT path, reachability, localId/remoteId, stale state via full rebuild, and now forced NAT-T). Recommend treating this as fully blocked on Meraki TAC's device-side debug log going forward, not inventing further guesses.
