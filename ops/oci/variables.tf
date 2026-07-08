@@ -43,6 +43,17 @@ variable "mx68_vpn_shared_secret" {
   description = "Pre-shared key for the MX68 <-> OCI IPSec connection"
 }
 variable "onprem_public_ip" { description = "Public IP of on-prem router/firewall for IPSec CPE" }
+
+# ── BikoFW-SRX (dmz zone edge VPN, replaces the former RRAS tunnel) ───────────
+variable "srx_local_identifier" {
+  default     = "192.168.1.1"
+  description = "BikoFW-SRX's irb.50 (dmz zone) IP -- sent as its IKE local identity since it's behind NAT"
+}
+variable "srx_vpn_shared_secret" {
+  default     = ""
+  sensitive   = true
+  description = "Pre-shared key for the BikoFW-SRX <-> OCI IPSec connection"
+}
 variable "onprem_api_port" {
   default     = 443
   description = "Port the on-prem NLB listens on"
