@@ -8,10 +8,11 @@ resource "oci_core_ipsec_connection_tunnel_management" "mx68_tunnel1" {
   ipsec_id  = oci_core_ipsec.mx68.id
   tunnel_id = data.oci_core_ipsec_connection_tunnels.mx68.ip_sec_connection_tunnels[0].id
 
-  routing       = "STATIC"
-  ike_version   = "V2"
-  display_name  = "mx68-tunnel-1"
-  shared_secret = var.mx68_vpn_shared_secret
+  routing                 = "STATIC"
+  ike_version             = "V2"
+  display_name            = "mx68-tunnel-1"
+  shared_secret           = var.mx68_vpn_shared_secret
+  nat_translation_enabled = "ENABLED"
 
   phase_one_details {
     is_custom_phase_one_config      = true
@@ -40,10 +41,11 @@ resource "oci_core_ipsec_connection_tunnel_management" "mx68_tunnel2" {
   ipsec_id  = oci_core_ipsec.mx68.id
   tunnel_id = data.oci_core_ipsec_connection_tunnels.mx68.ip_sec_connection_tunnels[1].id
 
-  routing       = "STATIC"
-  ike_version   = "V2"
-  display_name  = "mx68-tunnel-2"
-  shared_secret = var.mx68_vpn_shared_secret
+  routing                 = "STATIC"
+  ike_version             = "V2"
+  display_name            = "mx68-tunnel-2"
+  shared_secret           = var.mx68_vpn_shared_secret
+  nat_translation_enabled = "ENABLED"
 
   phase_one_details {
     is_custom_phase_one_config      = true
