@@ -81,3 +81,15 @@ Format: Date | Type | Duration | Description | Outcome
 - **Downtime**: 0 minutes
 - **Affected**: DNS/network only, no application impact
 - **Notes**: Tested end-to-end same day (2026-07-08) from the OCI standby instance via a Bastion port-forwarding session — `dig @169.254.169.254 _ldap._tcp.dc._msdcs.livbiko.local SRV` correctly returned all three on-prem DCs. Confirmed working, not just applied.
+
+## 2026-07-08 — Allow MX68's Meraki-cloud ports (TCP 46294/55261) on BikoFW-SRX
+
+- **Type**: Planned maintenance
+- **Duration**: ~5 minutes (recovery point, stage, commit confirmed, validate, finalize)
+- **Risk level**: High (production firewall policy addition — same device fronting RRAS/BIKODC's working tunnel)
+- **Changes made**: On BikoFW-SRX: address-book object `mx68-wan` (`192.168.1.214/32`), applications `app-tcp-46294`/`app-tcp-55261`, application-set `as-meraki-cloud`, and policy `PF-MERAKI-CLOUD` (`from-zone dmz to-zone untrust`, source `mx68-wan`, destination any, permit). Requested by user for MX68's outbound Meraki-cloud connectivity (VPN registry UDP 9353 + two other cloud ports). UDP 9353 was **not** added — already covered by the pre-existing `dmz-to-untrust` policy's `junos-udp-any` match, confirmed via `show configuration security policies from-zone dmz to-zone untrust` before making changes, so a dedicated rule for it would've been dead config (same redundancy lesson as the earlier `server-access` cleanup).
+- **Recovery point**: Full config backup (945 lines, session scratchpad) + Junos rescue snapshot taken before the change; committed via `commit confirmed 10` before finalizing.
+- **Outcome**: Success — `show | compare` confirmed a clean diff (no stray uncommitted config from other sessions this time); RRAS tunnels re-verified `UP`/IKE+ESP established immediately after commit, no regression; finalized with plain `commit`.
+- **Downtime**: 0 minutes
+- **Affected**: Network/firewall only, no application impact
+- **Notes**: As with the earlier UDP 500/4500 change, this SRX was already established (via direct inspection: ARP, interfaces, Hub Manager UI confirmation) to not be in the direct path between `192.168.1.0/24` and the internet — that's the Hub Manager's job. User confirmed wanting this rule added regardless, citing a traffic flow (Hub Manager → BikoFW-SRX → MX68) not otherwise confirmed via this session's diagnostics. Added as requested; no functional verification possible since MX68's tunnel is still down independent of this.
