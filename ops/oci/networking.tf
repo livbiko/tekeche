@@ -188,6 +188,119 @@ resource "oci_core_security_list" "private" {
     description = "MX68 site LAN — full access"
   }
 
+  # ── livbiko.local Active Directory — on-prem DCs (192.168.1.102/.103) ──────
+  # reaching into OCI's private subnet. Egress back to on-prem is already
+  # covered by the unrestricted "All outbound" rule below; these are only
+  # needed for the reverse direction, once something AD-related runs in OCI.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: DNS (TCP)"
+    tcp_options {
+      max = 53
+      min = 53
+    }
+  }
+  ingress_security_rules {
+    protocol    = "17"
+    source      = var.onprem_cidr
+    description = "AD: DNS (UDP)"
+    udp_options {
+      max = 53
+      min = 53
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: Kerberos (TCP)"
+    tcp_options {
+      max = 88
+      min = 88
+    }
+  }
+  ingress_security_rules {
+    protocol    = "17"
+    source      = var.onprem_cidr
+    description = "AD: Kerberos (UDP)"
+    udp_options {
+      max = 88
+      min = 88
+    }
+  }
+  ingress_security_rules {
+    protocol    = "17"
+    source      = var.onprem_cidr
+    description = "AD: W32Time"
+    udp_options {
+      max = 123
+      min = 123
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: RPC Endpoint Mapper"
+    tcp_options {
+      max = 135
+      min = 135
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: LDAP"
+    tcp_options {
+      max = 389
+      min = 389
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: SMB"
+    tcp_options {
+      max = 445
+      min = 445
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: LDAPS"
+    tcp_options {
+      max = 636
+      min = 636
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: Global Catalog"
+    tcp_options {
+      max = 3268
+      min = 3268
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: Global Catalog SSL"
+    tcp_options {
+      max = 3269
+      min = 3269
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "AD: RPC dynamic port range"
+    tcp_options {
+      max = 65535
+      min = 49152
+    }
+  }
+
   egress_security_rules {
     protocol    = "all"
     destination = "0.0.0.0/0"
