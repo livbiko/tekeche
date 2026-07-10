@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Runs the verification checklist and, if all checks pass,
     marks the current build as a Known Good Build.
