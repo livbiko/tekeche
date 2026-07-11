@@ -54,4 +54,14 @@ resource "oci_dns_resolver" "tekeche" {
   }
 
   depends_on = [oci_dns_resolver_endpoint.onprem_ad_forward]
+
+  # OCI's DNS resolver API always returns qname_cover_conditions without the
+  # trailing dot, regardless of what's sent — the oci provider v8.x plan/read
+  # cycle never converges on this field (perpetual cosmetic diff, confirmed
+  # 2026-07-09: apply reports success, 0 destroyed, but next plan shows the
+  # same 1-line change again). Functionally inert either way. Silencing it so
+  # real drift on this resource isn't lost in the noise.
+  lifecycle {
+    ignore_changes = [rules]
+  }
 }

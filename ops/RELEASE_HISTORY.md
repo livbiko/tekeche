@@ -144,3 +144,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: 4 UI changes: service icons +20%, Woyo car icon, GPS zone auto-detect, Wave/MTN/Especes payment. OTA push triggered.
 
+
+## Build #16 â€” 2026-07-09 12:42
+
+- **API commit**: 633e89de (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Admin alerts via Brevo SMTP relay (noreply@tekeche.com). 8/9 checks passed; booking-flow E2E failed only due to no driver online in test app at run time (unrelated, documented exception - see MAINTENANCE_LOG.md 2026-07-09).
+
+
+## Build #17 â€” 2026-07-09 23:25
+
+- **API commit**: 633e89de (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: 2026-07-09 23:23 - Fixed BIKODC DNS self-registration + MongoDB rs.conf hostname flapping + dead OCI standby member. 9/9 Test-Build.ps1 checks passed including full automated booking flow.
+

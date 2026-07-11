@@ -184,3 +184,363 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-04_14-41-38_before-rras-remoteaccess-role-install-ik"`
 
+
+## 2026-07-08 19:47:02 â€” Before BikoFW-SRX OCI VPN config apply
+
+- **ID**: 2026-07-08_19-46-55_before-bikofw-srx-oci-vpn-config-apply
+- **Reason**: Applying new site-to-site IPsec VPN (dmz zone, st0.1/st0.2) to BikoFW-SRX
+- **API commit**: 25d5cc21  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low - additive only, no existing config removed
+- **DB dump**: 514.5 KB
+- **Files affected**: BikoFW-SRX Junos config: security zones dmz, ike/ipsec proposals+policies+gateways+vpns, interfaces st0.1/st0.2, security policies DMZ-TO-OCI/OCI-TO-DMZ, routing-options static route 10.0.0.0/16
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-08_19-46-55_before-bikofw-srx-oci-vpn-config-apply"`
+
+
+## 2026-07-09 12:35:45 â€” Before switching alert.service.js to Brevo SMTP relay
+
+- **ID**: 2026-07-09_12-35-39_before-switching-alert-service-js-to-bre
+- **Reason**: User wants admin alerts sent via Brevo (noreply@tekeche.com) instead of raw Gmail SMTP
+- **API commit**: 25d5cc21  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low-Medium - sender transport change only, recipient unchanged
+- **DB dump**: 514.5 KB
+- **Files affected**: tekeche-api/src/services/alert.service.js
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_12-35-39_before-switching-alert-service-js-to-bre"`
+
+
+## 2026-07-09 13:37:53 â€” Before rebuilding BikoFW-SRX OCI VPN crypto to Oracle template defaults
+
+- **ID**: 2026-07-09_13-37-49_before-rebuilding-bikofw-srx-oci-vpn-cry
+- **Reason**: User requested full rebuild to match Oracle official SRX template (SHA-384/Group5/SHA1-96) plus DPD/vpn-monitor/df-bit-clear/MSS-clamp
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Medium - temporary drop of currently-working tunnel2 during crypto renegotiation, no production traffic depends on this VPN yet
+- **DB dump**: 514.5 KB
+- **Files affected**: ops/oci/vpn_srx_tunnels.tf, BikoFW-SRX Junos config: IKE/IPsec proposals+policies, VPN objects, security flow tcp-mss
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_13-37-49_before-rebuilding-bikofw-srx-oci-vpn-cry"`
+
+
+## 2026-07-09 15:44:54 â€” Before adding static ARP entry on BikoFW-SRX for NLB VIP
+
+- **ID**: 2026-07-09_15-44-50_before-adding-static-arp-entry-on-bikofw
+- **Reason**: NLB VIP 192.168.1.100 unreachable via routed VPN traffic due to multicast MAC not resolvable through router ARP - causing OCI LB failover to under-provisioned standby, likely cause of multi-user login failures
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low - single additive static ARP entry, does not touch NLB cluster or existing routing/policies
+- **DB dump**: 514.5 KB
+- **Files affected**: BikoFW-SRX Junos config: interfaces irb unit 50 static ARP entry
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_15-44-50_before-adding-static-arp-entry-on-bikofw"`
+
+
+## 2026-07-09 15:55:17 â€” Before switching TekecheCluster NLB from MULTICAST to UNICAST
+
+- **ID**: 2026-07-09_15-55-13_before-switching-tekechecluster-nlb-from
+- **Reason**: NLB multicast MAC not resolvable via router ARP, blocking OCI-routed traffic to primary VIP 192.168.1.100, causing full LB failover to under-provisioned OCI standby
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Medium - brief NLB reconvergence (~5-30s) on both nodes; currently zero live traffic through this VIP due to the existing bug, so practical impact is low right now
+- **DB dump**: 514.5 KB
+- **Files affected**: TekecheCluster NLB configuration (BikoDC, BikoDC1) - operation mode
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_15-55-13_before-switching-tekechecluster-nlb-from"`
+
+
+## 2026-07-09 17:11:04 â€” Before rebooting BikoDC to clear stuck NLB Converging state
+
+- **ID**: 2026-07-09_17-10-59_before-rebooting-bikodc-to-clear-stuck-n
+- **Reason**: BikoDC stuck in NLB Converging status after failed MULTICAST->UNICAST switch (RPC error 0x800706BE); reboot to force clean NLB reconvergence
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Medium - full API downtime ~5-8 min during reboot, PM2 auto-resurrect verified working via boot scheduled task
+- **DB dump**: 514.5 KB
+- **Files affected**: BikoDC full reboot - PM2 processes, NLB driver state
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_17-10-59_before-rebooting-bikodc-to-clear-stuck-n"`
+
+
+## 2026-07-09 20:08:42 â€” Before: Provision OKE cluster, node pool, OCIR in OCI (Phase 1 foundation)
+
+- **ID**: 2026-07-09_20-08-33_before-provision-oke-cluster-node-pool-o
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 514.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_20-08-33_before-provision-oke-cluster-node-pool-o"`
+
+
+## 2026-07-09 21:25:30 â€” Before: Fix BIKODC DNS self-registration (disable Ethernet1/Ethernet2 registration, clean stale A records)
+
+- **ID**: 2026-07-09_21-25-26_before-fix-bikodc-dns-self-registration
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 514.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_21-25-26_before-fix-bikodc-dns-self-registration"`
+
+
+## 2026-07-09 22:18:54 â€” Before: Reset local MongoDB admin password via standalone recovery mode (brief primary outage expected)
+
+- **ID**: 2026-07-09_22-18-49_before-reset-local-mongodb-admin-passwor
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 514.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_22-18-49_before-reset-local-mongodb-admin-passwor"`
+
+
+## 2026-07-09 22:30:01 â€” Before: MongoDB rs.reconfig() hostnames to IPs (BIKODC/BIKODC1 members)
+
+- **ID**: 2026-07-09_22-29-56_before-mongodb-rs-reconfig-hostnames-to
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 514.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_22-29-56_before-mongodb-rs-reconfig-hostnames-to"`
+
+
+## 2026-07-09 23:12:27 â€” Before: rs.remove 10.0.2.10 (dead OCI standby, non-voting member)
+
+- **ID**: 2026-07-09_23-12-22_before-rs-remove-10-0-2-10-dead-oci-stan
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 514.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_23-12-22_before-rs-remove-10-0-2-10-dead-oci-stan"`
+
+
+## 2026-07-09 23:21:21 â€” Before: insert synthetic test driver for booking-flow test
+
+- **ID**: 2026-07-09_23-21-19_before-insert-synthetic-test-driver-for
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 514.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-09_23-21-19_before-insert-synthetic-test-driver-for"`
+
+
+## 2026-07-10 08:00:34 â€” Before: add static route 10.0.0.0/16 via 192.168.1.1 on BIKODC (test on-prem network gap theory)
+
+- **ID**: 2026-07-10_08-00-30_before-add-static-route-10-0-0-0-16-via
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 515 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-10_08-00-30_before-add-static-route-10-0-0-0-16-via"`
+
+
+## 2026-07-10 08:04:39 â€” Before: add MongoDB firewall rule allowing OCI VCN (10.0.0.0/16)
+
+- **ID**: 2026-07-10_08-04-37_before-add-mongodb-firewall-rule-allowin
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 515 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-10_08-04-37_before-add-mongodb-firewall-rule-allowin"`
+
+
+## 2026-07-10 09:26:51 â€” Before: create acme.tekeche.com DNS zone for delegated ACME validation
+
+- **ID**: 2026-07-10_09-26-47_before-create-acme-tekeche-com-dns-zone
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 515 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-10_09-26-47_before-create-acme-tekeche-com-dns-zone"`
+
+
+## 2026-07-10 11:59:44 â€” Before: Re-issue Let's Encrypt cert for api/staging-api/security.tekeche.com via win-acme HTTP-01 + PemFiles store
+
+- **ID**: 2026-07-10_11-59-41_before-re-issue-let-s-encrypt-cert-for-a
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 515 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-10_11-59-41_before-re-issue-let-s-encrypt-cert-for-a"`
+
+
+## 2026-07-10 13:18:30 â€” Before: Add OCI LB port-80 backend set + repoint http-80 listener (fix plain-HTTP-to-HTTPS-port bug blocking ACME HTTP-01)
+
+- **ID**: 2026-07-10_13-18-27_before-add-oci-lb-port-80-backend-set-re
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 515 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-10_13-18-27_before-add-oci-lb-port-80-backend-set-re"`
+
+
+## 2026-07-10 19:11:41 â€” Before: Switch TekecheCluster NLB from MULTICAST to UNICAST (retry, RPC blocker now cleared)
+
+- **ID**: 2026-07-10_19-11-35_before-switch-tekechecluster-nlb-from-mu
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-10_19-11-35_before-switch-tekechecluster-nlb-from-mu"`
+
+
+## 2026-07-11 11:08:55 — Before: OKE Phase 3 Ingress+LB cutover (TLS secret, ingress-nginx, NSG rule, LB backend add)
+
+- **ID**: 2026-07-11_11-08-49_before-oke-phase-3-ingress-lb-cutover-tl
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_11-08-49_before-oke-phase-3-ingress-lb-cutover-tl"`
+
+
+## 2026-07-11 13:47:45 — Before: Revert BikoDC1 NLB operation mode Unicast->Multicast to release stuck unicast MAC
+
+- **ID**: 2026-07-11_13-47-41_before-revert-bikodc1-nlb-operation-mode
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_13-47-41_before-revert-bikodc1-nlb-operation-mode"`
+
+
+## 2026-07-11 14:34:30 — Before: Re-add BikoDC1 to Mongo rs0 as non-voting secondary (priority:0, votes:0)
+
+- **ID**: 2026-07-11_14-34-27_before-re-add-bikodc1-to-mongo-rs0-as-no
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.9 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_14-34-27_before-re-add-bikodc1-to-mongo-rs0-as-no"`
+
+
+## 2026-07-11 14:59:56 — Before: enable Bastion plugin + wipe/rejoin OCI standby Mongo + upgrade BikoDC1 to voting member
+
+- **ID**: 2026-07-11_14-59-52_before-enable-bastion-plugin-wipe-rejoin
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_14-59-52_before-enable-bastion-plugin-wipe-rejoin"`
+
+
+## 2026-07-11 15:11:00 — Before: reboot OCI standby VM to revive stuck Cloud Agent
+
+- **ID**: 2026-07-11_15-10-57_before-reboot-oci-standby-vm-to-revive-s
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_15-10-57_before-reboot-oci-standby-vm-to-revive-s"`
+
+
+## 2026-07-11 16:10:44 — Before: Redis replication fixes (OCI standby replicaof target, BikoDC local Memurai as 2nd replica)
+
+- **ID**: 2026-07-11_16-10-39_before-redis-replication-fixes-oci-stand
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_16-10-39_before-redis-replication-fixes-oci-stand"`
+
+
+## 2026-07-11 16:28:47 — Before: Deploy Redis Sentinel (OCI standby + 2 OKE pods) and Sentinel-aware tekeche-api code (OKE only)
+
+- **ID**: 2026-07-11_16-28-43_before-deploy-redis-sentinel-oci-standby
+- **Reason**: 
+- **API commit**: 633e89de  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.9 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_16-28-43_before-deploy-redis-sentinel-oci-standby"`
+
+
+## 2026-07-11 16:52:13 — Before: reboot OKE node oke-cphqhpzsmwq-nde2atnycdq-s2eunfqwwza-0 to revive stuck Cloud Agent for image build
+
+- **ID**: 2026-07-11_16-52-10_before-reboot-oke-node-oke-cphqhpzsmwq-n
+- **Reason**: 
+- **API commit**: af78e1a4  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 519.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_16-52-10_before-reboot-oke-node-oke-cphqhpzsmwq-n"`
+
+
+## 2026-07-11 19:09:29 — Before: Sentinel automatic failover test (stop BikoDC1 Memurai, confirm promotion, restore)
+
+- **ID**: 2026-07-11_19-09-24_before-sentinel-automatic-failover-test
+- **Reason**: 
+- **API commit**: 60ad0a3f  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_19-09-24_before-sentinel-automatic-failover-test"`
+
+
+## 2026-07-11 19:49:48 — Before: live BikoDC shutdown test (user-initiated) to validate Mongo/NLB failover to BikoDC1
+
+- **ID**: 2026-07-11_19-49-44_before-live-bikodc-shutdown-test-user-in
+- **Reason**: 
+- **API commit**: 60ad0a3f  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_19-49-44_before-live-bikodc-shutdown-test-user-in"`
+
+
+## 2026-07-11 20:45:50 — Before: restart KDC on BikoDC to clear stale Kerberos ticket cache post-crash
+
+- **ID**: 2026-07-11_20-45-43_before-restart-kdc-on-bikodc-to-clear-st
+- **Reason**: 
+- **API commit**: 60ad0a3f  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_20-45-43_before-restart-kdc-on-bikodc-to-clear-st"`
+
+
+## 2026-07-11 22:18:08 — Before: remove dead RRAS OCI-Tunnel1/2 S2S VPN interfaces on BikoDC (superseded by BikoFW-SRX VPN)
+
+- **ID**: 2026-07-11_22-18-07_before-remove-dead-rras-oci-tunnel1-2-s2
+- **Reason**: 
+- **API commit**: 60ad0a3f  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_22-18-07_before-remove-dead-rras-oci-tunnel1-2-s2"`
+

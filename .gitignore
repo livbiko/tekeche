@@ -42,6 +42,7 @@ ops/oci/terraform.tfvars.bak*
 ops/oci/.terraform/
 ops/oci/*.tfstate
 ops/oci/*.tfstate.backup
+ops/oci/*.tfstate.bak*
 
 # OCI Terraform run artifacts (plan/apply logs, saved plans)
 ops/oci/tfplan*

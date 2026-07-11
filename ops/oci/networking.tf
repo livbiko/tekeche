@@ -137,6 +137,19 @@ resource "oci_core_security_list" "private" {
     }
   }
 
+  # Added for the http-backends set (ACME HTTP-01 challenge routing) -- LB
+  # health checks and plain-HTTP traffic to the standby need this to avoid the
+  # "plain HTTP request sent to HTTPS port" issue that port-443-only backends had.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.public_subnet_cidr
+    description = "HTTP from LB subnet"
+    tcp_options {
+      max = 80
+      min = 80
+    }
+  }
+
   ingress_security_rules {
     protocol    = "6"
     source      = var.public_subnet_cidr
@@ -165,6 +178,19 @@ resource "oci_core_security_list" "private" {
     tcp_options {
       max = 6379
       min = 6379
+    }
+  }
+
+  # Redis Sentinel gossip — OKE-hosted Sentinels (hostNetwork, on the OKE
+  # nodes subnet) need to reach the standby's Sentinel, and vice versa (see
+  # the matching rule on oke_nodes NSG in oke.tf).
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "10.0.4.0/24"
+    description = "Redis Sentinel gossip from OKE nodes"
+    tcp_options {
+      max = 26379
+      min = 26379
     }
   }
 
