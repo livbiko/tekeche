@@ -1,0 +1,59 @@
+# One Sentinel pod per OKE node (2 nodes today). hostNetwork:true makes each
+# pod bind directly to its node's real routable IP (10.0.4.54 / 10.0.4.95)
+# instead of an internal pod IP -- this is what lets the OCI standby's
+# Sentinel and (later) the app itself dial these directly, with no NodePort
+# indirection or "sentinel announce-ip" workaround needed.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: redis-sentinel
+  namespace: tekeche
+  labels:
+    app: redis-sentinel
+spec:
+  selector:
+    matchLabels:
+      app: redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: redis-sentinel
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      # Sentinel rewrites its config file continuously during normal operation
+      # (not just on failover) and refuses to even start if that file isn't
+      # writable -- the Secret mount is read-only, so an init container seeds
+      # a writable emptyDir copy for the real process to run against.
+      initContainers:
+        - name: seed-config
+          image: docker.io/redis:8-alpine
+          command: ["sh", "-c", "cp /etc/sentinel-src/sentinel.conf /etc/sentinel/sentinel.conf"]
+          volumeMounts:
+            - name: config-src
+              mountPath: /etc/sentinel-src
+            - name: config
+              mountPath: /etc/sentinel
+      containers:
+        - name: sentinel
+          image: docker.io/redis:8-alpine
+          command: ["redis-server", "/etc/sentinel/sentinel.conf", "--sentinel"]
+          ports:
+            - containerPort: 26379
+              hostPort: 26379
+          volumeMounts:
+            - name: config
+              mountPath: /etc/sentinel
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+      volumes:
+        - name: config-src
+          secret:
+            secretName: redis-sentinel-config
+        - name: config
+          emptyDir: {}

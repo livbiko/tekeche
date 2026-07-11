@@ -1,0 +1,15 @@
+# ClusterIP only for Phase 2 — internal validation, no external exposure yet.
+# Phase 3 adds the Ingress/NodePort wiring that the existing OCI LB backend
+# set gets repointed at.
+apiVersion: v1
+kind: Service
+metadata:
+  name: tekeche-api
+  namespace: tekeche
+spec:
+  type: ClusterIP
+  selector:
+    app: tekeche-api
+  ports:
+    - port: 5000
+      targetPort: 5000

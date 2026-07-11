@@ -1,0 +1,72 @@
+# tekeche-api Deployment — Phase 2 (validation only, no external traffic yet).
+# 2 replicas deliberately, to prove out the Socket.io Redis adapter fan-out
+# (REDIS_URL below points at the existing on-prem Redis, same instance the
+# on-prem PM2 deployment already uses) — this is the multi-node behavior IIS
+# ARR could never do for WebSockets, which is why api.tekeche.com had been
+# pinned to a single instance previously.
+#
+# Uses imagePullSecrets (ocir-pull-secret) rather than automatic
+# instance-principal pulling: confirmed during Phase 2 that this node pool
+# has no kubelet image-credential-provider configured at all (no automatic
+# OCIR auth happens), so a standard dockerconfigjson secret is required.
+# That secret currently holds a short-lived instance-principal-derived
+# bearer token (see project_ocir_auth_token_blocked memory) -- needs
+# periodic refresh until the tenant-wide user Auth Token issue is resolved
+# or a proper credential-provider is configured on the node image.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tekeche-api
+  namespace: tekeche
+  labels:
+    app: tekeche-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tekeche-api
+  template:
+    metadata:
+      labels:
+        app: tekeche-api
+    spec:
+      imagePullSecrets:
+        - name: ocir-pull-secret
+      containers:
+        - name: tekeche-api
+          image: lhr.ocir.io/lr14abpkfrxj/tekeche-api:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: tekeche-api-config
+            - secretRef:
+                name: tekeche-api-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000  # the Dockerfile's "USER node" — numeric UID needed since
+                             # runAsNonRoot can't verify a symbolic username ahead of time
+            allowPrivilegeEscalation: false

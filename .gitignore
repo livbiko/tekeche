@@ -26,9 +26,9 @@ node_modules/
 logs/
 
 # submodules (managed as separate repos)
-tekeche-api/
-tekeche-mobile/
-tekeche-payment-gateway/
+/tekeche-api/
+/tekeche-mobile/
+/tekeche-payment-gateway/
 
 # recovery-point snapshots — contain env-keys.txt and full db-dumps, never commit
 ops/recovery-points/

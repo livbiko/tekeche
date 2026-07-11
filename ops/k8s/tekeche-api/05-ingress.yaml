@@ -1,0 +1,31 @@
+# Phase 3 — Ingress for tekeche-api, fronted by ingress-nginx (NodePort, not
+# LoadBalancer) so the existing single-public-IP OCI LB design is preserved:
+# the LB's main-backends set gets a new backup=true entry pointing at the OKE
+# nodes' NodePort, rather than provisioning a second public LB via OCI's CCM.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tekeche-api
+  namespace: tekeche
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    # ingress-nginx passes through Upgrade/Connection headers by default,
+    # so no extra annotation is needed for the Socket.io websocket path.
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.tekeche.com
+      secretName: tekeche-api-tls
+  rules:
+    - host: api.tekeche.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tekeche-api
+                port:
+                  number: 5000

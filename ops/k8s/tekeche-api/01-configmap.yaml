@@ -1,0 +1,41 @@
+# Non-sensitive config only. Anything with a credential/token/password goes in
+# 02-secret.yaml instead (see that file's header for how it's actually populated).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tekeche-api-config
+  namespace: tekeche
+data:
+  PORT: "5000"
+  NODE_ENV: "production"
+  OTP_EXPIRY_MINUTES: "5"
+  DISPATCH_TIMEOUT_SECONDS: "60"
+  JWT_EXPIRES_IN: "8h"
+  BREVO_FROM_EMAIL: "noreply@tekeche.com"
+  API_PUBLIC_URL: "https://api.tekeche.com"
+  CORS_ORIGINS: "https://tekeche.com,https://www.tekeche.com,https://api.tekeche.com,https://security.tekeche.com"
+  ADMIN_EMAIL: "assalehervekouame@gmail.com"
+  PAYMENT_GATEWAY_ENABLED: "true"
+  PAYMENT_GATEWAY_URL: "https://pay.tekeche.com"
+  GATEWAY_RECONCILE_ENABLED: "true"
+  GATEWAY_RECONCILE_CRON: "*/5 * * * *"
+  GATEWAY_RECONCILE_MIN_AGE_MINUTES: "5"
+  GATEWAY_RECONCILE_MAX_AGE_MINUTES: "1440"
+  GATEWAY_RECONCILE_BATCH: "100"
+  PLATFORM_COMMISSION_RATE: "0.00"
+  BLOCKED_EMAILS: "crawlerrobo@gmail.com"
+  MONGODB_RS_NAME: "rs0"
+  # Sentinel mode deliberately NOT enabled here (2026-07-11): the pub client
+  # connects fine via createSentinel, but the sub client (Socket.io redis-
+  # adapter's pub.duplicate()) hits a persistent 5s TCP connect timeout on
+  # its underlying PubSubProxy connection -- confirmed NOT a config issue
+  # (same target address as the working pub client, no connection-limit
+  # issue on the Redis server, node-targeting verified correct in the
+  # library source). Looks like a real gap in node-redis's Sentinel+PubSub
+  # support. Falling back to the proven direct REDIS_URL connection below
+  # until this is properly fixed (likely needs ioredis, which has far more
+  # mature Sentinel+pubsub support, or a node-redis version bump/patch).
+  # Sentinel infrastructure itself (3 instances, OCI standby + 2 OKE pods)
+  # is live and validated independently of this app-code issue.
+  # SENTINEL_HOSTS: "10.0.2.10:26379,10.0.4.54:26379,10.0.4.95:26379"
+  # SENTINEL_NAME: "mymaster"
