@@ -84,6 +84,10 @@ variable "standby_image_id" {
 variable "ssh_public_key"     { description = "SSH public key to access the standby VM" }
 variable "standby_private_ip" { default = "10.0.2.10" }
 
+variable "alert_email" {
+  description = "Email address for HA/DR monitoring alarm notifications"
+}
+
 # ── Load Balancer ─────────────────────────────────────────────────────────────
 variable "lb_min_bandwidth_mbps" { default = 10 }
 variable "lb_max_bandwidth_mbps" { default = 100 }
