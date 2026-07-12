@@ -1,0 +1,42 @@
+# PodDisruptionBudget + HorizontalPodAutoscaler for tekeche-api.
+# Requires metrics-server (installed 2026-07-12 - not present in this OKE
+# cluster by default, unlike some managed K8s offerings).
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tekeche-api-pdb
+  namespace: tekeche
+spec:
+  # minAvailable: 1 (not maxUnavailable) - with only 2 replicas today, this is
+  # the only setting that actually prevents a voluntary disruption (node
+  # drain, cluster upgrade) from taking both pods down at once.
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: tekeche-api
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: tekeche-api-hpa
+  namespace: tekeche
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: tekeche-api
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          # Against the deployment's 250m request, not the 1-core limit.
+          averageUtilization: 70
+  behavior:
+    scaleDown:
+      # Socket.io connections are stateful per-pod; avoid flapping scale-downs
+      # that would drop live websocket connections during brief CPU dips.
+      stabilizationWindowSeconds: 300
