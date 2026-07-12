@@ -1,5 +1,15 @@
 locals {
-  # Public resources (VCN, IGW, LB) go here — no security zone
+  # Public resources (VCN, IGW, LB) go here — no security zone.
+  # Confirmed 2026-07-12: this is why tekeche-vcn (and its IGW/public
+  # subnet/LB) live in a different compartment than everything else
+  # (OKE, private subnet, NSGs, security lists, vault, DNS all use
+  # var.compartment_id directly) - deliberate separation, not drift.
+  # No oci_identity_security_zone is actually attached to either
+  # compartment yet, but the separation is already in place for when
+  # one is. Do not "fix" this by moving resources between compartments -
+  # for a live VCN that's a high-risk operation that may force
+  # destroy/recreate of the entire production network depending on
+  # provider behavior, for zero functional benefit.
   pub_cid = oci_identity_compartment.pub.id
 }
 
