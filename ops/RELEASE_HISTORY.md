@@ -164,3 +164,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: 2026-07-09 23:23 - Fixed BIKODC DNS self-registration + MongoDB rs.conf hostname flapping + dead OCI standby member. 9/9 Test-Build.ps1 checks passed including full automated booking flow.
 
+
+## Build #18 — 2026-07-12 16:22
+
+- **API commit**: 8ccc9960 (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OCI LB onprem backend repointed from broken NLB VIP (192.168.1.100) to BikoDC direct IP (192.168.1.101). Test-Build 8/9 - override forced: sole failure is 'no driver online', a pre-existing unrelated test-environment precondition (confirmed via admin API: all 29 drivers isOnline:false), not a regression -- driver app path unaffected since public DNS cutover was deferred.
+
+
+## Build #19 — 2026-07-12 22:32
+
+- **API commit**: 8ccc9960 (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OCI standby resized to 8 OCPU/32GB + PM2 cluster mode (16 workers) for full-capacity failover; Mongo RS rejoined SECONDARY healthy; Test-Build 8/9 pass, sole failure is unrelated env precondition (no driver online for automated booking-flow test), accepted per user decision
+

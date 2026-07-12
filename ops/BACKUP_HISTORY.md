@@ -544,3 +544,147 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-11_22-18-07_before-remove-dead-rras-oci-tunnel1-2-s2"`
 
+
+## 2026-07-12 09:41:13 — Before: Add OCI boot-volume backup policy (bronze) for tekeche-standby VM
+
+- **ID**: 2026-07-12_09-41-12_before-add-oci-boot-volume-backup-policy
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_09-41-12_before-add-oci-boot-volume-backup-policy"`
+
+
+## 2026-07-12 09:51:10 — Before: Add OCI monitoring alarms (VPN/OKE-node/LB-backend) + notification topic
+
+- **ID**: 2026-07-12_09-51-08_before-add-oci-monitoring-alarms-vpn-oke
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_09-51-08_before-add-oci-monitoring-alarms-vpn-oke"`
+
+
+## 2026-07-12 13:35:15 — Before: Toggle BikoDC Ethernet0 adapter disable/enable to force upstream router ARP re-learn after stale-MAC issue broke inbound public traffic
+
+- **ID**: 2026-07-12_13-35-10_before-toggle-bikodc-ethernet0-adapter-d
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_13-35-10_before-toggle-bikodc-ethernet0-adapter-d"`
+
+
+## 2026-07-12 14:54:51 — Before: Fix SRX destination-NAT pool BDCSRV-POOL to point to 192.168.1.101 (BikoDC) instead of the unreachable NLB VIP 192.168.1.100, restoring public HTTPS access to Tekeche
+
+- **ID**: 2026-07-12_14-54-49_before-fix-srx-destination-nat-pool-bdcs
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_14-54-49_before-fix-srx-destination-nat-pool-bdcs"`
+
+
+## 2026-07-12 15:54:17 — Before: point OCI LB onprem backend at BikoDC direct IP (192.168.1.101) instead of broken NLB VIP (192.168.1.100)
+
+- **ID**: 2026-07-12_15-54-10_before-point-oci-lb-onprem-backend-at-bi
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_15-54-10_before-point-oci-lb-onprem-backend-at-bi"`
+
+
+## 2026-07-12 17:18:50 — Before: restart tekeche-api pm2 process on BikoDC1 (was crash-looping earlier today on missing ioredis, since fixed in shared node_modules, currently stopped)
+
+- **ID**: 2026-07-12_17-18-47_before-restart-tekeche-api-pm2-process-o
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_17-18-47_before-restart-tekeche-api-pm2-process-o"`
+
+
+## 2026-07-12 17:33:06 — Before: sync server.js/package.json/package-lock.json/web.config from BikoDC to BikoDC1 (stale independent copy) and npm install
+
+- **ID**: 2026-07-12_17-33-04_before-sync-server-js-package-json-packa
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 520.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_17-33-04_before-sync-server-js-package-json-packa"`
+
+
+## 2026-07-12 17:59:28 — Before: reinstall Node.js on BikoDC1 (v24.17.0 -> v20.18.0 to match BikoDC) and retry npm install
+
+- **ID**: 2026-07-12_17-59-26_before-reinstall-node-js-on-bikodc1-v24
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_17-59-26_before-reinstall-node-js-on-bikodc1-v24"`
+
+
+## 2026-07-12 18:31:54 — Before: register Scheduled Task on BikoDC1 to run pm2 resurrect at startup, independent of interactive session
+
+- **ID**: 2026-07-12_18-31-52_before-register-scheduled-task-on-bikodc
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_18-31-52_before-register-scheduled-task-on-bikodc"`
+
+
+## 2026-07-12 18:39:27 — Before: register Scheduled Task on BikoDC (production) to run pm2 resurrect at startup - registration only, not tested
+
+- **ID**: 2026-07-12_18-39-25_before-register-scheduled-task-on-bikodc
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_18-39-25_before-register-scheduled-task-on-bikodc"`
+
+
+## 2026-07-12 18:45:15 — Before: Phase 3 - reboot BikoDC to validate PM2 scheduled task auto-recovery
+
+- **ID**: 2026-07-12_18-45-12_before-phase-3-reboot-bikodc-to-validate
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_18-45-12_before-phase-3-reboot-bikodc-to-validate"`
+
+
+## 2026-07-12 21:58:30 — Before: Resize OCI standby VM to 8 OCPU/32GB and switch tekeche-api to PM2 cluster mode for full-capacity failover
+
+- **ID**: 2026-07-12_21-58-25_before-resize-oci-standby-vm-to-8-ocpu-3
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_21-58-25_before-resize-oci-standby-vm-to-8-ocpu-3"`
+
