@@ -22,3 +22,21 @@ resource "oci_core_volume_backup_policy_assignment" "standby_boot_backup" {
   asset_id  = data.oci_core_boot_volume_attachments.standby.boot_volume_attachments[0].boot_volume_id
   policy_id = data.oci_core_volume_backup_policies.bronze.volume_backup_policies[0].id
 }
+
+# ── Velero backup bucket ────────────────────────────────────────────────────
+# OKE cluster/workload state backup. Velero connects to this via the
+# Object Storage S3-compatible API (Oracle's documented approach - there's
+# no dedicated OCI-native Velero provider plugin), authenticated with a
+# Customer Secret Key generated separately (not a Terraform resource here,
+# to keep its one-time-shown secret value out of tfstate for no real
+# benefit - see the Velero install runbook).
+resource "oci_objectstorage_bucket" "velero" {
+  compartment_id = var.compartment_id
+  namespace      = data.oci_objectstorage_namespace.this.namespace
+  name           = "${var.project_name}-velero-backups"
+  access_type    = "NoPublicAccess"
+}
+
+data "oci_objectstorage_namespace" "this" {
+  compartment_id = var.compartment_id
+}

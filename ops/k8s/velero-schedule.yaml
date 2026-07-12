@@ -1,0 +1,19 @@
+# Daily Velero backup of the tekeche namespace (K8s resource state - no PVCs
+# exist today, so this is cluster/workload config, not data). 30-day
+# retention. Requires velero-plugin-for-aws:v1.8.2 specifically (see
+# ops/oci runbook note) - newer versions (v1.9+, migrated to AWS SDK v2)
+# default to aws-chunked transfer encoding on PutObject, which OCI's
+# S3-compatible API rejects with "NotImplemented: AWS chunked encoding not
+# supported" - same root cause as the OCI Terraform S3-backend issue,
+# fixed the same way (pin to the older SDK-generation tool).
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: tekeche-daily
+  namespace: velero
+spec:
+  schedule: "0 2 * * *"
+  template:
+    includedNamespaces:
+      - tekeche
+    ttl: 720h0m0s
