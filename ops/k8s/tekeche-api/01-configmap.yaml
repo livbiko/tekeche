@@ -25,17 +25,11 @@ data:
   PLATFORM_COMMISSION_RATE: "0.00"
   BLOCKED_EMAILS: "crawlerrobo@gmail.com"
   MONGODB_RS_NAME: "rs0"
-  # Sentinel mode deliberately NOT enabled here (2026-07-11): the pub client
-  # connects fine via createSentinel, but the sub client (Socket.io redis-
-  # adapter's pub.duplicate()) hits a persistent 5s TCP connect timeout on
-  # its underlying PubSubProxy connection -- confirmed NOT a config issue
-  # (same target address as the working pub client, no connection-limit
-  # issue on the Redis server, node-targeting verified correct in the
-  # library source). Looks like a real gap in node-redis's Sentinel+PubSub
-  # support. Falling back to the proven direct REDIS_URL connection below
-  # until this is properly fixed (likely needs ioredis, which has far more
-  # mature Sentinel+pubsub support, or a node-redis version bump/patch).
-  # Sentinel infrastructure itself (3 instances, OCI standby + 2 OKE pods)
-  # is live and validated independently of this app-code issue.
-  # SENTINEL_HOSTS: "10.0.2.10:26379,10.0.4.54:26379,10.0.4.95:26379"
-  # SENTINEL_NAME: "mymaster"
+  # Sentinel mode re-enabled 2026-07-12: the 2026-07-11 issue was node-redis's
+  # Sentinel+PubSub support (sub client, via pub.duplicate(), hit a persistent
+  # 5s connect timeout). Fixed by switching handlers.js from the `redis`
+  # package to `ioredis`, which has much more mature Sentinel+pubsub support.
+  # Sentinel infrastructure itself (3 instances, OCI standby + 2 OKE pods) has
+  # been live and validated since 2026-07-11 (real failover tested end-to-end).
+  SENTINEL_HOSTS: "10.0.2.10:26379,10.0.4.54:26379,10.0.4.95:26379"
+  SENTINEL_NAME: "mymaster"
