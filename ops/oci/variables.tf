@@ -75,8 +75,8 @@ variable "availability_domain" {
   description = "OCI availability domain name (e.g. Kopi:UK-LONDON-1-AD-1) — leave empty to auto-discover"
 }
 variable "standby_shape"      { default = "VM.Standard.E4.Flex" }
-variable "standby_ocpus"      { default = 1 }
-variable "standby_memory_gb"  { default = 8 }
+variable "standby_ocpus"      { default = 8 }
+variable "standby_memory_gb"  { default = 32 }
 variable "standby_image_id" {
   default     = ""
   description = "Ubuntu 22.04 image OCID — leave empty to auto-discover"

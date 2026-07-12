@@ -23,6 +23,181 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-07-12 15:54 — OCI LB on-prem backend repointed off broken NLB VIP
+
+- **Type**: Planned maintenance
+- **Duration**: ~30 minutes
+- **Risk level**: Medium (per `Get-ChangeRisk.ps1`)
+- **Changes made**: `ops/oci/terraform.tfvars` — added `onprem_nlb_vip = "192.168.1.101"` override
+  (was defaulting to the Windows NLB VIP `192.168.1.100`, confirmed unreachable from OCI due to a
+  multicast-MAC issue — see `project_nlb_multicast_oci_routing` memory). Applied via a
+  `terraform apply` scoped with `-target` to only the two `oci_load_balancer_backend` resources
+  (`onprem_nlb`, `onprem_nlb_http`) — an unscoped plan would have forced replacement of the live
+  OCI standby compute instance (its cloud-init also reads this variable for the Redis `replicaof`
+  line), which was out of scope and would have caused an outage. The public DNS cutover
+  (`api.tekeche.com` → OCI LB IP, currently still pointing directly at the on-prem IP at
+  register.com) was intentionally deferred to a separate change.
+- **Recovery point**: `2026-07-12_15-54-10_before-point-oci-lb-onprem-backend-at-bi`
+- **Outcome**: Success — verified `curl` through the OCI LB public IP (`79.72.66.42`) reaches
+  BikoDC and returns `{"status":"ok","db":"connected"}`. `oci lb backend-set-health get` shows
+  `main-backends` status `OK`, zero critical, across all 4 backends (on-prem primary + OKE/standby
+  backups).
+- **Downtime**: 0 minutes
+- **Affected**: API (backend routing only — no traffic impact since public DNS still bypasses the
+  LB)
+- **Notes**: `Test-Build.ps1` marked known-good (Build #18) with `-Force`, 8/9 checks passing. The
+  sole failure, "Full booking flow (automated)" / "No online+available standard driver found", is
+  a pre-existing test-environment precondition confirmed unrelated to this change — checked via the
+  admin API (`GET /api/admin/drivers`, authenticated with a short-lived diagnostic JWT) that all 29
+  drivers show `isOnline:false`; the driver app's connectivity path is untouched since it still
+  talks to `api.tekeche.com` at the unchanged on-prem public IP. Override approved by user.
+
+## 2026-07-12 16:45 — Public DNS cutover: api.tekeche.com → OCI LB
+
+- **Type**: Planned maintenance
+- **Duration**: ~50 minutes (includes a mid-change correction, see Notes)
+- **Risk level**: Medium (continuation of the 15:54 LB-backend change — same overall change,
+  DNS half deliberately deferred to its own approval step)
+- **Changes made**: Added a new A record at register.com for host `api` (`api.tekeche.com`) →
+  `79.72.66.42` (OCI LB public IP). Production `api.tekeche.com` had **no dedicated record before
+  this** — it was resolving via the wildcard `*` record (→ `81.130.238.41`, on-prem IP), which is
+  why it appeared "unaffected" during the 2026-07-10 nameserver incident. The wildcard and all
+  other records (`@`, `www`, `pay`, `staging-api`, `security`) were left untouched.
+- **Recovery point**: `2026-07-12_15-54-10_before-point-oci-lb-onprem-backend-at-bi` (covers the
+  paired Terraform change; the DNS record itself has no git-based recovery point — rollback is
+  deleting the `api` A record at register.com, which restores wildcard fallback to
+  `81.130.238.41`)
+- **Outcome**: Success — verified new record live at all 4 register.com authoritative nameservers
+  (`dns153.a`, `dns131.b`, `dns176.d`, `dns214.c`), and `curl https://api.tekeche.com/health`
+  returns `200 {"status":"ok","db":"connected"}` end-to-end through the new path (register.com →
+  OCI LB `79.72.66.42` → BikoDC `192.168.1.101`). `Test-Build.ps1` re-run post-change: same known
+  8/9 result, no new regression.
+- **Downtime**: 0 minutes
+- **Affected**: API (public ingress path for all production traffic)
+- **Notes**: Mid-change, register.com's panel had no `api` host to edit (see above) — while
+  looking for it, `staging-api` and `security` A records were briefly changed to `79.72.66.42` by
+  mistake (confusable host names), caught before public propagation, and reverted to their correct
+  `81.130.238.41` value (restored during the 2026-07-10 incident) before any harm. Confirmed via
+  direct authoritative-nameserver query, not just the panel UI. Worth adding a proper runbook for
+  register.com record edits given this registrar's UI has now caused two near-misses.
+
+## 2026-07-12 17:18-17:36 — BikoDC1 tekeche-api restart attempts: 3 layers of drift found, PAUSED
+
+- **Type**: Planned maintenance, incomplete — stopped deliberately per user instruction, not a failure/rollback
+- **Duration**: ~18 minutes across two approved sub-windows
+- **Risk level**: High (`Get-ChangeRisk.ps1`) for both the pm2 restart and the file-sync/npm-install steps
+- **Context**: Investigating why BikoDC1 can't be added to the OCI LB backend set (see 2026-07-12 15:54/16:45
+  entries above) — its `tekeche-api` was found completely stopped (0 pm2 processes), believed to be from a
+  same-day crash-loop on a missing `ioredis` module (see [[project_bikodc_shared_appcode]] memory).
+- **What was done**:
+  1. `pm2 resurrect` on BikoDC1 — came up, then crashed again 502/exhausted-restarts within ~90s, same
+     `Cannot find module 'ioredis'` error as before. Investigation found BikoDC1 does **not** actually share
+     `node_modules`/app code with BikoDC live (no active `Get-SmbMapping`, `C:\inetpub` is a plain local
+     folder there) — contradicts the earlier memory's "same physical files" finding; either wrong originally
+     or the share was disconnected since. BikoDC1 has been running its own independent, stale copy.
+  2. Hashed every file BikoDC uses (`server.js`, `package.json`, `package-lock.json`, `web.config`, all of
+     `src/**`) against BikoDC1's copies. All of `src/**` matched (identical). Only 4 files differed —
+     `web.config` was cosmetic-only (encoding/line-endings); `package.json`/`package-lock.json` were missing
+     `ioredis`, still had the old `redis` package; `server.js` was missing a real prod fix (the startup
+     routine that resets drivers stuck `isAvailable:false` after a crash/reload) and still referenced
+     "Atlas outages" in a comment — predates the 2026-06-17 Atlas→on-prem Mongo migration.
+  3. Backed up BikoDC1's original 4 files to `tekeche-api\_pre-sync-backup-2026-07-12\` on BikoDC1, then
+     copied BikoDC's current versions over. Verified: `server.js` now 70 lines (was 49), `ioredis` present
+     in `package.json`.
+  4. `npm install` on BikoDC1 **failed** — not related to the file sync. BikoDC1 runs Node v24.17.0/npm
+     v11.13.0 (vs. BikoDC's Node v20.18.0/npm v10.8.2), a different major Node version, and npm itself is
+     broken there: `TypeError: Class extends value undefined is not a constructor or null` inside npm's own
+     bundled `minipass-flush` module, before it even attempts to install anything. `node_modules` was never
+     touched (install failed immediately).
+- **Recovery points**: `2026-07-12_17-18-47_before-restart-tekeche-api-pm2-process-o`,
+  `2026-07-12_17-33-04_before-sync-server-js-package-json-packa`
+- **Outcome**: Paused, by design — user asked to stop and get a separate plan rather than keep expanding
+  scope live. **Current BikoDC1 state**: `server.js`/`package.json`/`package-lock.json`/`web.config` now
+  match BikoDC (originals backed up locally on BikoDC1); `node_modules` still old/stale (install never
+  completed); pm2 has 0 processes, confirmed quiet, not flapping.
+- **Downtime**: 0 minutes — BikoDC1 was never in any live traffic path (not in the OCI LB backend set, not
+  targeted by public DNS) throughout.
+- **Affected**: BikoDC1 only (`tekeche-api` files, attempted pm2 restart). BikoDC, OCI LB, public DNS, and
+  all live traffic paths untouched.
+- **Follow-up needed** (separate future change): BikoDC1's Node/npm toolchain needs repair or a
+  version-matching reinstall (target Node 20.x to match BikoDC) before `npm install` can succeed there and
+  `tekeche-api` can actually run. Only after that can BikoDC1 be safely added to the OCI LB backend set.
+
+## 2026-07-12 18:31-18:37 — BikoDC1 Node/npm fixed + PM2 persistence Phase 1 (Scheduled Task)
+
+- **Type**: Planned maintenance, follow-up to the 17:18 entry above
+- **Duration**: ~66 minutes total across the Node reinstall and Scheduled Task setup
+- **Risk level**: MEDIUM (`Get-ChangeRisk.ps1`) — BikoDC1 has no live traffic, no maintenance window required
+- **Node/npm toolchain fix (root cause of the earlier "crash-loop")**: downloaded official Node.js v20.18.0
+  x64 MSI from nodejs.org, verified SHA256 against the published `SHASUMS256.txt` before and after
+  transfer, uninstalled BikoDC1's Node v24.17.0 (silent `msiexec /x`), installed v20.18.0 (silent
+  `msiexec /i`) to exactly match BikoDC. `node --version`/`npm --version` now identical on both hosts
+  (v20.18.0 / 10.8.2). `npm install` in `tekeche-api` then succeeded (9 added, 7 removed, 605 audited) —
+  the earlier failure (`Class extends value undefined is not a constructor or null` inside npm's own
+  bundled `minipass-flush`) was npm-on-Node-24 breakage, unrelated to the app.
+- **Real root cause of the apparent ongoing crash-loop after that**: not a code or dependency issue at
+  all — confirmed via `node -e "require.resolve('ioredis')"` (succeeded) and running `server.js` directly
+  in the foreground (started cleanly: Mongo connected, Redis adapter active, no errors). Every `pm2`
+  command run via `Invoke-Command -ComputerName` spawns a **fresh, ephemeral WinRM session**; PM2 was
+  running inside that session, so it (and `tekeche-api` with it) got killed the moment each remote
+  session tore down — confirmed via PM2's own daemon log (`pm2.log`) showing a new "PM2 Daemon started"
+  line on every single invocation, ~1 minute apart. **Also found this is not BikoDC1-specific**: BikoDC's
+  own production `tekeche-api` is *only* staying up because of an active interactive RDP session
+  (`malindo`, logged in since 15:35 today, confirmed via `query user`) — PM2 is not a real Windows
+  service on either host. This is a live single-point-of-failure on production, not just BikoDC1.
+- **Fix (Phase 1 of 3, BikoDC1 only)**: registered a Scheduled Task (`PM2-TekecheAPI`) — trigger "at
+  startup" +30s delay, action = wrapper `C:\tekeche-ops\pm2-resurrect.cmd` (sets `PM2_HOME` then calls
+  `pm2 resurrect`), run as `SYSTEM` (`/rl HIGHEST`), which runs independent of any interactive session
+  without needing to store a user password. Manually triggered (`schtasks /run`) rather than waiting for
+  a real reboot to test. **Verified working**: subsequent separate `Invoke-Command` calls connected to an
+  already-running daemon (no new "Spawning PM2 daemon" message), uptime climbed cleanly across multiple
+  independent session boundaries (33s → 59s, restart count stayed 0), `/health` returned
+  `200 {"status":"ok","db":"connected"}` via localhost on BikoDC1.
+- **Also found, not yet fixed**: BikoDC1's `blocked-ips.json` has a stale entry for BikoDC's own IP
+  (`192.168.1.101`, reason `high_failure_rate`) dated **2026-06-20** — predates today entirely, unrelated
+  to this work. Doesn't affect real user traffic (public traffic reaches BikoDC1 via the OCI LB, not
+  BikoDC's IP directly) but blocks BikoDC-to-BikoDC1 direct verification/health-checks. Left as-is
+  pending a decision — not in scope for this change.
+- **Recovery points**: `2026-07-12_17-59-26_before-reinstall-node-js-on-bikodc1-v24`,
+  `2026-07-12_18-31-52_before-register-scheduled-task-on-bikodc`
+- **Outcome**: Success for Phase 1 (BikoDC1). `Test-Build.ps1` from BikoDC: same known 8/9 baseline
+  (driver-offline precondition, pre-existing/unrelated), no new regression. Not marked known-good
+  (same rationale as every other entry with this precondition).
+- **Downtime**: 0 minutes — BikoDC1 still not in the OCI LB backend set or any live traffic path; BikoDC
+  (production) was not touched in this entry at all.
+- **Follow-up needed**: Phase 2 (register the identical Scheduled Task on BikoDC — non-disruptive, safe
+  without a window) and Phase 3 (HIGH RISK — actually validate BikoDC's task survives session-logoff/
+  reboot, under an approved maintenance window, relying on OCI LB's existing health-check failover to
+  the standby/OKE backups as the safety net) are both still open, not done this session. Only after
+  Phase 3 should BikoDC1 be considered for the OCI LB backend set.
+
+## 2026-07-12 18:39-18:42 — PM2 persistence Phase 2: task registered on BikoDC (production, registration only)
+
+- **Type**: Planned maintenance, Phase 2 of 3 (see 18:31 entry above for Phase 1/context)
+- **Duration**: ~3 minutes
+- **Risk level**: MEDIUM (`Get-ChangeRisk.ps1` — registration-only, no maintenance window required since
+  the running production process is never touched by this step)
+- **Changes made**: Registered the same Scheduled Task pattern as BikoDC1 (`PM2-TekecheAPI`, trigger "at
+  startup" +30s delay, run as `SYSTEM`/`HIGHEST`) on BikoDC. **Correction from the Phase 1 plan**: BikoDC's
+  actual `PM2_HOME` is `C:\Users\Administrator\.pm2`, not `C:\Users\malindo\.pm2` like BikoDC1 — verified
+  via `dump.pm2` existence + matching pid files (`tekeche-api-5.pid` etc.) before assuming the same
+  pattern applied; wrapper script (`C:\tekeche-ops\pm2-resurrect.cmd`) adjusted accordingly.
+- **Deliberately NOT done**: did not run/trigger the task, did not test session-logoff or reboot survival.
+  That's Phase 3 — HIGH RISK per `Get-ChangeRisk.ps1` (`PM2 cluster` is explicitly named in
+  `CHANGE_MGMT.md`'s HIGH RISK list), needs its own approved maintenance window since it means
+  intentionally testing whether production's primary path survives disruption.
+- **Recovery point**: `2026-07-12_18-39-25_before-register-scheduled-task-on-bikodc`
+- **Outcome**: Success — task confirmed registered (`schtasks /query`: `Status: Ready`, `Enabled`,
+  `Run As User: SYSTEM`). Production `tekeche-api` confirmed untouched throughout: same pid, uptime kept
+  climbing (3h+), `/health` returned 200 before and after. `Test-Build.ps1`: same known 8/9 baseline
+  (driver-offline precondition), no new regression.
+- **Downtime**: 0 minutes.
+- **Affected**: Task Scheduler configuration on BikoDC only. Live production process, traffic, and all
+  other systems untouched.
+- **Follow-up needed**: Phase 3 (propose + get approval for a maintenance window to actually validate
+  BikoDC's task survives session-logoff/reboot, relying on OCI LB's health-check failover to
+  standby/OKE as the safety net) — still open, not started.
+
 ## 2026-06-28 — Initial OPS System Setup
 
 - **Type**: Planned maintenance
@@ -487,4 +662,27 @@ Adapter MAC changed to `00-0C-29-34-04-1C` (real VMware hardware MAC). Confirmed
 - **Recovery points**: `2026-07-11_22-18-07_before-remove-dead-rras-oci-tunnel1-2-s2`
 - **Test-Build.ps1 after**: Same 7/9 result as the entry above (same 2 pre-existing, unrelated failures) — no new regressions from this removal.
 - **Downtime**: None — both interfaces were already non-functional (`Unreachable`), so removing them changed no live traffic path.
+
+## 2026-07-12 21:56-22:32 — Resized OCI standby VM to 8 OCPU/32GB + switched to PM2 cluster mode, for true full-capacity failover
+
+- **Type**: Infrastructure sizing change, approved maintenance window (off-peak, executed immediately per user choice)
+- **Duration**: ~36 minutes
+- **Risk level**: High (infrastructure/compute resize — recovery point taken per protocol)
+- **Trigger**: User-requested review found the OCI standby (`10.0.2.10`) was sized at 1 OCPU/8GB against production BIKODC's 8 logical processors/32GB RAM — a cost-optimised placeholder per the original HLD design intent, not a true failover-capacity target. User chose the "parity + headroom" tier (8 OCPU/32GB) after cost comparison (~$27/mo → ~$181/mo).
+
+**Changes applied**:
+1. `variables.tf`: `standby_ocpus` 1→8, `standby_memory_gb` 8→32.
+2. `compute.tf`: cloud-init's `pm2 start server.js --name tekeche-api` → `-i max` (cluster mode, documents intent for future full rebuilds only — see note below).
+3. `compute.tf`: added `metadata` to `oci_core_instance.standby`'s `lifecycle.ignore_changes`. **Why**: the OCI provider treats `metadata.user_data` as `ForceNew` — the initial plan (before this fix) showed the cloud-init edit forcing a full instance *replace* (fresh boot volume, full MongoDB resync, LB backend re-registration), bundled in with the intended in-place shape_config resize. This was caught at `terraform plan` review, not applied. Ignoring `metadata` let the OCPU/memory change apply as a true in-place resize while the template edit stays documentation-only for a future rebuild.
+4. `terraform apply`: `oci_core_instance.standby` updated in-place (stop→resize→start, ~2m39s); `oci_core_volume_backup_policy_assignment.standby_boot_backup` replaced as an incidental side effect (lightweight backup-policy binding only, no data touched) — LB backends and the dynamic group were **not** touched since the instance kept its OCID/private IP.
+5. Live PM2 reconfig via OCI Bastion managed-SSH session (cloud-init only runs on first boot, so the template change alone wouldn't affect the running instance): `pm2 delete tekeche-api` → `pm2 start server.js --name tekeche-api -i max` → `pm2 save`. Now running 16 cluster workers (matches `nproc`=16 vCPU threads at 8 OCPU on E4.Flex).
+
+- **Recovery points**: `2026-07-12_21-58-25_before-resize-oci-standby-vm-to-8-ocpu-3`
+- **Verification**: Instance confirmed `RUNNING` at 8 OCPU/32GB post-apply. `rs.status()` (via admin creds) showed the OCI standby rejoined as `SECONDARY, health:1` after the reboot; on-prem primary `192.168.1.101` healthy throughout (`192.168.1.102`/BikoDC1 showed unreachable — pre-existing, separately tracked, unrelated to this change). Local `/health` on the standby returned 200 post-reconfig. Terraform state pushed back to the `tekeche-tfstate` bucket (local-state workaround still in effect — see [[project_oci_terraform_s3_backend_broken]]).
+- **Test-Build.ps1 after**: 8/9 passed. Sole failure: `Full booking flow (automated)` — `No online+available standard driver found`, the same known test-precondition documented in the 2026-07-09 21:00 entry above (no driver logged into the app at the time; not a connectivity or regression issue, and this test hits BIKODC production on `127.0.0.1:5000`, which this change never touched). User explicitly chose to accept this as a known gap rather than insert a synthetic test driver or roll back.
+- **Downtime**: ~2-3 minutes on the OCI standby only (stop/resize/start), zero customer impact — the standby is `backup=true`/drained in the LB, not in the active traffic path, and on-prem BIKODC remained primary and healthy throughout.
+- **Affected**: OCI standby VM shape (`10.0.2.10`), its PM2 process model, `oci_core_volume_backup_policy_assignment.standby_boot_backup` (recreated, not the underlying boot volume).
+- **Cost impact**: ~+$154/mo (E4.Flex OCPU/memory billing), per cost comparison provided before the change.
+- **Follow-up open**: `lb_max_bandwidth_mbps` (currently 100 Mbps) was flagged as a secondary item not addressed tonight — worth validating against real peak throughput if the standby ever takes a sustained failover under load. Socket.io/real-time behavior under the standby's new 16-worker cluster mode has not yet been live-tested under an actual failover (LB backend set uses `ROUND_ROBIN`, not `IP_HASH`; production relies on a Redis pub/sub adapter for cross-worker socket.io, which should also apply here, but this specific box has never run multi-process before — recommend a failover drill to confirm before treating this as verified DR capacity).
+- **Result**: `Set-KnownGood.ps1 -Force` run (per user decision on the booking-flow gap) — **Build #19 marked Known Good** (API `8ccc9960` / Mobile `564ebbc6`).
 - **Follow-up needed**: None expected; if BikoFW-SRX's tunnel is ever replaced, no need to consider these RRAS interfaces as a fallback path — they're fully superseded.

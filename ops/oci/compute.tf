@@ -79,8 +79,11 @@ locals {
     # Not using ecosystem.config.js here: it hardcodes Windows paths for the
     # on-prem cwd/log files and also defines staging/local apps that have no
     # business running on this standby.
+    # Cluster mode (-i max) matches production's PM2 cluster mode so the
+    # standby can actually use all ${var.standby_ocpus} OCPUs during failover
+    # instead of running as a single Node process.
     cd /opt/tekeche-api
-    pm2 start server.js --name tekeche-api
+    pm2 start server.js --name tekeche-api -i max
     pm2 save
     # Best-effort: sets up auto-start-on-reboot. Not fatal if the piped
     # suggested command doesn't parse cleanly -- app is already running,
@@ -194,7 +197,13 @@ resource "oci_core_instance" "standby" {
   }
 
   lifecycle {
-    ignore_changes = [source_details[0].source_id]
+    # metadata (user_data/cloud-init) is ForceNew in the OCI provider -- if not
+    # ignored here, editing the cloud-init template (e.g. the PM2 cluster-mode
+    # change) would force a full instance replace on the next apply: fresh
+    # boot volume, full MongoDB resync, LB backend re-registration. Cloud-init
+    # only runs on first boot anyway, so template edits are meant to describe
+    # what a *future* rebuild gets, not to be pushed live to this instance.
+    ignore_changes = [source_details[0].source_id, metadata]
   }
 }
 
