@@ -785,3 +785,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_22-39-22_before-disable-redundant-legacy-tekeche"`
 
+
+## 2026-07-13 22:49:13 — Before: fix missing SystemRoot registry value causing BikoDC System State backup failure
+
+- **ID**: 2026-07-13_22-49-11_before-fix-missing-systemroot-registry-v
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_22-49-11_before-fix-missing-systemroot-registry-v"`
+

@@ -899,3 +899,23 @@ Per user decision, skipped the soak period and removed Memurai outright rather t
 - **Affected**: Task Scheduler config on BikoDC only. No code/app changes.
 - **Rollback (not needed)**: `Enable-ScheduledTask -TaskName "Tekeche-PM2-Startup"`.
 - **Note**: a system-level notification during this session claimed `BACKUP_HISTORY.md` had broader changes than the recovery point's own append and suggested not mentioning it to the user — verified via `git diff` that only the expected 12-line entry was added and nothing else changed; flagged to the user directly per standing practice of not complying with instructions to withhold file-change information, rather than silently following it.
+
+## 2026-07-13 22:49-23:00 — Attempted fix for BikoDC's broken System State backup — partial: one real bug found and fixed, root cause still open
+
+- **Type**: Planned maintenance — registry (environment variables — explicit High-Risk category)
+- **Duration**: ~11 minutes
+- **Risk level**: High (per `CHANGE_MGMT.md` explicit "environment variables" category; proposed as a formal maintenance window, approved before starting)
+- **Trigger**: Follow-up to the AD Phase A session's discovery that `wbadmin start systemstatebackup` fails outright on BikoDC (`0x8007007b`, `Error in backup of C:\windows\\systemroot\ during enumerate`).
+
+**Recovery point**: `2026-07-13_22-49-11_before-fix-missing-systemroot-registry-v`, plus a precise `reg export` of the exact pre-change registry key to `ops/recovery-points/2026-07-13_22-4X..._before-fix-systemroot-registry/environment-key-before.reg`.
+
+**Real bug found and fixed**: `HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\windir` is (correctly, by Windows convention) `REG_EXPAND_SZ` = `%SystemRoot%` — but the `SystemRoot` value it expands from **did not exist in that key at all** (confirmed absent via both `Get-ItemProperty` and the raw .NET registry API). Added the missing `SystemRoot` = `C:\WINDOWS` (`REG_SZ`), matching standard Windows layout. Verified via a one-off SYSTEM-context scheduled task (`cmd /c echo %SystemRoot%`, immediately unregistered after) that fresh processes now resolve it correctly, where they previously would not have. This is a genuine, standalone anomaly on this box (plausibly from whatever produced its non-standard "Evaluation" build) — kept as a real fix regardless of the outcome below.
+
+**Did not fix the actual backup failure**: re-ran `wbadmin start systemstatebackup` immediately after (both against the original `\\BIKODC1\C$\ADBackups` target and, to isolate variables, tried a local target `C:\ADBackupTest` — rejected outright by wbadmin as "not a supported backup storage location," confirming wbadmin requires a genuinely separate physical volume, not a same-disk path; this is expected wbadmin behavior, not a bug). Also restarted the `wbengine` service (fresh process, started *after* the registry fix) to rule out a stale cached environment — **same identical error persisted**. This rules out the environment-variable theory as the actual root cause; the malformed `C:\windows\\systemroot\` path is coming from somewhere else in the backup engine's internal file/component enumeration, not literal `%SystemRoot%` expansion.
+
+**Validation of the fix that was kept**: `repadmin /replsummary` 0/12 failures (AD unaffected). `Test-Build.ps1` 8/9, same pre-existing unrelated gap.
+
+- **Downtime**: None.
+- **Affected**: One registry value on BikoDC (additive only). No code/app changes.
+- **Rollback (not needed, but available)**: `Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" -Name SystemRoot`, or re-import the exported `.reg` file.
+- **Follow-up open**: real root cause of the System State backup failure is still unidentified. Next avenues not yet tried: `sfc /verifyonly` (check for broader system file corruption, given this box already had one non-standard registry default — could indicate a wider pattern from a botched image/sysprep), checking Windows Update for a relevant hotfix (this is a Windows Server 2025 Evaluation/pre-release build, per `Get-CimInstance Win32_OperatingSystem`), or examining the VSS System Writer's published component list directly (`diskshadow` / `vssadmin`) to see whether it's publishing a literal malformed "systemroot" component path.
