@@ -771,5 +771,5 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **DB dump**: 521.2 KB
 - **Files affected**: None (infrastructure/OS-level test, no code changes)
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_19-08-59_before-real-bikodc-power-off-failover-te"`
-- **Outcome**: See `MAINTENANCE_LOG.md` 2026-07-13 19:09-19:23 entry. ~8-9min real downtime; OCI LB detected the outage after a ~3min lag then correctly marked the backend unhealthy for ~5min; whether backup backends actually served traffic during that window is unverified/open.
+- **Outcome**: See `MAINTENANCE_LOG.md` 2026-07-13 19:09-19:23 entry. ~8-9min real downtime; OCI LB detected the outage after a ~3min lag then correctly marked the backend unhealthy for ~5min; PM2 came back up fully automatically (`PM2-TekecheAPI` task, confirmed via daemon log + zero logon events, no manual step) by 19:23:37; whether backup backends actually served traffic during the detection window is unverified/open.
 

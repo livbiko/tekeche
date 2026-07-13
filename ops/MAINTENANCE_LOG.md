@@ -841,14 +841,19 @@ Per user decision, skipped the soak period and removed Memurai outright rather t
 - **18:12–18:14 UTC** — OCI LB still reports 0 unhealthy backends despite BikoDC already being down — an unexplained ~3 min detection lag against a health-checker configured for 10s interval / 2 retries (should detect a dead TCP port in ~20-30s). Not investigated further this session.
 - **18:15–18:19 UTC** — LB correctly marks `main-backends` unhealthy (metric=1 for 5 consecutive minutes). Detection did happen, contrary to an initial assumption that "no failover occurred" at all.
 - **18:20 UTC** — metric returns to 0, consistent with BikoDC's network stack recovering.
-- **~18:23 UTC** (19:23 local, per pm2 process uptime) — `pm2` processes on BikoDC restarted manually via RDP session, ~2 min after Windows finished booting. Confirms the known [[project_pm2_not_a_service]] gap caused a real, concrete production impact during this test — tekeche-api did not auto-start after reboot.
+- **19:20:51 local** — the `PM2-TekecheAPI` scheduled task (Phase 2 fix from [[project_pm2_not_a_service]], registered 2026-07-12) fired on its "at startup +30s" trigger, ran `C:\tekeche-ops\pm2-resurrect.cmd`.
+- **19:23:37 local** — PM2 daemon confirmed started (`pm2.log`: "New PM2 Daemon started"), ~2m46s after the task fired — plausible cold-start time for PM2 + its clustered processes.
 - Post-recovery: `Test-Build.ps1` 9/9 passed at 19:46.
+
+**Correction (superseding an earlier version of this entry)**: originally logged as "pm2 restarted manually via RDP." That was wrong, based on process-uptime timing alone without checking further. Verified afterward via Security event log (0 logon events of any kind, any account, during 19:15-19:30 — auditing confirmed enabled and working) and the `PM2-TekecheAPI` task's own run timing: **PM2 came back up fully automatically, no manual intervention.** This is the first real, unplanned validation of the Phase 2 fix, and it passed — Phase 3 of [[project_pm2_not_a_service]] can be considered informally validated by this real event, though a deliberate, instrumented test is still worth doing.
+
+**New finding while verifying this**: a second, older, redundant scheduled task also exists — `Tekeche-PM2-Startup` (dated 2026-06-18, predates the Phase 1/2 work, action `C:\Scripts\pm2-startup.ps1`) — also fires at startup, and on this boot it **hung and was killed** by its own 5-minute `ExecutionTimeLimit` (its own log `C:\logs\pm2-startup.log` confirms: last successful entry is 2026-07-04, nothing for the 2026-07-13 run, consistent with never reaching completion). It wasn't needed this time since `PM2-TekecheAPI` succeeded independently, but it's a latent redundant/unreliable mechanism racing the real one on every boot — worth disabling or removing to avoid confusion and wasted boot-time resource contention. Not touched this session — flagged only.
 
 **Left unresolved / not verified**: whether the backup backends (OCI standby VM, OKE nodes — all `backup: true` in `main-backends`) actually served client traffic during the 18:15-18:19 detection window, or whether requests simply errored out for that period regardless of the LB's detection. This needs standby/OKE request logs for that window (not pulled — session redirected to AD/DC work before this was completed). **Follow-up open.**
 
-- **Downtime**: ~8-9 minutes of BikoDC being fully down (18:12:27-~18:21), plus pm2 needing a manual restart on top of that.
+- **Downtime**: ~8-9 minutes of BikoDC being fully down (18:12:27-~18:21), plus ~2m46s more before PM2 itself was confirmed back up (~19:23:37) — all automatic, no manual step.
 - **Affected**: BikoDC only (app/OS). No code/Terraform changes this entry.
-- **Follow-up open**: (1) the ~3min LB detection-lag gap, (2) confirm whether backup backends actually served traffic during the detection window, (3) [[project_pm2_not_a_service]] Phase 2/3 (proper Windows Service wrapper) is now demonstrated to matter in a real outage, not just a theoretical gap.
+- **Follow-up open**: (1) the ~3min LB detection-lag gap, (2) confirm whether backup backends actually served traffic during the detection window, (3) disable/remove the redundant `Tekeche-PM2-Startup`/`pm2-startup.ps1` legacy mechanism, (4) a deliberate instrumented Phase 3 test for [[project_pm2_not_a_service]] is still worth doing even though this real event was a positive signal.
 
 ## 2026-07-13 21:41-22:04 — AD Phase A: new Site/Subnets/SiteLink for OCI (`OCI-London`)
 
