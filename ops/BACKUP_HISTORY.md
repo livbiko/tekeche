@@ -712,3 +712,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_23-45-13_before-phase-a-deploy-payment-gateway-to"`
 
+
+## 2026-07-13 11:15:46 — Before: OKE full-failover resize (4 OCPU/32GB nodes, LB backend IP fix, HPA maxReplicas 6)
+
+- **ID**: 2026-07-13_11-15-40_before-oke-full-failover-resize-4-ocpu-3
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_11-15-40_before-oke-full-failover-resize-4-ocpu-3"`
+
+
+## 2026-07-13 12:49:50 — Before: clean stale Memurai temp-rdb files and restart the crashed service
+
+- **ID**: 2026-07-13_12-49-48_before-clean-stale-memurai-temp-rdb-file
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_12-49-48_before-clean-stale-memurai-temp-rdb-file"`
+

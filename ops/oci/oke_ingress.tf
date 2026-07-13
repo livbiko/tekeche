@@ -27,7 +27,11 @@ resource "oci_core_network_security_group_security_rule" "oke_nodes_ingress_from
 resource "oci_load_balancer_backend" "oke_node_1" {
   load_balancer_id = oci_load_balancer_load_balancer.main.id
   backendset_name  = oci_load_balancer_backend_set.main.name
-  ip_address       = "10.0.4.54"
+  # Node IPs are not stable across a node-pool resize/cycle -- these were
+  # replaced 2026-07-13 (was 10.0.4.54) when the pool was resized to
+  # 4 OCPU/32GB per node for full-failover capacity. If the pool is ever
+  # cycled again, re-check `kubectl get nodes -o wide` and update here.
+  ip_address       = "10.0.4.249"
   port             = 30443
   weight           = 1
   drain            = false
@@ -38,7 +42,8 @@ resource "oci_load_balancer_backend" "oke_node_1" {
 resource "oci_load_balancer_backend" "oke_node_2" {
   load_balancer_id = oci_load_balancer_load_balancer.main.id
   backendset_name  = oci_load_balancer_backend_set.main.name
-  ip_address       = "10.0.4.95"
+  # Was 10.0.4.95 -- see oke_node_1's comment above.
+  ip_address       = "10.0.4.67"
   port             = 30443
   weight           = 1
   drain            = false

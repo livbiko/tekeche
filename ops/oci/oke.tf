@@ -145,13 +145,14 @@ resource "oci_core_network_security_group_security_rule" "nodes_egress_internet"
 # the whole 0.0.0.0/0 CIDR (which the private route table further scopes to
 # DRG for onprem_cidr specifically, and NAT for everything else).
 
-# ── OKE Cluster (Basic — no control-plane charge) ─────────────────────────────
+# ── OKE Cluster (Enhanced — hourly control-plane fee, needed for native
+# node-pool cycling used by the full-failover resize) ─────────────────────────
 resource "oci_containerengine_cluster" "main" {
   compartment_id     = var.compartment_id
   name               = "${var.project_name}-oke"
   vcn_id             = oci_core_vcn.tekeche.id
   kubernetes_version = "v1.36.1"
-  type               = "BASIC_CLUSTER"
+  type               = "ENHANCED_CLUSTER"
 
   endpoint_config {
     is_public_ip_enabled = false
@@ -188,8 +189,17 @@ resource "oci_containerengine_node_pool" "main" {
   node_shape         = "VM.Standard.E4.Flex"
 
   node_shape_config {
-    ocpus         = 2
-    memory_in_gbs = 16
+    ocpus         = 4
+    memory_in_gbs = 32
+  }
+
+  # Native rolling replace: launches a new (bigger) node before removing an
+  # old one, respecting the tekeche-api PodDisruptionBudget (minAvailable: 1)
+  # throughout -- avoids the manual cordon/drain/delete dance.
+  node_pool_cycling_details {
+    is_node_cycling_enabled = true
+    maximum_surge           = "1"
+    maximum_unavailable     = "0"
   }
 
   node_source_details {
