@@ -821,8 +821,12 @@ Adapter MAC changed to `00-0C-29-34-04-1C` (real VMware hardware MAC). Confirmed
 4. **A third automatic failover happened during this fix** (Sentinel's own doing, not a manual action) — ended with **BikoDC1 elected master**, BikoDC and the standby both correctly following it as replicas. Verified genuinely healthy, not just superficially: all three nodes report the **identical `replid` and offset**, zero divergence, `lag=0-1`. This is a fully valid end state (no configured priority preference forces a specific member to hold mastership) — just not the specific member originally expected mid-process.
 5. `Test-Build.ps1`: 8/9, same known gap, re-confirmed stable after a 15s wait (no further flapping).
 
-**Result**: All three Sentinel-monitored replica-set members (BikoDC, BikoDC1, OCI standby) now run **genuine Redis 8.8.0** — the version-mismatch problem behind [[project_redis_version_mismatch]] is fully closed, not just mitigated. Memurai remains **installed but stopped** on both on-prem boxes (not yet uninstalled) as a fast rollback path pending a soak period.
+**Result**: All three Sentinel-monitored replica-set members (BikoDC, BikoDC1, OCI standby) now run **genuine Redis 8.8.0** — the version-mismatch problem behind [[project_redis_version_mismatch]] is fully closed, not just mitigated.
 
 - **Downtime**: Two brief (sub-10-second, based on Sentinel's 5s detection window) master transitions during the BikoDC swap and the subsequent firewall fix — both absorbed transparently by Sentinel failover; app-level checks passed throughout, no user-facing errors observed.
 - **Affected**: BikoDC, BikoDC1 (Windows Services + new firewall rules); no code or Terraform changes.
-- **Follow-up open**: (1) Uninstall Memurai from both boxes for real, once a soak period has passed. (2) The pre-existing SRX VPN tunnel-2 flapping incident (see the CPU-exhaustion investigation, same day) was still open/unresolved when this work started — unrelated, not addressed by this change.
+- **Follow-up open**: The pre-existing SRX VPN tunnel-2 flapping incident (see the CPU-exhaustion investigation, same day) was still open/unresolved when this work started — unrelated, not addressed by this change.
+
+## 2026-07-13 17:15-17:20 — Memurai fully uninstalled from BikoDC and BikoDC1
+
+Per user decision, skipped the soak period and removed Memurai outright rather than leaving it installed-but-stopped. `Uninstall-Package -Name "Memurai Developer" -Force` on both boxes (MSI-based, clean uninstall via PackageManagement) — confirmed gone via `Get-Service`/`Get-Package` returning nothing on both. `Test-Build.ps1` re-run after: still 8/9, same pre-existing "no driver online" gap, zero impact from the removal (expected, since it was already stopped and not serving anything). Both boxes now have zero Memurai footprint — native Redis 8.8.0 is the only cache/pub-sub layer on-prem.
