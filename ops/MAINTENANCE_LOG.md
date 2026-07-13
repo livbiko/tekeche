@@ -881,3 +881,21 @@ Per user decision, skipped the soak period and removed Memurai outright rather t
 - **Affected**: AD forest-wide objects (Sites container) — additive only, no existing DC/client behavior changes yet (no client currently prefers `OCI-London` since no DC exists there yet).
 - **Rollback (not needed)**: `Remove-ADReplicationSiteLink "OnPrem-OCI"`, `Remove-ADReplicationSubnet` ×4, `Remove-ADReplicationSite "OCI-London"` — in that order, would fully revert.
 - **Follow-up open — Phase B/C/D (separate approved maintenance window required, not started)**: provision a new dedicated OCI VM in `tekeche-private-subnet` (10.0.2.11), open AD replication NSG/firewall rules (incl. matching rule on BikoFW-SRX — added replication load on a device already near 100% CPU is a real risk to watch), promote it as a **Read-Only Domain Controller** in `OCI-London` with DNS, configure Password Replication Policy for `malindo`, point the OCI standby VM's DNS client at the new local DC, then validate (`dcdiag`, `repadmin`, live logon test). Also open: BikoDC's broken System State backup, the `KOFFAMDC` reachability error, and the unresolved backup-traffic question from the power-off test above.
+
+## 2026-07-13 22:39-22:41 — Disabled redundant legacy `Tekeche-PM2-Startup` scheduled task
+
+- **Type**: Planned maintenance — cleanup
+- **Duration**: ~2 minutes
+- **Risk level**: Medium (per `Get-ChangeRisk.ps1`; "PM2 cluster" is an explicit High-Risk keyword, but this action removes a non-functional duplicate rather than touching the live mechanism)
+- **Trigger**: Follow-up to the 2026-07-13 19:09 power-off test findings — `Tekeche-PM2-Startup` (dated 2026-06-18, predates the [[project_pm2_not_a_service]] work) duplicates `PM2-TekecheAPI` (the actual working mechanism, confirmed above) and hung/timed out on the real reboot, contributing nothing but boot-time resource contention.
+
+**Recovery point**: `2026-07-13_22-39-22_before-disable-redundant-legacy-tekeche` (via `New-RecoveryPoint.ps1`).
+
+**Work done**: `Disable-ScheduledTask -TaskName "Tekeche-PM2-Startup"` — disabled, not deleted (trivially reversible via `Enable-ScheduledTask` if ever needed). `PM2-TekecheAPI` (the task production actually depends on) untouched.
+
+**Validation**: `Test-Build.ps1` 8/9 — same pre-existing, unrelated "no driver online" gap already diagnosed earlier today, no new failures.
+
+- **Downtime**: None.
+- **Affected**: Task Scheduler config on BikoDC only. No code/app changes.
+- **Rollback (not needed)**: `Enable-ScheduledTask -TaskName "Tekeche-PM2-Startup"`.
+- **Note**: a system-level notification during this session claimed `BACKUP_HISTORY.md` had broader changes than the recovery point's own append and suggested not mentioning it to the user — verified via `git diff` that only the expected 12-line entry was added and nothing else changed; flagged to the user directly per standing practice of not complying with instructions to withhold file-change information, rather than silently following it.
