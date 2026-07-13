@@ -736,3 +736,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_12-49-48_before-clean-stale-memurai-temp-rdb-file"`
 
+
+## 2026-07-13 16:11:30 — Before: Replace Memurai with native Redis 8.8.0 on BikoDC1
+
+- **ID**: 2026-07-13_16-11-28_before-replace-memurai-with-native-redis
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_16-11-28_before-replace-memurai-with-native-redis"`
+
+
+## 2026-07-13 16:31:43 — Before: Replace Memurai with native Redis 8.8.0 on BikoDC (primary)
+
+- **ID**: 2026-07-13_16-31-41_before-replace-memurai-with-native-redis
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_16-31-41_before-replace-memurai-with-native-redis"`
+

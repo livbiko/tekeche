@@ -797,3 +797,32 @@ Adapter MAC changed to `00-0C-29-34-04-1C` (real VMware hardware MAC). Confirmed
 - One `kubectl logs` fetch for the second pod timed out on the bastion tunnel mid-drill — not chased further once the header/health/auth checks already gave positive confirmation, to avoid holding production in a backup-only (on-prem drained) state any longer than necessary.
 - Rolled back within ~11 minutes: un-drained on-prem, restored standby to `backup:true`/`offline:false`. Confirmed final backend flags are an exact match to the pre-drill baseline, and `X-Powered-By: ARR/3.0` is back, confirming on-prem is genuinely serving again.
 - **Result: OKE's resized capacity confirmed serving real production traffic correctly** — health, TLS, auth middleware, and pod stability all verified via the public LB path, same bar as the standby VM's 2026-07-12 drill.
+
+## 2026-07-13 16:11-17:02 — Replaced Memurai with native Redis 8.8.0 on BikoDC1 and BikoDC
+
+- **Type**: Redis/cache-layer replacement, both on-prem production nodes — HIGH RISK per `Get-ChangeRisk.ps1`
+- **Duration**: ~51 minutes
+- **Trigger**: Follow-up to [[project_redis_version_mismatch]] (Memurai's RDB format is stuck at Redis-7.2 compatibility, incompatible with the OCI standby's real Redis 8.8.0) — decided against the originally-scoped WSL2 approach (see below) in favor of a native Windows Redis build discovered mid-session.
+
+**WSL2 approach abandoned before any production change**: Phase 0 (installing WSL2 + a test Redis, zero production impact) failed immediately — `HCS_E_HYPERV_NOT_INSTALLED`, because BikoDC is a VMware VM without nested virtualization exposed to the guest, which would require a VM power-off + vCenter access this session doesn't have. Pivoted to `redis-windows/redis-windows` on GitHub — a natively-compiled Windows Redis build (MSYS2-based, `RedisService.exe` for real Windows Service integration) offering the **exact same version already running on the OCI standby, 8.8.0** — no virtualization dependency at all, and eliminates the version-mismatch problem outright rather than just narrowing it.
+
+**Recovery points**: `2026-07-13_16-11-28_before-replace-memurai-with-native-redis` (BikoDC1), `2026-07-13_16-31-41_before-replace-memurai-with-native-redis` (BikoDC).
+
+**BikoDC1 first** (not primary at the time, lower blast radius):
+1. Pulled live Memurai config via authenticated `CONFIG GET` (port 6379, `bind 127.0.0.1 192.168.1.102`, shared `requirepass`, `maxmemory 0`, `appendonly no`) — the conf file itself had no non-default lines to grep, all settings were live-configured rather than persisted in `memurai.conf`.
+2. Downloaded `Redis-8.8.0-Windows-x64-msys2-with-Service.zip`, built a matching `redis.conf`, stopped (not uninstalled) Memurai, installed the new build via `RedisService.exe install`, started it.
+3. **Hit `NOAUTH Authentication required` on the replication attempt** — a fresh Redis replica needs `masterauth` set to authenticate to a password-protected master; this isn't implied by `requirepass` alone. Fixed live via `CONFIG SET masterauth` + persisted to the conf file. Retry succeeded immediately, correct `replid` inherited, real offset syncing.
+4. `Test-Build.ps1`: 8/9, same known gap. BikoDC's own master-side view confirmed both the OCI standby and BikoDC1 `state=online, lag=0`.
+
+**BikoDC (the primary) next** — pre-built the config with `masterauth` included this time (learned from BikoDC1) to minimize the stop/install/start window, since Sentinel's `down-after-milliseconds` is only 5000ms:
+1. Stop → install → start completed, but still landed as a fresh standalone `role:master` (new instance, new replid) — as expected, since a brand-new process has no memory of the prior replication lineage regardless of how fast the swap is.
+2. **Sentinel had already promoted the OCI standby to master** during the gap (confirmed via the standby's `replid2` preserving the old shared production replid — the standard signal of a promotion). Pointed BikoDC's new instance at the standby; synced immediately.
+3. **Found a second, unrelated firewall gap while verifying the full topology**: BikoDC1 showed disconnected for ~29 minutes (`total_disconnect_time_sec` in the thousands) — its only inbound-6379 firewall rule was scoped to the old `memurai.exe` binary specifically (Windows app-path-based rule), so nothing could reach the new `redis-server.exe` process from other hosts at all. A second existing rule ("Redis from Docker1") only allowed one unrelated IP (`192.168.1.122`). Added a proper port-based rule (`192.168.1.0/24`, `10.0.0.0/16`) on **both** BikoDC1 and BikoDC (BikoDC had the identical app-scoped-only gap, fixed proactively before it could bite the same way), then re-pointed BikoDC1 at the real master.
+4. **A third automatic failover happened during this fix** (Sentinel's own doing, not a manual action) — ended with **BikoDC1 elected master**, BikoDC and the standby both correctly following it as replicas. Verified genuinely healthy, not just superficially: all three nodes report the **identical `replid` and offset**, zero divergence, `lag=0-1`. This is a fully valid end state (no configured priority preference forces a specific member to hold mastership) — just not the specific member originally expected mid-process.
+5. `Test-Build.ps1`: 8/9, same known gap, re-confirmed stable after a 15s wait (no further flapping).
+
+**Result**: All three Sentinel-monitored replica-set members (BikoDC, BikoDC1, OCI standby) now run **genuine Redis 8.8.0** — the version-mismatch problem behind [[project_redis_version_mismatch]] is fully closed, not just mitigated. Memurai remains **installed but stopped** on both on-prem boxes (not yet uninstalled) as a fast rollback path pending a soak period.
+
+- **Downtime**: Two brief (sub-10-second, based on Sentinel's 5s detection window) master transitions during the BikoDC swap and the subsequent firewall fix — both absorbed transparently by Sentinel failover; app-level checks passed throughout, no user-facing errors observed.
+- **Affected**: BikoDC, BikoDC1 (Windows Services + new firewall rules); no code or Terraform changes.
+- **Follow-up open**: (1) Uninstall Memurai from both boxes for real, once a soak period has passed. (2) The pre-existing SRX VPN tunnel-2 flapping incident (see the CPU-exhaustion investigation, same day) was still open/unresolved when this work started — unrelated, not addressed by this change.
