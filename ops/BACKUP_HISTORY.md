@@ -688,3 +688,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_21-58-25_before-resize-oci-standby-vm-to-8-ocpu-3"`
 
+
+## 2026-07-12 22:47:54 — Before: Failover drill - drain on-prem LB backend, route production traffic to resized OCI standby
+
+- **ID**: 2026-07-12_22-47-52_before-failover-drill-drain-on-prem-lb-b
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_22-47-52_before-failover-drill-drain-on-prem-lb-b"`
+
+
+## 2026-07-12 23:45:15 — Before: Phase A - deploy payment-gateway to OCI standby, fix hostname Mongo URI on production
+
+- **ID**: 2026-07-12_23-45-13_before-phase-a-deploy-payment-gateway-to
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-12_23-45-13_before-phase-a-deploy-payment-gateway-to"`
+
