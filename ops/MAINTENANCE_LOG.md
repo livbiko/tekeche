@@ -830,3 +830,49 @@ Adapter MAC changed to `00-0C-29-34-04-1C` (real VMware hardware MAC). Confirmed
 ## 2026-07-13 17:15-17:20 — Memurai fully uninstalled from BikoDC and BikoDC1
 
 Per user decision, skipped the soak period and removed Memurai outright rather than leaving it installed-but-stopped. `Uninstall-Package -Name "Memurai Developer" -Force` on both boxes (MSI-based, clean uninstall via PackageManagement) — confirmed gone via `Get-Service`/`Get-Package` returning nothing on both. `Test-Build.ps1` re-run after: still 8/9, same pre-existing "no driver online" gap, zero impact from the removal (expected, since it was already stopped and not serving anything). Both boxes now have zero Memurai footprint — native Redis 8.8.0 is the only cache/pub-sub layer on-prem.
+
+## 2026-07-13 19:09-19:23 — Real BikoDC power-off failover test (unplanned/exploratory, not fully instrumented)
+
+- **Type**: Unplanned incident / exploratory HA test — user powered off BikoDC for real (not a drain drill)
+- **Recovery point**: `2026-07-13_19-08-59_before-real-bikodc-power-off-failover-te` (taken before the test)
+
+**Reconstructed timeline** (Windows Event Log on BikoDC + OCI `oci_lbaas.UnHealthyBackendServers` metric on `main-backends`, since the live session that ran this test ended before the outcome was logged):
+- **18:12:27 UTC** (19:12:27 local) — BikoDC unexpected shutdown begins (Event ID 1074/6008).
+- **18:12–18:14 UTC** — OCI LB still reports 0 unhealthy backends despite BikoDC already being down — an unexplained ~3 min detection lag against a health-checker configured for 10s interval / 2 retries (should detect a dead TCP port in ~20-30s). Not investigated further this session.
+- **18:15–18:19 UTC** — LB correctly marks `main-backends` unhealthy (metric=1 for 5 consecutive minutes). Detection did happen, contrary to an initial assumption that "no failover occurred" at all.
+- **18:20 UTC** — metric returns to 0, consistent with BikoDC's network stack recovering.
+- **~18:23 UTC** (19:23 local, per pm2 process uptime) — `pm2` processes on BikoDC restarted manually via RDP session, ~2 min after Windows finished booting. Confirms the known [[project_pm2_not_a_service]] gap caused a real, concrete production impact during this test — tekeche-api did not auto-start after reboot.
+- Post-recovery: `Test-Build.ps1` 9/9 passed at 19:46.
+
+**Left unresolved / not verified**: whether the backup backends (OCI standby VM, OKE nodes — all `backup: true` in `main-backends`) actually served client traffic during the 18:15-18:19 detection window, or whether requests simply errored out for that period regardless of the LB's detection. This needs standby/OKE request logs for that window (not pulled — session redirected to AD/DC work before this was completed). **Follow-up open.**
+
+- **Downtime**: ~8-9 minutes of BikoDC being fully down (18:12:27-~18:21), plus pm2 needing a manual restart on top of that.
+- **Affected**: BikoDC only (app/OS). No code/Terraform changes this entry.
+- **Follow-up open**: (1) the ~3min LB detection-lag gap, (2) confirm whether backup backends actually served traffic during the detection window, (3) [[project_pm2_not_a_service]] Phase 2/3 (proper Windows Service wrapper) is now demonstrated to matter in a real outage, not just a theoretical gap.
+
+## 2026-07-13 21:41-22:04 — AD Phase A: new Site/Subnets/SiteLink for OCI (`OCI-London`)
+
+- **Type**: Planned maintenance — AD topology, additive only
+- **Duration**: ~23 minutes
+- **Risk level**: High (self-classified; `Get-ChangeRisk.ps1` returned Medium but this touches a forest shared with non-Tekeche systems — `ALBANDC`/`GUIZODC`/`PASCALEDC`/`JUMPBOX` — and "authentication" is an explicit High-Risk category, so treated as High per the same precedent as the 2026-07-13 OKE resize)
+- **Trigger**: User wants AD authentication for OCI-hosted hosts (specifically: Windows logon on the OCI standby VM) to stop depending on a hybrid link that already has known reliability problems ([[project_srx_oci_vpn]]), by eventually placing a domain controller inside OCI. This entry is Phase A (topology prep) only — no DC has been placed in OCI yet.
+
+**Recovery point**: attempted a proper System State backup of BikoDC (the FSMO holder) via `wbadmin start systemstatebackup` to `\\BIKODC1\C$\ADBackups` — **failed**, pre-existing and unrelated to this change: `Error in backup of C:\windows\\systemroot\ during enumerate: 0x8007007b The filename, directory name, or volume label syntax is incorrect.` This means **BikoDC currently has no working System State backup mechanism at all** — a real, standalone gap, not caused by this session. Not fixed here (out of scope); flagged to the user, who approved proceeding without it given Phase A's low blast-radius (pure additive metadata, trivially reversible). Used a lightweight text export of the pre-change AD Sites/Subnets/SiteLinks instead, saved to `ops/recovery-points/2026-07-13_*_before-ad-site-oci-london/ad-topology-before.txt`.
+
+**Work done**:
+1. `New-ADReplicationSite -Name "OCI-London"` — new site for OCI uk-london-1 / tekeche-vcn.
+2. `New-ADReplicationSubnet` ×4, mapped to `OCI-London`: `10.0.1.0/24` (public), `10.0.2.0/24` (private — where the standby VM and any future RODC would live), `10.0.4.0/24` (OKE nodes), `10.0.5.0/28` (OKE API endpoint) — the real `tekeche-vcn` subnet CIDRs per Terraform state. (Noted but left alone: a pre-existing stale `10.0.0.0/24` AD subnet object that doesn't match any real OCI range — harmless leftover, not cleaned up.)
+3. `New-ADReplicationSiteLink -Name "OnPrem-OCI"` linking `Default-First-Site-Name` ↔ `OCI-London`, cost 500 (vs `DEFAULTIPSITELINK`'s 100 — deliberately less-preferred/more-expensive) and a 180min replication interval (matches `DEFAULTIPSITELINK`'s existing convention; deliberately not AD's 15min default, given the SRX VPN's chronic CPU exhaustion — see [[project_srx_oci_vpn]]).
+4. No existing AD objects (Sites, Subnets, SiteLinks) were modified or removed — purely additive.
+
+**Validation**:
+- `repadmin /replsummary`: 0/12 failures across BikoDC/BikoDC1/BikoDC2 — no replication regression.
+- FSMO roles confirmed unchanged (still 100% on BikoDC).
+- On-prem subnet-to-site mappings confirmed untouched (spot-checked `192.168.1.0/24` still under `Default-First-Site-Name`).
+- **New, unrelated discovery**: `repadmin /replsummary` surfaced an operational error (58) reaching `KOFFAMDC.koffam.livbiko.local` — a domain controller in a **previously-unknown child domain** (`koffam.livbiko.local`) elsewhere in this shared forest. Not caused by this change (Sites/Subnets objects are forest-wide but purely additive here); flagged to the user as a new finding, not investigated further this session.
+- `Test-Build.ps1`: 8/9 — the one failure (`Full booking flow (automated)`) was independently confirmed via direct script run to be the pre-existing, unrelated "no online+available standard driver" test-environment gap (`test-booking-flow.js` output: "No online+available standard driver found"), not a regression from this change. No rollback performed; `Set-KnownGood.ps1` not run (script's own gate requires all 9 checks passing, consistent with prior precedent of not force-marking known-good over a pre-existing gap).
+
+- **Downtime**: None.
+- **Affected**: AD forest-wide objects (Sites container) — additive only, no existing DC/client behavior changes yet (no client currently prefers `OCI-London` since no DC exists there yet).
+- **Rollback (not needed)**: `Remove-ADReplicationSiteLink "OnPrem-OCI"`, `Remove-ADReplicationSubnet` ×4, `Remove-ADReplicationSite "OCI-London"` — in that order, would fully revert.
+- **Follow-up open — Phase B/C/D (separate approved maintenance window required, not started)**: provision a new dedicated OCI VM in `tekeche-private-subnet` (10.0.2.11), open AD replication NSG/firewall rules (incl. matching rule on BikoFW-SRX — added replication load on a device already near 100% CPU is a real risk to watch), promote it as a **Read-Only Domain Controller** in `OCI-London` with DNS, configure Password Replication Policy for `malindo`, point the OCI standby VM's DNS client at the new local DC, then validate (`dcdiag`, `repadmin`, live logon test). Also open: BikoDC's broken System State backup, the `KOFFAMDC` reachability error, and the unresolved backup-traffic question from the power-off test above.
