@@ -947,3 +947,53 @@ Per user decision, skipped the soak period and removed Memurai outright rather t
 - **Affected**: New AD object (`TEKECHE-RODC` DC), one RDP security-list rule (additive), 4 OCI compute instances created/destroyed during iteration (final one live).
 - **Rollback (not needed)**: `Uninstall-ADDSDomainController` on TEKECHE-RODC for a clean demote (never held FSMO, low risk); RDP security-list rule and RODC VM can be removed via Terraform if ever needed.
 - **Follow-up open**: (1) `bikodc`/`bikodc1` DNS A-record pollution — needs investigation into what `192.168.1.110` actually is before any cleanup; (2) direct RPC/repadmin query to TEKECHE-RODC fails — likely a Windows Firewall rule gap on the new DC, not yet checked; (3) Phase D (domain-join the Ubuntu standby VM via sssd/realmd for AD-based SSH) — separate checkpoint, not started.
+
+## 2026-07-14 17:52-19:35 — Removed stray DNS A-records from bikodc/bikodc1, fixing live replication failures
+
+- **Type**: Planned maintenance — AD DNS cleanup (self-classified HIGH RISK, same precedent as Phase A/C: "authentication" + shared forest blast radius, even though `Get-ChangeRisk.ps1` returned MEDIUM)
+- **Duration**: ~1h43m elapsed (mostly investigation), ~2 minutes actual change
+- **Trigger**: Resuming [[project_ad_oci_rodc]] Phase D — fresh `repadmin /replsummary` check before starting turned up a **new regression**: BIKODC and BIKODC1 showing 6/12 replication failures each (`SEC_E_WRONG_PRINCIPAL` / -2146893022, "target principal name is incorrect"), 0 failures on BIKODC2. Not present at Phase C completion (0/12 documented then).
+
+**Root cause**: the DNS pollution flagged-but-not-fixed during Phase C was still present — `bikodc` and `bikodc1` A-records each carried 3 entries: their correct IP, `192.168.1.100` (on-prem NLB VIP), and `192.168.1.110` (unidentified host, still unreachable — no ping reply, no ARP entry, no PTR). When Kerberos-authenticated replication between BIKODC and BIKODC1 resolved the wrong IP via round-robin, SPN validation failed against the mismatched target.
+
+**Investigation before touching anything**:
+- Zone `livbiko.local`: `DynamicUpdate = Secure`, aging/scavenging **disabled** — ruled out active daily DDNS churn; pointed to a stale historical leftover rather than a recurring registration.
+- Confirmed `192.168.1.100` is bound as a secondary IP on both BIKODC's and BIKODC1's `Ethernet0` with `SkipAsSource: True` already set on both — the standard NLB config that's supposed to keep a secondary VIP out of DNS dynamic-registration selection. Since this was already correctly configured, the stray records were judged to be a one-time leftover from before `SkipAsSource` was set (aging being off meant it never got cleaned up), not something actively regenerating — so no adapter/NLB config change was needed, just the record removal.
+- `.110` remains unidentified (not investigated further, per the existing Phase C decision not to touch it blind) but is not currently live (no ping/ARP/PTR response), so removing its stray A-record carries low risk of breaking anything actively using it.
+
+**Recovery point**: `2026-07-14_17-52-30_before-remove-stray-dns-a-records-192-16` (`New-RecoveryPoint.ps1`, app-level) plus a manual DNS zone export (`dns-records-before.txt` in that same folder) as the actual rollback anchor, since the app-level recovery point doesn't capture DNS zone state — same pattern as the Phase A AD-topology export.
+
+**Work done**: `Remove-DnsServerResourceRecord` for `192.168.1.110` and `192.168.1.100` under both `bikodc` and `bikodc1` in the `livbiko.local` zone. (One removal — `bikodc`'s `.100` — silently no-opped on the first attempt despite no reported error; retried with `-ErrorAction Stop` and it succeeded the second time. Cause not identified; worth watching for on any future DNS record removal on this server.)
+
+**Validation**:
+- `bikodc` → `192.168.1.101` only. `bikodc1` → `192.168.1.102` only. Confirmed clean on both.
+- `repadmin /replsummary`: **0/12 failures** across BIKODC/BIKODC1/BIKODC2 — regression fixed. Remaining two operational errors (`KOFFAMDC.koffam.livbiko.local`, `TEKECHE-RODC.livbiko.local`, both error 58/RPC unavailable) are the pre-existing, already-documented separate issues, unaffected by this change.
+- `Test-Build.ps1`: 8/9 — same pre-existing, unrelated "no driver online" test-environment gap, independently reconfirmed by running `test-booking-flow.js` directly (fails at step 1, "No online+available standard driver found"). No rollback performed.
+- `Set-KnownGood.ps1` **not run** — same precedent as Phase A: this is a pure infra/AD change with no new app build to mark, and the script's own gate requires all 9 checks passing.
+
+**New, separate finding surfaced along the way (not acted on)**: investigated whether `KOFFAMDC`'s repadmin error could also be cleaned up. Found it isn't a DNS record at all — it's a Configuration-partition cross-reference + NTDS Settings/server object for a child domain `koffam.livbiko.local`, created and last touched in a single ~24-minute window on **2026-04-29**, untouched since. Strongly looks like an abandoned/incomplete child-domain build rather than a live system belonging to another team, but not certain from AD metadata alone. User decided to leave it alone for now — it's cosmetic (shows only as an operational error, not in the fails/total counters) and any real fix would be a forest-wide `ntdsutil` metadata cleanup, a separate and heavier HIGH RISK action from this session's DNS cleanup.
+
+- **Downtime**: None.
+- **Affected**: Two DNS A-records each on `bikodc` and `bikodc1` (both in `livbiko.local`, additive-reversible). No code/app changes.
+- **Rollback (not needed)**: re-add the removed A-records from `dns-records-before.txt` in the recovery-point folder if ever needed.
+- **Follow-up open**: (1) `.110` host still unidentified — investigate before doing anything else with it; (2) `KOFFAMDC` orphaned metadata — left alone per user decision, revisit only if asked; (3) direct RPC/repadmin query to TEKECHE-RODC still fails (pre-existing, not investigated); (4) **Phase D itself (domain-join the Ubuntu standby VM via sssd/realmd) — not yet started, this session was entirely pre-work** — needs its own approved maintenance window.
+
+## 2026-07-14 21:00-21:25 — AD Phase D: security-list prep done, standby-join paused on a new TEKECHE-RODC firewall finding
+
+- **Type**: Planned maintenance — infrastructure (Terraform) + investigation. HIGH RISK self-classified (same precedent as Phase A/C/DNS-cleanup).
+- **Trigger**: Continuation of [[project_ad_oci_rodc]] Phase D — domain-join the OCI standby VM (`10.0.2.10`, Ubuntu 22.04) to `livbiko.local` via sssd/realmd, using TEKECHE-RODC as its local DC.
+
+**Recovery point**: `2026-07-14_22-11-43_before-ad-phase-d-domain-join-standby-vm`.
+
+**Work done — completed**:
+1. Added intra-subnet AD ingress rules (DNS/Kerberos/W32Time/RPC-EPM/LDAP/SMB/LDAPS/GC/GC-SSL/RPC-dynamic-range) to `oci_core_security_list.private`, sourced from `10.0.2.0/24` itself. The existing AD rules only covered `onprem_cidr` reaching in; the standby VM and RODC are both OCI-side in the same subnet, and OCI security lists don't implicitly allow intra-subnet instance-to-instance traffic. `terraform plan` confirmed purely additive (1 to change, 0 add/destroy); applied; follow-up plan showed zero drift. Committed (`6adec05`).
+2. Created an OCI Bastion managed-SSH session to the standby VM (`ubuntu@10.0.2.10`, double-hop ProxyCommand) — confirmed reachable, Ubuntu 22.04.5 LTS confirmed.
+
+**Blocker found — standby-join paused, not started**: from the standby VM, `nc` to `10.0.2.11:389` and `:88` both timed out; only `:53` (DNS) succeeded. Re-tested the identical pattern from BikoDC (on-prem, already permitted via the pre-existing `onprem_cidr` rules) — **same result**: 389/88 timeout, 53 succeeds. This rules out the security-list change as the cause (BikoDC's path predates today's change entirely) and confirms the block is **on TEKECHE-RODC itself**, not the network layer. Further testing found **WinRM (5986)** and **RDP (3389)** also unreachable to the RODC from BikoDC — only DNS responds. This sharpens (doesn't yet fully explain) the Phase C finding that direct repadmin/RPC queries to TEKECHE-RODC fail (error 58): it looks like most inbound Windows Firewall rule groups (AD DS, Remote Desktop, WinRM-HTTPS) aren't active on this box's current network profile, while the DNS Server role's rule is (DNS role rules are typically enabled regardless of profile). Leading theory, not yet confirmed: the RODC's OCI vNIC never got categorized as "DomainAuthenticated" by NLA (a known chicken-and-egg problem for a DC's own first network interface), leaving it on "Public," which keeps the AD DS/RDP firewall rule groups disabled.
+
+**Decision**: user chose to pause the standby-VM join and fix the RODC's firewall/network-profile first, rather than either (a) proceeding with a fallback join against an on-prem writable DC (which would get today's join done but not achieve Phase D's actual goal of local-RODC auth), or (b) stopping entirely. RDP/WinRM being blocked means the only viable access path is the OCI Console VNC connection (bypasses the network stack/firewall entirely) with the user driving the keyboard directly — same approach used successfully in Phase C, since the `vncdotool` scripted-input path has a known real bug (crashes on multi-character keysym names) that made it unreliable for anything beyond simple keystrokes.
+
+- **Downtime**: None.
+- **Affected**: `oci_core_security_list.private` (additive, already applied and kept — it's correct and will be needed regardless of the firewall fix). No changes made to TEKECHE-RODC itself yet.
+- **Rollback (not needed)**: security-list rules are additive/reversible via `git revert` + `terraform apply` if ever needed; nothing else was touched.
+- **Follow-up open**: (1) TEKECHE-RODC's Windows Firewall/network-profile gap — needs a live VNC session to diagnose (`Get-NetConnectionProfile`, AD DS + Remote Desktop firewall rule group status) and fix; (2) once fixed, resume the standby VM's `sssd`/`realmd` join (steps 3-7 of the originally proposed Phase D plan, unaffected by this finding); (3) the `.110` unidentified host from the earlier DNS cleanup is still unexplained, unrelated to this.
