@@ -349,6 +349,121 @@ resource "oci_core_security_list" "private" {
     }
   }
 
+  # ── livbiko.local Active Directory — intra-subnet, standby VM <-> RODC ────
+  # The rules above only cover on-prem DCs reaching into OCI. The standby VM
+  # (10.0.2.10) and TEKECHE-RODC (10.0.2.11) are both OCI-side, same subnet --
+  # OCI security lists don't implicitly allow instance-to-instance traffic
+  # within a subnet, so these are needed for the standby VM's sssd/realmd
+  # join (AD Phase D) to reach its local RODC instead of crossing the VPN.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: DNS (TCP) - intra-subnet"
+    tcp_options {
+      max = 53
+      min = 53
+    }
+  }
+  ingress_security_rules {
+    protocol    = "17"
+    source      = var.private_subnet_cidr
+    description = "AD: DNS (UDP) - intra-subnet"
+    udp_options {
+      max = 53
+      min = 53
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: Kerberos (TCP) - intra-subnet"
+    tcp_options {
+      max = 88
+      min = 88
+    }
+  }
+  ingress_security_rules {
+    protocol    = "17"
+    source      = var.private_subnet_cidr
+    description = "AD: Kerberos (UDP) - intra-subnet"
+    udp_options {
+      max = 88
+      min = 88
+    }
+  }
+  ingress_security_rules {
+    protocol    = "17"
+    source      = var.private_subnet_cidr
+    description = "AD: W32Time - intra-subnet"
+    udp_options {
+      max = 123
+      min = 123
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: RPC Endpoint Mapper - intra-subnet"
+    tcp_options {
+      max = 135
+      min = 135
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: LDAP - intra-subnet"
+    tcp_options {
+      max = 389
+      min = 389
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: SMB - intra-subnet"
+    tcp_options {
+      max = 445
+      min = 445
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: LDAPS - intra-subnet"
+    tcp_options {
+      max = 636
+      min = 636
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: Global Catalog - intra-subnet"
+    tcp_options {
+      max = 3268
+      min = 3268
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: Global Catalog SSL - intra-subnet"
+    tcp_options {
+      max = 3269
+      min = 3269
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "AD: RPC dynamic port range - intra-subnet"
+    tcp_options {
+      max = 65535
+      min = 49152
+    }
+  }
+
   egress_security_rules {
     protocol    = "all"
     destination = "0.0.0.0/0"
