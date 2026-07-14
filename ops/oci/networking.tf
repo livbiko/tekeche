@@ -215,6 +215,18 @@ resource "oci_core_security_list" "private" {
     }
   }
 
+  # RDP from VCN only (use Bastion for external access) -- added 2026-07-14,
+  # was missing entirely, blocking Bastion port-forwarding to Windows RODC VMs.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.vcn_cidr
+    description = "RDP within VCN"
+    tcp_options {
+      max = 3389
+      min = 3389
+    }
+  }
+
   # Meraki MX68 site LAN — broad reachability to the whole private subnet
   # (unscoped, unlike the narrowly-scoped on-prem rules above -- revisit if
   # the actual traffic pattern turns out to need less than "everything")
@@ -373,6 +385,6 @@ resource "oci_bastion_bastion" "main" {
   bastion_type                 = "STANDARD"
   target_subnet_id             = oci_core_subnet.private.id
   name                         = "${var.project_name}-bastion"
-  client_cidr_block_allow_list = ["0.0.0.0/0"]  # restrict to your office IP in prod
-  max_session_ttl_in_seconds   = 10800           # 3 hours
+  client_cidr_block_allow_list = ["0.0.0.0/0"] # restrict to your office IP in prod
+  max_session_ttl_in_seconds   = 10800         # 3 hours
 }

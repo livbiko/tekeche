@@ -1,8 +1,8 @@
 # ── OCI Auth ──────────────────────────────────────────────────────────────────
-variable "tenancy_ocid"     { description = "OCI tenancy OCID" }
-variable "user_ocid"        { description = "OCI user OCID" }
-variable "fingerprint"      { description = "API key fingerprint" }
-variable "private_key_path"    { description = "Path to OCI API private key PEM file" }
+variable "tenancy_ocid" { description = "OCI tenancy OCID" }
+variable "user_ocid" { description = "OCI user OCID" }
+variable "fingerprint" { description = "API key fingerprint" }
+variable "private_key_path" { description = "Path to OCI API private key PEM file" }
 variable "private_key_content" {
   default     = ""
   description = "OCI API private key PEM content (unused — provider uses private_key_path)"
@@ -14,8 +14,8 @@ variable "region" {
 variable "compartment_id" { description = "Compartment OCID where all resources are created" }
 
 # ── Networking ────────────────────────────────────────────────────────────────
-variable "vcn_cidr"            { default = "10.0.0.0/16" }
-variable "public_subnet_cidr"  { default = "10.0.1.0/24" }
+variable "vcn_cidr" { default = "10.0.0.0/16" }
+variable "public_subnet_cidr" { default = "10.0.1.0/24" }
 variable "private_subnet_cidr" { default = "10.0.2.0/24" }
 
 # ── On-prem ───────────────────────────────────────────────────────────────────
@@ -74,19 +74,29 @@ variable "availability_domain" {
   default     = ""
   description = "OCI availability domain name (e.g. Kopi:UK-LONDON-1-AD-1) — leave empty to auto-discover"
 }
-variable "standby_shape"      { default = "VM.Standard.E4.Flex" }
-variable "standby_ocpus"      { default = 8 }
-variable "standby_memory_gb"  { default = 32 }
+variable "standby_shape" { default = "VM.Standard.E4.Flex" }
+variable "standby_ocpus" { default = 8 }
+variable "standby_memory_gb" { default = 32 }
 variable "standby_image_id" {
   default     = ""
   description = "Ubuntu 22.04 image OCID — leave empty to auto-discover"
 }
-variable "ssh_public_key"     { description = "SSH public key to access the standby VM" }
+variable "ssh_public_key" { description = "SSH public key to access the standby VM" }
 variable "standby_private_ip" { default = "10.0.2.10" }
 
 variable "alert_email" {
   description = "Email address for HA/DR monitoring alarm notifications"
 }
+
+# ── Compute (OCI RODC) ─────────────────────────────────────────────────────────
+variable "rodc_shape" { default = "VM.Standard.E4.Flex" }
+variable "rodc_ocpus" { default = 2 }
+variable "rodc_memory_gb" { default = 16 }
+variable "rodc_image_id" {
+  default     = ""
+  description = "Windows Server 2025 Standard image OCID -- leave empty to auto-discover"
+}
+variable "rodc_private_ip" { default = "10.0.2.11" }
 
 # ── Load Balancer ─────────────────────────────────────────────────────────────
 variable "lb_min_bandwidth_mbps" { default = 10 }
@@ -98,8 +108,8 @@ variable "lb_cert_id" {
 
 # ── DNS ───────────────────────────────────────────────────────────────────────
 variable "dns_zone_name" { default = "tekeche.com" }
-variable "api_hostname"  { default = "api" }
-variable "dns_ttl"       { default = 30 }
+variable "api_hostname" { default = "api" }
+variable "dns_ttl" { default = 30 }
 
 # ── App ───────────────────────────────────────────────────────────────────────
 variable "github_repo_url" { default = "https://github.com/livbiko/tekeche-api" }
@@ -118,4 +128,4 @@ variable "mongodb_keyfile_content" {
   sensitive   = true
   description = "Shared MongoDB replica-set keyFile content -- must be byte-identical to the on-prem keyfile (C:\\Program Files\\MongoDB\\Server\\8.3\\keyfile.txt)"
 }
-variable "project_name"    { default = "tekeche" }
+variable "project_name" { default = "tekeche" }

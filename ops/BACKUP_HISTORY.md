@@ -797,3 +797,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_22-49-11_before-fix-missing-systemroot-registry-v"`
 
+
+## 2026-07-13 23:12:22 — Before: Provision dedicated OCI RODC VM in tekeche-private-subnet for AD authentication resilience
+
+- **ID**: 2026-07-13_23-12-20_before-provision-dedicated-oci-rodc-vm-i
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_23-12-20_before-provision-dedicated-oci-rodc-vm-i"`
+
