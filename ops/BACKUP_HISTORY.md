@@ -989,3 +989,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-18_00-04-02_before-tekeche-nlb-standby-drill-re-test"`
 
+
+## 2026-07-18 00:12:02 — Before: BikoDC1 route fix - 10.0.0.0/16 via SRX not via BikoDC
+
+- **ID**: 2026-07-18_00-12-00_before-bikodc1-route-fix-10-0-0-0-16-via
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-18_00-12-00_before-bikodc1-route-fix-10-0-0-0-16-via"`
+
