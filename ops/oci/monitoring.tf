@@ -41,7 +41,18 @@ resource "oci_monitoring_alarm" "oke_node_down" {
   # Counts nodes actively reporting ACTIVE condition; alarms if fewer than
   # the expected node pool size (2) are healthy. More robust than matching
   # specific "down" state strings, which aren't fully documented.
-  query           = "NodeState[1m]{clusterId = \"${oci_containerengine_cluster.main.id}\", nodeCondition = \"ACTIVE\"}.count() < 2"
+  #
+  # FIXED 2026-07-17: without .grouping(), OCI evaluates the trigger rule
+  # independently per metric stream (one stream per node, since OKE publishes
+  # NodeState per-node-per-possible-condition). Each healthy node's own
+  # ACTIVE-condition stream reports count()=1 (one datapoint = itself) every
+  # interval, which is always "< 2" -- so this fired a false CRITICAL alert
+  # (confirmed real-world 2026-07-17 13:18 UTC while both actual nodes were
+  # RUNNING/ACTIVE) essentially at random, independent of real node health.
+  # .grouping(clusterId) collapses all per-node streams sharing the same
+  # cluster into one series first, so count() sums datapoints across every
+  # currently-ACTIVE node into a single true total before comparing to 2.
+  query           = "NodeState[1m]{clusterId = \"${oci_containerengine_cluster.main.id}\", nodeCondition = \"ACTIVE\"}.grouping(clusterId).count() < 2"
   severity        = "CRITICAL"
   body            = "Fewer than 2 OKE nodes report ACTIVE condition - a worker node may be down."
   is_enabled      = true
