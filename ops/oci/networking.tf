@@ -1,16 +1,12 @@
 locals {
-  # Public resources (VCN, IGW, LB) go here — no security zone.
-  # Confirmed 2026-07-12: this is why tekeche-vcn (and its IGW/public
-  # subnet/LB) live in a different compartment than everything else
-  # (OKE, private subnet, NSGs, security lists, vault, DNS all use
-  # var.compartment_id directly) - deliberate separation, not drift.
-  # No oci_identity_security_zone is actually attached to either
-  # compartment yet, but the separation is already in place for when
-  # one is. Do not "fix" this by moving resources between compartments -
-  # for a live VCN that's a high-risk operation that may force
-  # destroy/recreate of the entire production network depending on
-  # provider behavior, for zero functional benefit.
-  pub_cid = oci_identity_compartment.pub.id
+  # 2026-07-17: consolidating into var.compartment_id at user's explicit
+  # request. The original driver (UK compartment's security zone blocking
+  # IGW/requiring KMS) no longer applies - that security zone
+  # ("securityzonedemo") was deleted 2026-07-04, and UK currently has none
+  # attached (confirmed live via oci cloud-guard security-zone-collection
+  # list-security-zones before this change). Plan reviewed for
+  # destroy/recreate before apply - see MAINTENANCE_LOG.md.
+  pub_cid = var.compartment_id
 }
 
 # ── VCN ───────────────────────────────────────────────────────────────────────
@@ -224,6 +220,43 @@ resource "oci_core_security_list" "private" {
     tcp_options {
       max = 3389
       min = 3389
+    }
+  }
+
+  # RDP from on-prem -- added 2026-07-15, needed for direct troubleshooting
+  # access to TEKECHE-RODC from the on-prem LAN over the existing
+  # BikoFW-SRX <-> OCI VPN tunnel, without going through Bastion/VNC console.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "RDP from on-prem"
+    tcp_options {
+      max = 3389
+      min = 3389
+    }
+  }
+
+  # WinRM from on-prem -- added 2026-07-15, RDP to TEKECHE-RODC proved
+  # unreliable mid-troubleshooting (protocol negotiation failing, session
+  # never renders); WinRM was already running locally on the box (Server
+  # Manager uses it even for localhost operations) but had no security-list
+  # rule allowing on-prem access, unlike RDP/AD ports.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "WinRM (HTTP) from on-prem"
+    tcp_options {
+      max = 5985
+      min = 5985
+    }
+  }
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "WinRM (HTTPS) from on-prem"
+    tcp_options {
+      max = 5986
+      min = 5986
     }
   }
 
