@@ -184,3 +184,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: OCI standby resized to 8 OCPU/32GB + PM2 cluster mode (16 workers) for full-capacity failover; Mongo RS rejoined SECONDARY healthy; Test-Build 8/9 pass, sole failure is unrelated env precondition (no driver online for automated booking-flow test), accepted per user decision
 
+
+## Build #20 — 2026-07-16 10:45
+
+- **API commit**: 8ccc9960 (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Post BIKODC disk extend (149GB) + PM2 outage recovery (35hr undetected downtime, fixed). 8/9 Test-Build checks pass; sole failure is the pre-existing 'no online test driver' gap, same as prior known-good builds.
+
+
+## Build #21 — 2026-07-17 08:42
+
+- **API commit**: 8ccc9960 (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Consolidated tekeche-vcn/IGW/public-subnet/LB from tekeche-pub into UK compartment (security zone driving the split was deleted 2026-07-04). 8/9 Test-Build checks pass; sole failure is the pre-existing no-online-driver test-data gap, unrelated.
+

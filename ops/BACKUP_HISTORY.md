@@ -809,3 +809,171 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-13_23-12-20_before-provision-dedicated-oci-rodc-vm-i"`
 
+
+## 2026-07-14 17:52:34 — Before: Remove stray DNS A-records 192.168.1.110 and 192.168.1.100 (NLB VIP) from bikodc and bikodc1
+
+- **ID**: 2026-07-14_17-52-30_before-remove-stray-dns-a-records-192-16
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-14_17-52-30_before-remove-stray-dns-a-records-192-16"`
+
+
+## 2026-07-14 22:11:45 — Before: AD Phase D - domain-join standby VM to livbiko.local via sssd/realmd
+
+- **ID**: 2026-07-14_22-11-43_before-ad-phase-d-domain-join-standby-vm
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-14_22-11-43_before-ad-phase-d-domain-join-standby-vm"`
+
+
+## 2026-07-16 10:20:22 — Before: extend BIKODC C: partition into existing unallocated ~50GB disk space
+
+- **ID**: 2026-07-16_10-20-20_before-extend-bikodc-c-partition-into-ex
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-16_10-20-20_before-extend-bikodc-c-partition-into-ex"`
+
+
+## 2026-07-16 11:43:31 — Before: add PM2-HealthMonitor scheduled task on BikoDC (mid-session crash detection)
+
+- **ID**: 2026-07-16_11-43-29_before-add-pm2-healthmonitor-scheduled-t
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-16_11-43-29_before-add-pm2-healthmonitor-scheduled-t"`
+
+
+## 2026-07-16 11:56:23 — Before: Add PM2-HealthMonitor scheduled task to BikoDC1
+
+- **ID**: 2026-07-16_11-56-21_before-add-pm2-healthmonitor-scheduled-t
+- **Reason**: Close mid-session PM2 crash monitoring gap on BikoDC1, mirroring the fix just validated on BikoDC
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low - new scheduled task only, no changes to running app process
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-16_11-56-21_before-add-pm2-healthmonitor-scheduled-t"`
+
+
+## 2026-07-16 13:34:27 — Before: Consolidate 4 redundant tekeche-api startup mechanisms on BikoDC1
+
+- **ID**: 2026-07-16_13-34-25_before-consolidate-4-redundant-tekeche-a
+- **Reason**: Found 4 uncoordinated startup paths (2 scheduled tasks, 1 raw-CLI task, 1 dormant NSSM service) causing an unexplained hourly graceful reload; currently-live process runs under an undocumented SYSTEM-home PM2 daemon bypassing ecosystem.config.js (no max_memory_restart protection)
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Medium - changes which mechanism starts tekeche-api on BikoDC1 boot; app itself unaffected while running, but next reboot/restart must succeed via the new canonical path
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-16_13-34-25_before-consolidate-4-redundant-tekeche-a"`
+
+
+## 2026-07-16 15:58:06 — Before: Supervised livbiko-OCI failover test
+
+- **ID**: 2026-07-16_15-58-04_before-supervised-livbiko-oci-failover-t
+- **Reason**: Verify OCI standby (and OKE backup backends) actually serve correct production traffic when BikoDC is taken out of LB rotation
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Medium - temporarily shifts all production traffic to backup backends (OCI standby + OKE); BikoDC app itself untouched, LB-routing-level test only
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-16_15-58-04_before-supervised-livbiko-oci-failover-t"`
+
+
+## 2026-07-16 17:05:30 — Before: Isolation test of each OCI LB backup backend individually
+
+- **ID**: 2026-07-16_17-05-28_before-isolation-test-of-each-oci-lb-bac
+- **Reason**: Isolate which specific backend among {OCI standby, OKE node 1, OKE node 2} caused the 35% failure rate in the earlier failover test; VPN tunnel now confirmed UP (unlike during the earlier test)
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Medium - brief, surgical production traffic exposure to one isolated backup backend at a time, few seconds each, immediate rollback after each
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-16_17-05-28_before-isolation-test-of-each-oci-lb-bac"`
+
+
+## 2026-07-16 18:37:50 — Before: Install real Let's Encrypt cert on OCI standby nginx (was self-signed)
+
+- **ID**: 2026-07-16_18-37-48_before-install-real-let-s-encrypt-cert-o
+- **Reason**: Root-caused the failover test's 35% failure rate to OCI standby serving a self-signed TLS cert; installing the already-issued real api.tekeche.com cert from BikoDC's win-acme store
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low - standby doesn't serve real traffic in steady state; nginx -t validates config before reload
+- **DB dump**: 521.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-16_18-37-48_before-install-real-let-s-encrypt-cert-o"`
+
+
+## 2026-07-17 02:05:43 — Before: Move tekeche-vcn/IGW/public-subnet/LB from tekeche-pub into UK compartment
+
+- **ID**: 2026-07-17_02-05-40_before-move-tekeche-vcn-igw-public-subne
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-17_02-05-40_before-move-tekeche-vcn-igw-public-subne"`
+
+
+## 2026-07-17 09:33:00 — Before: Delete 37 orphaned sz-probe test VCNs from tekeche-pub
+
+- **ID**: 2026-07-17_09-32-58_before-delete-37-orphaned-sz-probe-test
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-17_09-32-58_before-delete-37-orphaned-sz-probe-test"`
+
+
+## 2026-07-17 13:01:52 — Before: rebuild deleted production LB as Network Load Balancer
+
+- **ID**: 2026-07-17_13-01-50_before-rebuild-deleted-production-lb-as
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-17_13-01-50_before-rebuild-deleted-production-lb-as"`
+
+
+## 2026-07-17 19:53:54 — Before: fix false-positive OKE node-down alarm query
+
+- **ID**: 2026-07-17_19-53-52_before-fix-false-positive-oke-node-down
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-17_19-53-52_before-fix-false-positive-oke-node-down"`
+
+
+## 2026-07-17 21:52:27 — Before: tekeche-nlb failover drill (drain on-prem, verify standby, restore)
+
+- **ID**: 2026-07-17_21-52-24_before-tekeche-nlb-failover-drill-drain
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-17_21-52-24_before-tekeche-nlb-failover-drill-drain"`
+
