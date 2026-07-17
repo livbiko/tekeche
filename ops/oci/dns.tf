@@ -2,7 +2,7 @@
 #
 # Architecture:
 #   api.tekeche.com → OCI DNS Traffic Management
-#     Primary:   OCI Flexible LB public IP  (health-checked)
+#     Primary:   OCI Network LB public IP  (health-checked)
 #     Fallback:  (not needed — LB already handles on-prem vs standby routing)
 #
 # If OCI LB itself goes down (rare), DNS failover is a last-resort option.
@@ -25,7 +25,7 @@ resource "oci_health_checks_http_monitor" "lb_health" {
   display_name        = "${var.project_name}-lb-health"
   interval_in_seconds = 30
   protocol            = "HTTPS"
-  targets             = [oci_load_balancer_load_balancer.main.ip_address_details[0].ip_address]
+  targets             = [oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address]
   port                = 443
   path                = "/health"
   is_enabled          = true
@@ -50,7 +50,7 @@ resource "oci_dns_rrset" "api" {
   items {
     domain = "${var.api_hostname}.${var.dns_zone_name}"
     rtype  = "A"
-    rdata  = oci_load_balancer_load_balancer.main.ip_address_details[0].ip_address
+    rdata  = oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address
     ttl    = var.dns_ttl
   }
 }

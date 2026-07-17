@@ -24,9 +24,9 @@ resource "oci_core_network_security_group_security_rule" "oke_nodes_ingress_from
 # so a single node failure doesn't take out the whole backup path. The
 # primary on-prem backend (onprem_nlb, backup=false in loadbalancer.tf) is
 # untouched -- this only extends the pool the LB falls back to.
-resource "oci_load_balancer_backend" "oke_node_1" {
-  load_balancer_id = oci_load_balancer_load_balancer.main.id
-  backendset_name  = oci_load_balancer_backend_set.main.name
+resource "oci_network_load_balancer_backend" "oke_node_1" {
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.main.id
+  backend_set_name         = oci_network_load_balancer_backend_set.main.name
   # Node IPs are not stable across a node-pool resize/cycle -- these were
   # replaced 2026-07-13 (was 10.0.4.54) when the pool was resized to
   # 4 OCPU/32GB per node for full-failover capacity. If the pool is ever
@@ -34,21 +34,21 @@ resource "oci_load_balancer_backend" "oke_node_1" {
   ip_address       = "10.0.4.249"
   port             = 30443
   weight           = 1
-  drain            = false
-  backup           = true
-  offline          = false
+  is_drain         = false
+  is_backup        = true
+  is_offline       = false
 }
 
-resource "oci_load_balancer_backend" "oke_node_2" {
-  load_balancer_id = oci_load_balancer_load_balancer.main.id
-  backendset_name  = oci_load_balancer_backend_set.main.name
+resource "oci_network_load_balancer_backend" "oke_node_2" {
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.main.id
+  backend_set_name         = oci_network_load_balancer_backend_set.main.name
   # Was 10.0.4.95 -- see oke_node_1's comment above.
   ip_address       = "10.0.4.67"
   port             = 30443
   weight           = 1
-  drain            = false
-  backup           = true
-  offline          = false
+  is_drain         = false
+  is_backup        = true
+  is_offline       = false
 }
 
 # ── Redis Sentinel gossip — standby's Sentinel reaching the OKE-hosted

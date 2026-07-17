@@ -1,8 +1,8 @@
 # ── Key outputs after `terraform apply` ───────────────────────────────────────
 
 output "lb_public_ip" {
-  description = "OCI Load Balancer public IP — point api.tekeche.com DNS here"
-  value       = oci_load_balancer_load_balancer.main.ip_address_details[0].ip_address
+  description = "OCI Network Load Balancer public IP — point api.tekeche.com DNS here"
+  value       = oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address
 }
 
 output "standby_private_ip" {
