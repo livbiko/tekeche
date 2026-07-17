@@ -49,14 +49,65 @@ resource "oci_monitoring_alarm" "oke_node_down" {
   repeat_notification_duration = "PT1H"
 }
 
+# ── Alert on the NLB itself being deleted ──────────────────────────────────────
+# Direct response to the 2026-07-17 incident: tekeche-lb (the classic LB) was
+# deleted out-of-band via the OCI Console with zero automated warning -- the
+# only reason it was caught was a routine audit-log check during an unrelated
+# task, hours after real users were likely already affected. Monitoring alarms
+# only cover metrics, not control-plane actions like delete calls, so this
+# needs the separate Events service instead.
+#
+# eventType strings hedge across a few plausible casing/format variants --
+# empirically confirmed the audit-log equivalent for THIS exact resource is
+# "com.oraclecloud.network-load-balancer-api.UpdateNetworkLoadBalancer.begin/.end"
+# (verified live via a harmless tag-update + audit-log check, since neither
+# OCI's Events reference docs nor a live NLB with real delete history were
+# available to check the exact Events-service string directly). Delete is
+# inferred by direct analogy (same PascalCase-operation-name pattern the
+# classic LB's own audit trail used for its "DeleteLoadBalancer" event).
+# If none of these match in practice, this alarm will simply never fire --
+# it fails silently, not at apply time -- so treat this as best-effort
+# hardening, not a guarantee, until an actual delete is used to confirm it.
+resource "oci_events_rule" "nlb_deleted" {
+  compartment_id = var.compartment_id
+  display_name   = "${var.project_name}-nlb-deleted"
+  description    = "Alert immediately if tekeche-nlb is deleted, to avoid a repeat of the 2026-07-17 undetected-outage incident."
+  is_enabled     = true
+
+  condition = jsonencode({
+    eventType = [
+      "com.oraclecloud.network-load-balancer-api.DeleteNetworkLoadBalancer",
+      "com.oraclecloud.network-load-balancer-api.deletenetworkloadbalancer",
+      "com.oraclecloud.networkloadbalancer.deletenetworkloadbalancer",
+    ]
+    data = {
+      resourceId = [oci_network_load_balancer_network_load_balancer.main.id]
+    }
+  })
+
+  actions {
+    actions {
+      action_type = "ONS"
+      is_enabled  = true
+      topic_id    = oci_ons_notification_topic.alerts.id
+      description = "Notify on tekeche-nlb deletion"
+    }
+  }
+}
+
 resource "oci_monitoring_alarm" "lb_unhealthy_backend" {
   compartment_id        = var.compartment_id
   display_name          = "${var.project_name}-lb-unhealthy-backend"
-  metric_compartment_id = oci_load_balancer_load_balancer.main.compartment_id
-  namespace             = "oci_lbaas"
-  query           = "UnHealthyBackendServers[1m]{resourceId = \"${oci_load_balancer_load_balancer.main.id}\"}.max() > 0"
+  metric_compartment_id = oci_network_load_balancer_network_load_balancer.main.compartment_id
+  namespace             = "oci_nlb"
+  # Metric name is best-effort from OCI NLB documentation (UnHealthyBackendCount)
+  # -- NOT yet verified against live emitted data, since no NLB existed in this
+  # compartment to query `oci monitoring metric list` against at write time.
+  # Re-check once the NLB has been running a few minutes: if this metric name
+  # is wrong the alarm will just silently never fire, not error at apply time.
+  query           = "UnHealthyBackendCount[1m]{resourceId = \"${oci_network_load_balancer_network_load_balancer.main.id}\"}.max() > 0"
   severity        = "WARNING"
-  body            = "tekeche-lb has at least one unhealthy backend server (on-prem NLB, standby VM, or an OKE node)."
+  body            = "tekeche-nlb has at least one unhealthy backend server (on-prem NLB, standby VM, or an OKE node)."
   is_enabled      = true
   destinations    = [oci_ons_notification_topic.alerts.id]
   repeat_notification_duration = "PT1H"
