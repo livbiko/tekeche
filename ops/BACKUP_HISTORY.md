@@ -977,3 +977,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-17_21-52-24_before-tekeche-nlb-failover-drill-drain"`
 
+
+## 2026-07-18 00:04:04 — Before: tekeche-nlb standby drill re-test (drain on-prem, verify standby, restore)
+
+- **ID**: 2026-07-18_00-04-02_before-tekeche-nlb-standby-drill-re-test
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-18_00-04-02_before-tekeche-nlb-standby-drill-re-test"`
+

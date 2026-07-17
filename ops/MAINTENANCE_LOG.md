@@ -1215,3 +1215,12 @@ Per user decision, skipped the soak period and removed Memurai outright rather t
 - **Recovery point**: `2026-07-17_21-52-24_before-tekeche-nlb-failover-drill-drain`.
 - **Verification**: post-drill `oci nlb backend-set-health get` shows identical state to the pre-drill baseline. `Test-Build.ps1`: 8/9, same pre-existing unrelated gap, no regression.
 - **Outcome**: Success — the rebuilt NLB's on-prem-primary/OCI-standby failover topology works correctly end-to-end, first real confirmation since today's incident/rebuild.
+
+## 2026-07-18 — tekeche-standby re-test (spot-check, same drill)
+
+- **Type**: Planned verification, re-run of the 2026-07-17 drill above — MEDIUM risk (briefly routes real production traffic through the standby path)
+- **Pre-check**: standby backend (`10.0.2.10:443`) healthy, instance `RUNNING`, only the 2 known-stale OKE node backends critical (unchanged, unrelated).
+- **Steps**: same drain/verify/restore pattern via `oci nlb backend update --is-drain`. 5/5 clean `200 OK` during drain, ARR header absent, real response body (`db: connected`) confirming the standby's own app and its own MongoDB connection both healthy. Independently cross-checked via TLS cert issuer: standby presented Let's Encrypt intermediate `YR2`, versus BikoDC's `YR1` seen in the prior day's drill — confirms distinct servers beyond just the header marker. Restored cleanly, 5/5 clean with header back, backend health identical to pre-drill baseline.
+- **Recovery point**: `2026-07-18_00-04-02_before-tekeche-nlb-standby-drill-re-test`.
+- **Verification**: `Test-Build.ps1`: 8/9, same pre-existing unrelated gap, no regression.
+- **Outcome**: Success — standby failover path re-confirmed working, no drift since yesterday's drill.
