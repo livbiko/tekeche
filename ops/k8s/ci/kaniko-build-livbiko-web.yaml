@@ -1,0 +1,29 @@
+# See kaniko-build-tekeche-web.yaml for rationale -- same pattern.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kaniko-build-livbiko-web
+  namespace: tekeche
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor:latest
+          args:
+            - "--context=git://github.com/livbiko/tekeche.git#refs/heads/main"
+            - "--context-sub-path=ops/k8s/livbiko-web"
+            - "--dockerfile=Dockerfile"
+            - "--destination=lhr.ocir.io/lr14abpkfrxj/livbiko-web:latest"
+          volumeMounts:
+            - name: docker-config
+              mountPath: /kaniko/.docker
+      volumes:
+        - name: docker-config
+          secret:
+            secretName: ocir-pull-secret
+            items:
+              - key: .dockerconfigjson
+                path: config.json

@@ -43,6 +43,10 @@ ops/oci/.terraform/
 ops/oci/*.tfstate
 ops/oci/*.tfstate.backup
 ops/oci/*.tfstate.bak*
+# broader pattern for the numbered-timestamp form Terraform actually writes
+# (terraform.tfstate.<timestamp>.backup) -- the two patterns above don't
+# match it, found 2026-07-18 when several showed up as untracked
+ops/oci/terraform.tfstate.*.backup
 
 # OCI Terraform run artifacts (plan/apply logs, saved plans)
 ops/oci/tfplan*

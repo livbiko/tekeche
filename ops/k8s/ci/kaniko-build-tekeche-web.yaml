@@ -1,0 +1,34 @@
+# One-off in-cluster image build for tekeche-web, since no Docker is available
+# on BikoDC and no CI pipeline builds container images yet (only a git-pull
+# IIS deploy hook exists). Reuses ocir-pull-secret (already granted "manage
+# repos" -- push+pull -- per oke_iam.tf's Phase-2-build-node policy) as
+# Kaniko's push credential. Repo is public, so the git context needs no
+# clone credentials.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kaniko-build-tekeche-web
+  namespace: tekeche
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor:latest
+          args:
+            - "--context=git://github.com/livbiko/tekeche.git#refs/heads/main"
+            - "--context-sub-path=ops/k8s/tekeche-web"
+            - "--dockerfile=Dockerfile"
+            - "--destination=lhr.ocir.io/lr14abpkfrxj/tekeche-web:latest"
+          volumeMounts:
+            - name: docker-config
+              mountPath: /kaniko/.docker
+      volumes:
+        - name: docker-config
+          secret:
+            secretName: ocir-pull-secret
+            items:
+              - key: .dockerconfigjson
+                path: config.json
