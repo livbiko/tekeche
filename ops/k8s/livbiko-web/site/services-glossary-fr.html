@@ -1,0 +1,778 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services IT Expliqués | Glossaire Technologique LivBiko</title>
+    <meta name="description" content="Explications en langage clair de chaque technologie livrée par LivBiko — Cisco AnyConnect, Azure, Oracle OCI, EDR, SIEM, DRaaS et plus.">
+    <meta name="keywords" content="services IT expliqués, glossaire MSP, Cisco AnyConnect VPN, Azure services managés">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="author" content="LivBiko">
+    <link rel="canonical" href="https://livbiko.com/services-glossary-fr.html">
+    <link rel="alternate" hreflang="fr" href="https://livbiko.com/services-glossary-fr.html">
+    <link rel="alternate" hreflang="en" href="https://livbiko.com/services-glossary.html">
+    <link rel="alternate" hreflang="x-default" href="https://livbiko.com/index.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Services IT Expliqués | Glossaire Technologique LivBiko">
+    <meta property="og:description" content="Explications en langage clair de chaque technologie livrée par LivBiko — Cisco AnyConnect, Azure, Oracle OCI, EDR, SIEM, DRaaS et plus.">
+    <meta property="og:url" content="https://livbiko.com/services-glossary-fr.html">
+    <meta property="og:image" content="https://livbiko.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="LivBiko — Managed IT Services Provider, London">
+    <meta property="og:site_name" content="LivBiko">
+    <meta property="og:locale" content="fr_FR">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Services IT Expliqués | Glossaire Technologique LivBiko">
+    <meta name="twitter:description" content="Explications en langage clair de chaque technologie livrée par LivBiko — Cisco AnyConnect, Azure, Oracle OCI, EDR, SIEM, DRaaS et plus.">
+    <meta name="twitter:image" content="https://livbiko.com/og-image.png">
+    <meta name="twitter:image:alt" content="LivBiko — Managed IT Services Provider, London">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","@id":"https://livbiko.com/#organization","name":"LivBiko","url":"https://livbiko.com","description":"London-based Managed Service Provider delivering hosted virtual desktops, Microsoft & Oracle cloud services, cybersecurity, and 24/7 managed IT support.","address":{"@type":"PostalAddress","streetAddress":"Angré, Rue la Rose Trémière", Abidjan","addressLocality":"Abidjan","postalCode":"","addressCountry":"GB"},"contactPoint":{"@type":"ContactPoint","telephone":"+2250575312901","email":"info@livbiko.com","contactType":"customer service","areaServed":"GB"}}</script>
+    <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KZJBXK4M');</script>
+<!-- End Google Tag Manager -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0a0a; --bg-secondary: #111111;
+            --accent: #00ff88; --accent-dim: #00cc6a;
+            --text-primary: #ffffff; --text-secondary: #a0a0a0;
+            --border: rgba(255,255,255,0.1);
+        }
+        body { font-family: 'IBM Plex Mono', monospace; background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(0,255,136,0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(0,100,255,0.03) 0%, transparent 50%);
+            animation: rotate 20s linear infinite; pointer-events: none; z-index: 0; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+        nav { padding: 2rem 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); animation: slideDown 0.8s ease-out; }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-30px); } to { opacity:1; transform:translateY(0); } }
+        .nav-left { display: flex; align-items: center; gap: 3rem; }
+        .logo { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--text-primary); }
+        .logo span { color: var(--accent); }
+        
+        nav ul { display: flex; gap: 2.5rem; list-style: none; flex-wrap: wrap; }
+        nav a { color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: color 0.3s ease; position: relative; }
+        nav a::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px; background:var(--accent); transition:width 0.3s ease; }
+        nav a:hover { color: var(--text-primary); }
+        nav a:hover::after { width: 100%; }
+        nav a.active { color: var(--accent); }
+        .lang-switcher { display: flex; gap: 0.5rem; align-items: center; }
+        .lang-btn { background:transparent; border:1px solid var(--border); color:var(--text-secondary); padding:0.5rem 1rem; font-family:'IBM Plex Mono',monospace; font-size:0.75rem; cursor:pointer; transition:all 0.3s ease; text-transform:uppercase; }
+        .lang-btn.active { background:var(--accent); color:var(--bg-primary); border-color:var(--accent); }
+        .lang-btn:hover:not(.active) { border-color:var(--accent); color:var(--accent); }
+        /* HERO */
+        .page-hero { padding: 6rem 0 4rem; animation: fadeIn 1s ease-out 0.3s both; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        .page-label { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent); margin-bottom:1.5rem; }
+        .page-hero h1 { font-family:'Syne',sans-serif; font-size:clamp(2.5rem,6vw,5rem); font-weight:700; line-height:1.1; letter-spacing:-0.03em; margin-bottom:2rem; }
+        .page-hero h1 .accent { color:var(--accent); animation:glow 2s ease-in-out infinite; }
+        @keyframes glow { 0%,100% { text-shadow:0 0 20px rgba(0,255,136,0.5); } 50% { text-shadow:0 0 40px rgba(0,255,136,0.8); } }
+        .page-hero p { font-size:1.1rem; color:var(--text-secondary); max-width:700px; line-height:1.85; }
+        .hero-tags { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:2rem; }
+        .hero-tag { border:1px solid var(--accent); color:var(--accent); padding:0.3rem 0.8rem; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; }
+        /* OVERVIEW GRID */
+        .overview { padding:5rem 0; border-top:1px solid var(--border); display:grid; grid-template-columns:1fr 1.6fr; gap:5rem; align-items:start; }
+        .overview-meta { position:sticky; top:2rem; }
+        .overview-meta .section-label { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent); margin-bottom:1.5rem; }
+        .overview-meta h2 { font-family:'Syne',sans-serif; font-size:clamp(1.8rem,3vw,2.6rem); font-weight:700; letter-spacing:-0.02em; margin-bottom:1.5rem; }
+        .overview-meta p { color:var(--text-secondary); line-height:1.85; font-size:0.9rem; margin-bottom:1rem; }
+        .feature-list { display:flex; flex-direction:column; gap:1.5rem; }
+        .feature-card { background:var(--bg-secondary); border:1px solid var(--border); padding:2rem; transition:all 0.3s ease; position:relative; overflow:hidden; }
+        .feature-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--accent); transform:scaleY(0); transform-origin:top; transition:transform 0.3s ease; }
+        .feature-card:hover::before { transform:scaleY(1); }
+        .feature-card:hover { border-color:rgba(0,255,136,0.3); }
+        .feature-card h3 { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:600; margin-bottom:0.6rem; }
+        .feature-card p { color:var(--text-secondary); font-size:0.85rem; line-height:1.75; }
+        /* BENEFITS */
+        .benefits { padding:5rem 0; border-top:1px solid var(--border); }
+        .section-header { text-align:center; margin-bottom:4rem; }
+        .section-label { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.2em; color:var(--accent); margin-bottom:1rem; }
+        .section-title { font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3rem); font-weight:700; letter-spacing:-0.02em; }
+        .benefits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2rem; }
+        .benefit-card { background:var(--bg-secondary); border:1px solid var(--border); padding:2.5rem 2rem; transition:all 0.4s ease; position:relative; overflow:hidden; }
+        .benefit-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:2px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform 0.4s ease; }
+        .benefit-card:hover::before { transform:scaleX(1); }
+        .benefit-card:hover { transform:translateY(-6px); border-color:var(--accent); box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+        .benefit-num { font-family:'Syne',sans-serif; font-size:2.5rem; font-weight:700; color:rgba(0,255,136,0.15); line-height:1; margin-bottom:1rem; }
+        .benefit-card h3 { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:600; margin-bottom:0.6rem; }
+        .benefit-card p { color:var(--text-secondary); font-size:0.85rem; line-height:1.7; }
+        /* PROCESS */
+        .process { padding:5rem 0; border-top:1px solid var(--border); }
+        .process-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0; position:relative; margin-top:4rem; }
+        .process-steps::before { content:''; position:absolute; top:40px; left:10%; width:80%; height:1px; background:linear-gradient(90deg,transparent,var(--accent),transparent); }
+        .process-step { padding:2rem 1.5rem; text-align:center; }
+        .step-num { width:80px; height:80px; background:var(--bg-secondary); border:2px solid var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 2rem; font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:700; color:var(--accent); position:relative; z-index:1; }
+        .process-step h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:600; margin-bottom:0.6rem; }
+        .process-step p { color:var(--text-secondary); font-size:0.8rem; line-height:1.7; }
+        /* LEGAL SPECIFIC */
+        .legal-body { padding:5rem 0; border-top:1px solid var(--border); }
+        .legal-content { max-width:860px; }
+        .legal-content h2 { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:700; margin:3rem 0 1rem; color:var(--text-primary); }
+        .legal-content h2:first-child { margin-top:0; }
+        .legal-content p { color:var(--text-secondary); font-size:0.9rem; line-height:1.85; margin-bottom:1rem; }
+        .legal-content ul { color:var(--text-secondary); font-size:0.9rem; line-height:1.85; margin:0.5rem 0 1rem 1.5rem; }
+        .legal-content ul li { margin-bottom:0.4rem; }
+        .legal-content .highlight-box { background:var(--bg-secondary); border-left:3px solid var(--accent); padding:1.5rem 2rem; margin:2rem 0; }
+        .legal-content .highlight-box p { margin-bottom:0; color:var(--text-primary); font-size:0.875rem; }
+        .legal-date { color:var(--accent); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:2rem; }
+        /* CTA */
+        .cta-section { padding:5rem 0; text-align:center; border-top:1px solid var(--border); }
+        .cta-section h2 { font-family:'Syne',sans-serif; font-size:clamp(1.8rem,4vw,2.8rem); font-weight:700; margin-bottom:1rem; letter-spacing:-0.02em; }
+        .cta-section p { color:var(--text-secondary); margin-bottom:2.5rem; font-size:0.95rem; }
+        .btn { padding:1rem 2.5rem; font-family:'IBM Plex Mono',monospace; font-size:0.875rem; text-decoration:none; border:none; cursor:pointer; transition:all 0.3s ease; position:relative; overflow:hidden; display:inline-block; }
+        .btn-primary { background:var(--accent); color:var(--bg-primary); font-weight:600; }
+        .btn-primary::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent); transition:left 0.5s ease; }
+        .btn-primary:hover::before { left:100%; }
+        .btn-primary:hover { background:var(--accent-dim); transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,255,136,0.3); }
+        .btn-secondary { background:transparent; color:var(--text-primary); border:1px solid var(--border); margin-left:1rem; }
+        .btn-secondary:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
+        /* FOOTER */
+        footer { border-top:1px solid var(--border); padding:4rem 0 2rem; }
+        .footer-content { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; margin-bottom:3rem; }
+        .footer-brand p { color:var(--text-secondary); margin-top:1rem; font-size:0.85rem; line-height:1.7; }
+        .footer-links h4 { font-family:'Syne',sans-serif; margin-bottom:1rem; font-size:0.9rem; }
+        .footer-links ul { list-style:none; }
+        .footer-links li { margin-bottom:0.75rem; }
+        .footer-links a { color:var(--text-secondary); text-decoration:none; font-size:0.85rem; transition:color 0.3s ease; }
+        .footer-links a:hover { color:var(--accent); }
+        .footer-bottom { padding-top:2rem; border-top:1px solid var(--border); text-align:center; color:var(--text-secondary); font-size:0.75rem; }
+        @media (max-width:900px) { .overview { grid-template-columns:1fr; gap:3rem; } .overview-meta { position:static; } .process-steps::before { display:none; } }
+        @media (max-width:768px) { nav { flex-direction:column; align-items:flex-start; gap:1.5rem; } .nav-left { flex-direction:column; gap:1rem; } nav ul { gap:1.5rem; } .footer-content { grid-template-columns:1fr; } .btn-secondary { margin-left:0; margin-top:1rem; } }
+
+        /* ── Service breadcrumb bar ── */
+        .back-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+        }
+        .back-bar-top {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.25s;
+        }
+        .back-link .arrow {
+            font-size: 1rem;
+            transition: transform 0.25s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link:hover .arrow { transform: translateX(-3px); }
+        .sibling-nav {
+            display: flex;
+            align-items: stretch;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .sibling-nav::-webkit-scrollbar { display: none; }
+        .sibling-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1.25rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            border-right: 1px solid var(--border);
+            transition: all 0.25s;
+            position: relative;
+        }
+        .sibling-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.25s;
+        }
+        .sibling-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.03); }
+        .sibling-link:hover::after { transform: scaleX(1); }
+        .sibling-link.current {
+            color: var(--accent);
+            background: rgba(0,255,136,0.06);
+            border-bottom: 2px solid var(--accent);
+        }
+        .sibling-link.current::after { transform: scaleX(1); }
+        .sibling-icon { font-size: 0.9rem; flex-shrink: 0; }
+        /* Legal breadcrumb bar */
+        .legal-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+        }
+        .legal-bar-top {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .legal-sibling-nav {
+            display: flex;
+            align-items: stretch;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .legal-sibling-nav::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) {
+            .sibling-link { padding: 0.75rem 0.9rem; font-size: 0.7rem; }
+        }
+        
+        .gloss-hero { padding:5rem 0 3rem; animation:fadeIn 0.9s ease-out both; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+        .gloss-hero .page-label { font-size:.72rem; text-transform:uppercase; letter-spacing:.2em; color:var(--accent); margin-bottom:1rem; }
+        .gloss-hero h1 { font-family:'Syne',sans-serif; font-size:clamp(2.4rem,6vw,4.5rem); font-weight:700; letter-spacing:-.03em; line-height:1.1; margin-bottom:1.2rem; }
+        .gloss-hero h1 .accent { color:var(--accent); }
+        .gloss-hero p { color:var(--text-secondary); font-size:1rem; max-width:640px; line-height:1.85; }
+        .group-nav { display:flex; gap:.5rem; flex-wrap:wrap; padding:2rem 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:3rem; }
+        .group-btn { display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1.1rem; border:1px solid var(--border); color:var(--text-secondary); font-family:'IBM Plex Mono',monospace; font-size:.72rem; cursor:pointer; background:transparent; transition:all .25s; white-space:nowrap; }
+        .group-btn:hover { border-color:var(--accent); color:var(--text-primary); }
+        .group-btn.active { background:var(--accent); color:var(--bg-primary); border-color:var(--accent); font-weight:600; }
+        .tab-section { margin-bottom:4rem; }
+        .tab-group-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; }
+        .tab-group-title { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; }
+        .tab-group-link { font-size:.75rem; color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent); padding-bottom:2px; transition:opacity .2s; }
+        .tab-group-link:hover { opacity:.7; }
+        .tab-bar { display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:2rem; }
+        .tab-btn { display:inline-flex; align-items:center; gap:.4rem; padding:.55rem 1rem; border:1px solid var(--border); color:var(--text-secondary); font-family:'IBM Plex Mono',monospace; font-size:.72rem; cursor:pointer; background:transparent; transition:all .22s; white-space:nowrap; position:relative; }
+        .tab-btn::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--accent); transform:scaleX(0); transition:transform .22s; }
+        .tab-btn:hover { color:var(--text-primary); border-color:rgba(0,255,136,.4); }
+        .tab-btn:hover::after { transform:scaleX(1); }
+        .tab-btn.active { color:var(--accent); border-color:var(--accent); background:rgba(0,255,136,.06); }
+        .tab-btn.active::after { transform:scaleX(1); }
+        .tab-panel { display:none; animation:panelIn .35s ease-out; }
+        .tab-panel.active { display:grid; grid-template-columns:1fr 1.5fr; gap:3rem; align-items:start; }
+        @keyframes panelIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .panel-meta { position:sticky; top:2rem; }
+        .panel-icon { width:64px; height:64px; border:1px solid var(--accent); background:rgba(0,255,136,.08); display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:1.5rem; }
+        .panel-meta h2 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:700; letter-spacing:-.02em; margin-bottom:1rem; }
+        .panel-meta p { color:var(--text-secondary); font-size:.875rem; line-height:1.85; margin-bottom:1.5rem; }
+        .panel-cta { display:inline-flex; align-items:center; gap:.5rem; color:var(--accent); text-decoration:none; font-size:.8rem; border-bottom:1px solid var(--accent); padding-bottom:2px; transition:opacity .2s; }
+        .panel-cta:hover { opacity:.7; }
+        .panel-points { display:flex; flex-direction:column; gap:.9rem; }
+        .panel-point { display:flex; align-items:flex-start; gap:.9rem; padding:1.2rem 1.4rem; background:var(--bg-secondary); border:1px solid var(--border); transition:border-color .25s; }
+        .panel-point:hover { border-color:rgba(0,255,136,.35); }
+        .panel-point-bullet { color:var(--accent); font-size:1rem; flex-shrink:0; margin-top:.1rem; }
+        .panel-point span { color:var(--text-secondary); font-size:.85rem; line-height:1.7; }
+        .tab-section { display:none; }
+        .tab-section.visible { display:block; }
+        @media(max-width:900px) { .tab-panel.active { grid-template-columns:1fr; } .panel-meta { position:static; } }
+        @media(max-width:600px) { .tab-btn { font-size:.68rem; padding:.45rem .75rem; } .group-btn { font-size:.68rem; } }</style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KZJBXK4M"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div class="container">
+                <nav>
+            <div class="nav-left">
+                <a href="index-fr.html" class="logo">Liv<span>Biko</span></a>
+                <ul>
+                    <li><a href="index-fr.html#services">Services</a></li>
+                    <li><a href="who-we-are-fr.html">Qui Sommes-Nous</a></li>
+                    <li><a href="services-glossary-fr.html">Services Expliqués</a></li>
+                    <li><a href="what-we-do-fr.html">Ce que Nous Faisons</a></li>
+                    <li><a href="index-fr.html#contact">Contact</a></li>
+                    <li><a href="book-assessment-fr.html">Réserver une Évaluation</a></li>
+                </ul>
+            </div>
+            <div class="lang-switcher">
+                <button class="lang-btn" onclick="window.location.href='services-glossary.html'">EN</button>
+                <button class="lang-btn active" onclick="window.location.href='services-glossary-fr.html'">FR</button>
+            </div>
+        </nav>
+
+<section class="gloss-hero">
+    <div class="page-label">Services & Technologies</div>
+    <h1>Chaque service, <span class="accent">expliqué.</span></h1>
+    <p>Parcourez chaque technologie et capacité que nous livrons — sélectionnez un groupe de services, puis un sujet pour voir ce que cela signifie, ce que nous faisons et pourquoi c'est important pour votre entreprise.</p>
+</section>
+
+<nav class="group-nav">
+    <button class="group-btn active" onclick="switchGroup('heberge')">🖥️ Bureau Virtuel Hébergé</button>
+    <button class="group-btn " onclick="switchGroup('m365')">☁️ Microsoft Azure & M365</button>
+    <button class="group-btn " onclick="switchGroup('manage')">🛠️ Support Managé</button>
+    <button class="group-btn " onclick="switchGroup('ia')">🔶 Oracle OCI & IA</button>
+    <button class="group-btn " onclick="switchGroup('sinistre')">💾 Reprise après Sinistre</button>
+    <button class="group-btn " onclick="switchGroup('cybersecurite')">🔒 Cybersécurité</button>
+    <button class="group-btn " onclick="switchGroup('penetration')">🎯 Tests de Pénétration</button>
+    </nav>
+
+
+    <section class="tab-section" id="group_heberge">
+        <div class="tab-group-header">
+            <h2 class="tab-group-title">🖥️ Bureau Virtuel Hébergé</h2>
+            <a href="service-virtual-desktop-fr.html" class="tab-group-link">Page Service Complète →</a>
+        </div>
+        <div class="tab-bar" id="tabbar_heberge">
+        <button class="tab-btn active" data-tab="cisco_anyconnect" onclick="switchTab(this,'heberge')">🔐 Cisco AnyConnect</button>
+        <button class="tab-btn " data-tab="rdp" onclick="switchTab(this,'heberge')">🖥️ RDP</button>
+        <button class="tab-btn " data-tab="vdi" onclick="switchTab(this,'heberge')">🗂️ VDI</button>
+        <button class="tab-btn " data-tab="acces_zero_trust" onclick="switchTab(this,'heberge')">🛡️ Accès Zero-Trust</button>
+        </div>
+        
+        <div class="tab-panel active" id="panel_heberge_cisco_anyconnect">
+            <div class="panel-meta">
+                <div class="panel-icon">🔐</div>
+                <h2>Cisco AnyConnect VPN</h2>
+                <p>Chaque session de bureau virtuel est établie via Cisco AnyConnect, imposant l'authentification multifacteur, la vérification de conformité des appareils et le chiffrement du tunnel avant tout accès aux données. Les utilisateurs sont authentifiés et la posture de leur appareil est vérifiée avant qu'une session ne soit accordée.</p>
+                <a href="service-virtual-desktop-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>MFA imposé à chaque session</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Conformité de l'appareil vérifiée avant l'accès</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tunnels chiffrés AES pour toutes les données en transit</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Compatible Windows, macOS, iOS & Android</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Politiques gérées de façon centralisée</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_heberge_rdp">
+            <div class="panel-meta">
+                <div class="panel-icon">🖥️</div>
+                <h2>Gestion Remote Desktop Protocol</h2>
+                <p>Gestion complète des environnements de bureaux virtuels Windows livrés via Remote Desktop Protocol. Notre équipe gère le provisionnement, les correctifs, le tuning des performances et le cycle de vie complet des utilisateurs — pour que vos utilisateurs bénéficient d'une expérience de bureau rapide et fiable à chaque connexion.</p>
+                <a href="service-virtual-desktop-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Bureaux virtuels Windows hébergés dans le cloud</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Correctifs et surveillance des performances automatisés</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Provisionnement et dé-provisionnement des utilisateurs</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Compatible avec tout appareil RDP</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Équilibrage de charge des sessions</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_heberge_vdi">
+            <div class="panel-meta">
+                <div class="panel-icon">🗂️</div>
+                <h2>Virtual Desktop Infrastructure</h2>
+                <p>Le modèle VDI hébergé de LivBiko déplace entièrement votre environnement de bureau dans le cloud — éliminant le coût et la complexité de l'infrastructure VDI on-premises. Chaque utilisateur dispose d'une machine virtuelle dédiée ou partagée, configurée selon son rôle, avec des applications déployées de façon centralisée.</p>
+                <a href="service-virtual-desktop-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Machines virtuelles dédiées ou partagées par utilisateur</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Modèles gold-image par département/rôle</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Applications gérées et déployées de façon centralisée</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Aucune infrastructure on-premises requise</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Reprise d'activité instantanée intégrée</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_heberge_acces_zero_trust">
+            <div class="panel-meta">
+                <div class="panel-icon">🛡️</div>
+                <h2>Architecture d'Accès Zero-Trust</h2>
+                <p>Zero-Trust signifie ne jamais supposer qu'une connexion est sûre — chaque session est authentifiée, chaque appareil est vérifié, et l'accès n'est accordé qu'à ce dont l'utilisateur a réellement besoin. LivBiko implémente les principes Zero-Trust via Cisco AnyConnect, l'accès conditionnel Entra ID et des politiques de moindre privilège.</p>
+                <a href="service-virtual-desktop-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Vérification de chaque utilisateur, chaque session</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Santé de l'appareil vérifiée avant l'accès</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Politiques d'accès conditionnel par rôle</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Accès applicatif par moindre privilège imposé</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Journaux d'audit complets de chaque session</span></div></div>
+        </div>
+    </section>
+    <section class="tab-section" id="group_m365">
+        <div class="tab-group-header">
+            <h2 class="tab-group-title">☁️ Microsoft Azure & M365</h2>
+            <a href="service-microsoft-fr.html" class="tab-group-link">Page Service Complète →</a>
+        </div>
+        <div class="tab-bar" id="tabbar_m365">
+        <button class="tab-btn active" data-tab="azure" onclick="switchTab(this,'m365')">☁️ Azure</button>
+        <button class="tab-btn " data-tab="microsoft_365" onclick="switchTab(this,'m365')">📧 Microsoft 365</button>
+        <button class="tab-btn " data-tab="gestion_tenant" onclick="switchTab(this,'m365')">🏢 Gestion Tenant</button>
+        <button class="tab-btn " data-tab="entra_id" onclick="switchTab(this,'m365')">🔑 Entra ID</button>
+        <button class="tab-btn " data-tab="intune" onclick="switchTab(this,'m365')">📱 Intune</button>
+        </div>
+        
+        <div class="tab-panel active" id="panel_m365_azure">
+            <div class="panel-meta">
+                <div class="panel-icon">☁️</div>
+                <h2>Infrastructure Microsoft Azure</h2>
+                <p>LivBiko conçoit, déploie et gère des environnements Azure adaptés à vos charges de travail — machines virtuelles, comptes de stockage, réseaux virtuels, Azure SQL, App Services et plus. Nous gérons votre abonnement Azure directement, avec gouvernance des coûts, bases de sécurité et optimisation intégrées.</p>
+                <a href="service-microsoft-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Gestion complète de l'abonnement Azure</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Machines virtuelles, réseaux & stockage</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Azure SQL, App Services, Azure Kubernetes</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Surveillance des coûts & optimisation incluses</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Bases de sécurité appliquées en standard</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_m365_microsoft_365">
+            <div class="panel-meta">
+                <div class="panel-icon">📧</div>
+                <h2>Gestion Microsoft 365</h2>
+                <p>Nous gérons l'intégralité de votre environnement Microsoft 365 — Exchange Online, SharePoint, OneDrive, Teams et licences — directement dans votre tenant. Des migrations à l'administration quotidienne, nous maintenons votre environnement M365 propre, sécurisé et rentable.</p>
+                <a href="service-microsoft-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Exchange Online, SharePoint, OneDrive & Teams</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Administration complète du tenant</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Gestion des licences & optimisation des coûts</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Migration depuis Google Workspace ou Exchange on-premises</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Rapports mensuels & bilans trimestriels</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_m365_gestion_tenant">
+            <div class="panel-meta">
+                <div class="panel-icon">🏢</div>
+                <h2>Gestion du Tenant Microsoft</h2>
+                <p>Nous travaillons directement dans vos tenants Microsoft 365 et Azure — gérant les cycles de vie des utilisateurs, les stratégies de groupe, les paramètres de sécurité et les licences. Notre équipe garantit que votre tenant est toujours propre, conforme et configuré selon les meilleures pratiques Microsoft.</p>
+                <a href="service-microsoft-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Création, modification & offboarding des utilisateurs</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Configuration des stratégies de groupe & accès conditionnel</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Améliorations des paramètres de sécurité & Secure Score</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Allocation des licences & reporting des coûts</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Accès direct au tenant — pas via un portail tiers</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_m365_entra_id">
+            <div class="panel-meta">
+                <div class="panel-icon">🔑</div>
+                <h2>Microsoft Entra ID (Azure AD)</h2>
+                <p>Entra ID est la colonne vertébrale des identités de votre environnement Microsoft. LivBiko gère l'application du MFA, les politiques d'accès conditionnel, la gestion des identités privilégiées (PIM) et l'authentification unique (SSO) — garantissant que les bonnes personnes accèdent aux bonnes ressources.</p>
+                <a href="service-microsoft-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>MFA activé pour tous les utilisateurs</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Politiques d'accès conditionnel par rôle/localisation</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Privileged Identity Management (PIM)</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Authentification unique (SSO) entre applications</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Gouvernance des accès utilisateurs invités</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_m365_intune">
+            <div class="panel-meta">
+                <div class="panel-icon">📱</div>
+                <h2>Gestion des Appareils Microsoft Intune</h2>
+                <p>Intune vous donne le contrôle de chaque appareil de votre organisation — Windows, macOS, iOS et Android — sans qu'ils soient physiquement présents. LivBiko gère l'enrôlement, la configuration des politiques, la surveillance de conformité et l'effacement à distance.</p>
+                <a href="service-microsoft-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Enrôlement & déploiement de politiques</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Bases de sécurité imposées sur tous les endpoints</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Surveillance de conformité & reporting</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Effacement à distance pour appareils perdus ou compromis</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Compatible BYOD et appareils d'entreprise</span></div></div>
+        </div>
+    </section>
+    <section class="tab-section" id="group_manage">
+        <div class="tab-group-header">
+            <h2 class="tab-group-title">🛠️ Support Managé</h2>
+            <a href="service-managed-support-fr.html" class="tab-group-link">Page Service Complète →</a>
+        </div>
+        <div class="tab-bar" id="tabbar_manage">
+        <button class="tab-btn active" data-tab="helpdesk_24_7" onclick="switchTab(this,'manage')">🎧 Helpdesk 24/7</button>
+        <button class="tab-btn " data-tab="sla_garanti" onclick="switchTab(this,'manage')">📋 SLA Garanti</button>
+        <button class="tab-btn " data-tab="rmm" onclick="switchTab(this,'manage')">📡 RMM</button>
+        <button class="tab-btn " data-tab="sur_site_and_distant" onclick="switchTab(this,'manage')">🚗 Sur Site & Distant</button>
+        </div>
+        
+        <div class="tab-panel active" id="panel_manage_helpdesk_24_7">
+            <div class="panel-meta">
+                <div class="panel-icon">🎧</div>
+                <h2>Support Helpdesk 24/7</h2>
+                <p>Support helpdesk illimité pour tous vos utilisateurs, en permanence. Nos ingénieurs sont disponibles par téléphone, email et portail de ticketing à toute heure — pas seulement pendant les heures de bureau. Chaque ticket reçoit une réponse dans les délais définis par votre SLA.</p>
+                <a href="service-managed-support-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tickets illimités — pas de facturation à l'incident</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Support par téléphone, email & portail</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Temps de réponse définis dans votre SLA</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Ingénieurs qui connaissent votre environnement</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Couverture hors heures pour incidents P1 & P2</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_manage_sla_garanti">
+            <div class="panel-meta">
+                <div class="panel-icon">📋</div>
+                <h2>Temps de Réponse Garantis par SLA</h2>
+                <p>Chaque client de services managés dispose d'un Accord de Niveau de Service définissant exactement ce à quoi s'attendre — temps de réponse, objectifs de résolution et voies d'escalade pour chaque niveau de priorité.</p>
+                <a href="service-managed-support-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>P1 Critique : réponse 15 min, résolution 4h</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>P2 Haute : réponse 1h, résolution 8h</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>P3 Moyenne : réponse 4h, 2 jours ouvrés</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>P4 Basse : réponse 1 jour ouvré</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Rapports de performance SLA mensuels</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_manage_rmm">
+            <div class="panel-meta">
+                <div class="panel-icon">📡</div>
+                <h2>Surveillance & Gestion à Distance</h2>
+                <p>Nous déployons notre agent RMM sur chaque endpoint, serveur et équipement réseau de votre environnement — surveillant CPU, mémoire, disque, état des correctifs et posture de sécurité en temps réel. Les problèmes sont signalés et traités de façon proactive avant que vos utilisateurs ne les remarquent.</p>
+                <a href="service-managed-support-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Agent déployé sur tous les endpoints & serveurs</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Surveillance CPU, mémoire, disque & correctifs en temps réel</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Alertes automatisées avant impact utilisateur</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Résolution proactive des problèmes incluse</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Visibilité de la posture de sécurité sur tous les actifs</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_manage_sur_site_and_distant">
+            <div class="panel-meta">
+                <div class="panel-icon">🚗</div>
+                <h2>Support Sur Site & Distant</h2>
+                <p>Quand le support distant ne suffit pas, nous nous déplaçons chez vous. Nos ingénieurs couvrent Londres et le Sud-Est pour les visites sur site — remplacements matériels, dépannage réseau, déménagements de bureaux, installation de nouveaux sites. Distant en priorité, sur site quand c'est nécessaire.</p>
+                <a href="service-managed-support-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Couverture sur site à Londres & Sud-Est</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Remplacement & installation matérielle</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Dépannage réseau & câblage</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Déménagements de bureaux & installation de nouveaux sites</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Approche distant-first — sur site quand nécessaire</span></div></div>
+        </div>
+    </section>
+    <section class="tab-section" id="group_ia">
+        <div class="tab-group-header">
+            <h2 class="tab-group-title">🔶 Oracle OCI & IA</h2>
+            <a href="service-oracle-fr.html" class="tab-group-link">Page Service Complète →</a>
+        </div>
+        <div class="tab-bar" id="tabbar_ia">
+        <button class="tab-btn active" data-tab="oracle_partner" onclick="switchTab(this,'ia')">🔶 Oracle Partner</button>
+        <button class="tab-btn " data-tab="oci" onclick="switchTab(this,'ia')">🏗️ OCI</button>
+        <button class="tab-btn " data-tab="oracle_ia" onclick="switchTab(this,'ia')">🤖 Oracle IA</button>
+        <button class="tab-btn " data-tab="integration_cloud" onclick="switchTab(this,'ia')">🔗 Intégration Cloud</button>
+        </div>
+        
+        <div class="tab-panel active" id="panel_ia_oracle_partner">
+            <div class="panel-meta">
+                <div class="panel-icon">🔶</div>
+                <h2>Partenaire Oracle Agréé</h2>
+                <p>LivBiko détient le statut de Partenaire Oracle — donnant à nos clients accès à des blueprints d'architecture validés, des voies d'escalade technique Oracle directes, et des ressources partenaires exclusives indisponibles pour les non-partenaires.</p>
+                <a href="service-oracle-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Accréditation Partenaire Oracle</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Accès aux voies d'escalade technique Oracle</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Blueprints d'architecture OCI validés</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Ingénieurs Oracle certifiés sur votre compte</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Avantages tarifaires et de licences partenaires</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_ia_oci">
+            <div class="panel-meta">
+                <div class="panel-icon">🏗️</div>
+                <h2>Oracle Cloud Infrastructure (OCI)</h2>
+                <p>Oracle Cloud Infrastructure fournit des services de calcul, stockage, réseau et base de données de niveau entreprise — souvent à un coût nettement inférieur à AWS ou Azure pour les charges de travail Oracle. LivBiko conçoit, déploie et gère des environnements OCI conformes aux meilleures pratiques Oracle.</p>
+                <a href="service-oracle-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Calcul, réseaux, stockage bloc & objet</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Oracle Database Cloud Service (DBCS, ADB, Exadata)</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Réseaux OCI : VCN, load balancers, FastConnect</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Gouvernance des coûts et alertes budgétaires</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Security Zones et gestion des identités & accès</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_ia_oracle_ia">
+            <div class="panel-meta">
+                <div class="panel-icon">🤖</div>
+                <h2>Produits & Services IA Oracle</h2>
+                <p>La suite IA d'Oracle — OCI AI Vision, OCI Language, OCI Anomaly Detection et Oracle Analytics Cloud — apporte le machine learning à vos données Oracle sans nécessiter d'équipe data science dédiée. LivBiko implémente et intègre ces services.</p>
+                <a href="service-oracle-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>OCI AI Vision : analyse d'images & documents</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>OCI Language : NLP, sentiment & classification de textes</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>OCI Anomaly Detection pour la surveillance opérationnelle</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tableaux de bord Oracle Analytics Cloud & insights ML</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Intégrés dans vos applications Oracle existantes</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_ia_integration_cloud">
+            <div class="panel-meta">
+                <div class="panel-icon">🔗</div>
+                <h2>Intégration Cloud Oracle</h2>
+                <p>De nombreuses entreprises exploitent des charges de travail Oracle on-premises aux côtés d'environnements Microsoft Azure. LivBiko gère des architectures Oracle hybrides — connectant les bases de données Oracle on-premises à OCI via FastConnect ou VPN, intégrant OCI avec Azure Active Directory.</p>
+                <a href="service-oracle-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Oracle on-premises connecté à OCI</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Coexistence & intégration OCI et Azure</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Connectivité FastConnect et VPN IPSec</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Fédération d'identités entre Oracle et Microsoft</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Mouvement sécurisé des données entre environnements</span></div></div>
+        </div>
+    </section>
+    <section class="tab-section" id="group_sinistre">
+        <div class="tab-group-header">
+            <h2 class="tab-group-title">💾 Reprise après Sinistre</h2>
+            <a href="service-disaster-recovery-fr.html" class="tab-group-link">Page Service Complète →</a>
+        </div>
+        <div class="tab-bar" id="tabbar_sinistre">
+        <button class="tab-btn active" data-tab="backup_as_a_service" onclick="switchTab(this,'sinistre')">💾 Backup-as-a-Service</button>
+        <button class="tab-btn " data-tab="rto___rpo" onclick="switchTab(this,'sinistre')">⏱️ RTO / RPO</button>
+        <button class="tab-btn " data-tab="draas" onclick="switchTab(this,'sinistre')">☁️ DRaaS</button>
+        <button class="tab-btn " data-tab="tests_de_basculement" onclick="switchTab(this,'sinistre')">🧪 Tests de Basculement</button>
+        </div>
+        
+        <div class="tab-panel active" id="panel_sinistre_backup_as_a_service">
+            <div class="panel-meta">
+                <div class="panel-icon">💾</div>
+                <h2>Backup-as-a-Service</h2>
+                <p>Sauvegardes automatisées et chiffrées AES-256 de vos serveurs, endpoints, charges de travail cloud et données Microsoft 365 — stockées dans des emplacements géographiquement séparés avec des durées de rétention configurables. Chaque tâche de sauvegarde est surveillée quotidiennement.</p>
+                <a href="service-disaster-recovery-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Sauvegardes automatisées selon votre calendrier</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Chiffrement AES-256 au repos et en transit</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Emplacements de stockage géographiquement séparés</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Sauvegarde Microsoft 365 (Exchange, SharePoint, OneDrive, Teams)</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Surveillance quotidienne — tâches échouées investiguées</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_sinistre_rto___rpo">
+            <div class="panel-meta">
+                <div class="panel-icon">⏱️</div>
+                <h2>Objectifs de Temps et Point de Reprise</h2>
+                <p>Le RTO (Recovery Time Objective) définit la rapidité avec laquelle vous devez être de nouveau opérationnel après un incident. Le RPO (Recovery Point Objective) définit la perte de données acceptable. LivBiko travaille avec vous pour définir ces cibles pour chaque charge de travail, puis conçoit une stratégie qui les garantit.</p>
+                <a href="service-disaster-recovery-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>RTO défini par charge de travail (minutes à heures)</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>RPO défini par charge de travail (zéro à 24 heures)</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Stratégie conçue autour de vos cibles, pas du coût</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tests réguliers pour valider le RTO réel vs cible</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Runbooks de reprise écrits pour chaque scénario</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_sinistre_draas">
+            <div class="panel-meta">
+                <div class="panel-icon">☁️</div>
+                <h2>Disaster Recovery as a Service</h2>
+                <p>Le DRaaS assure le basculement automatisé de vos serveurs et charges de travail critiques vers l'environnement DR cloud de LivBiko — de sorte qu'en cas de panne de site, d'attaque ransomware ou de défaillance matérielle, vos systèmes reviennent en ligne dans votre RTO convenu sans intervention manuelle.</p>
+                <a href="service-disaster-recovery-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Basculement automatisé des charges de travail critiques</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Cibles RTO pré-définies par charge de travail</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Environnement DR cloud maintenu et prêt</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tests de basculement inclus — pas une option payante</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Reprise en production complète ou capacité réduite</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_sinistre_tests_de_basculement">
+            <div class="panel-meta">
+                <div class="panel-icon">🧪</div>
+                <h2>Tests de Basculement & Exercices DR</h2>
+                <p>Un plan DR non testé est une hypothèse. LivBiko conduit des exercices DR planifiés — testant les restaurations de sauvegarde, les procédures de basculement et les temps de reprise par rapport à vos cibles RTO documentées — et fournit un rapport écrit confirmant les résultats.</p>
+                <a href="service-disaster-recovery-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Exercices DR planifiés — généralement trimestriels</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tests de restauration de sauvegarde inclus</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Validation des procédures de basculement</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Rapport écrit : RTO réel vs cible documentée</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Problèmes identifiés et remédiés avant un incident réel</span></div></div>
+        </div>
+    </section>
+    <section class="tab-section" id="group_cybersecurite">
+        <div class="tab-group-header">
+            <h2 class="tab-group-title">🔒 Cybersécurité</h2>
+            <a href="service-cybersecurity-fr.html" class="tab-group-link">Page Service Complète →</a>
+        </div>
+        <div class="tab-bar" id="tabbar_cybersecurite">
+        <button class="tab-btn active" data-tab="edr" onclick="switchTab(this,'cybersecurite')">🔍 EDR</button>
+        <button class="tab-btn " data-tab="siem" onclick="switchTab(this,'cybersecurite')">📊 SIEM</button>
+        <button class="tab-btn " data-tab="cyber_essentials" onclick="switchTab(this,'cybersecurite')">🏅 Cyber Essentials</button>
+        <button class="tab-btn " data-tab="rgpd" onclick="switchTab(this,'cybersecurite')">⚖️ RGPD</button>
+        <button class="tab-btn " data-tab="iso_27001" onclick="switchTab(this,'cybersecurite')">📜 ISO 27001</button>
+        </div>
+        
+        <div class="tab-panel active" id="panel_cybersecurite_edr">
+            <div class="panel-meta">
+                <div class="panel-icon">🔍</div>
+                <h2>Détection & Réponse aux Endpoints</h2>
+                <p>EDR piloté par IA déployé sur tous vos endpoints — laptops, desktops, serveurs et VMs cloud. L'EDR va au-delà de l'antivirus traditionnel en détectant les indicateurs comportementaux de compromission en temps réel, isolant automatiquement les appareils affectés et fournissant une télémétrie forensique complète.</p>
+                <a href="service-cybersecurity-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Déployé sur tous les endpoints & serveurs</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Détection comportementale — pas seulement des signatures</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Isolation automatique des appareils compromis</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Télémétrie forensique complète pour investigation</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Géré par notre SOC 24/7</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_cybersecurite_siem">
+            <div class="panel-meta">
+                <div class="panel-icon">📊</div>
+                <h2>Security Information & Event Management</h2>
+                <p>Notre plateforme SIEM agrège et corrèle les journaux de vos endpoints, environnements cloud, pare-feux, systèmes d'identité et applications — donnant à nos analystes SOC une vue unique de votre posture de sécurité. Les alertes sont triées en temps réel.</p>
+                <a href="service-cybersecurity-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Agrégation des journaux de toutes les sources</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Corrélation et alertes en temps réel</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Analystes SOC examinant les alertes 24/7</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Filtrage des faux positifs inclus</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Flux de renseignements sur les menaces intégrés</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_cybersecurite_cyber_essentials">
+            <div class="panel-meta">
+                <div class="panel-icon">🏅</div>
+                <h2>Certification Cyber Essentials</h2>
+                <p>Cyber Essentials est une certification soutenue par le Gouvernement britannique couvrant cinq contrôles clés : pare-feux, configuration sécurisée, contrôle des accès, protection contre les malwares et gestion des correctifs. LivBiko gère les cinq contrôles dans le cadre de votre service managé.</p>
+                <a href="service-cybersecurity-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Les cinq domaines de contrôle CE gérés en standard</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Renouvellement annuel supporté par notre équipe</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Évaluation des écarts et remédiation incluses</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Cyber Essentials Plus également supporté</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Requis pour de nombreux contrats du Gouvernement britannique</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_cybersecurite_rgpd">
+            <div class="panel-meta">
+                <div class="panel-icon">⚖️</div>
+                <h2>Gestion de la Conformité RGPD</h2>
+                <p>Le RGPD britannique exige des organisations qu'elles mettent en œuvre des contrôles techniques appropriés pour protéger les données personnelles. LivBiko gère le côté technique de votre conformité RGPD — chiffrement, contrôles d'accès, journaux d'audit, détection des violations et réponse aux incidents.</p>
+                <a href="service-cybersecurity-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Contrôles techniques mappés aux exigences RGPD</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Détection des violations et support de notification sous 72h</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Contrôles d'accès aux données et journaux d'audit</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Dossiers de preuves pour audits et due diligence</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Revue de conformité annuelle incluse</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_cybersecurite_iso_27001">
+            <div class="panel-meta">
+                <div class="panel-icon">📜</div>
+                <h2>Support ISO 27001</h2>
+                <p>ISO 27001 est la norme internationale pour la gestion de la sécurité de l'information. Le service de sécurité managée de LivBiko implémente et maintient de nombreux contrôles techniques requis par ISO 27001 — gestion des accès, gestion des vulnérabilités, réponse aux incidents et continuité d'activité.</p>
+                <a href="service-cybersecurity-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Contrôles techniques alignés sur l'Annexe A ISO 27001</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Gestion des accès et application du moindre privilège</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Programme de gestion des vulnérabilités</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Réponse aux incidents et continuité d'activité</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Preuves et documentation pour audits de certification</span></div></div>
+        </div>
+    </section>
+    <section class="tab-section" id="group_penetration">
+        <div class="tab-group-header">
+            <h2 class="tab-group-title">🎯 Tests de Pénétration</h2>
+            <a href="service-pen-testing-fr.html" class="tab-group-link">Page Service Complète →</a>
+        </div>
+        <div class="tab-bar" id="tabbar_penetration">
+        <button class="tab-btn active" data-tab="tests_de_penetration" onclick="switchTab(this,'penetration')">🎯 Tests de Pénétration</button>
+        <button class="tab-btn " data-tab="scan_de_vulnerabilites" onclick="switchTab(this,'penetration')">🔎 Scan de Vulnérabilités</button>
+        <button class="tab-btn " data-tab="owasp" onclick="switchTab(this,'penetration')">🌐 OWASP</button>
+        <button class="tab-btn " data-tab="evaluation_reseau" onclick="switchTab(this,'penetration')">🌍 Évaluation Réseau</button>
+        <button class="tab-btn " data-tab="remediation" onclick="switchTab(this,'penetration')">🔧 Remédiation</button>
+        </div>
+        
+        <div class="tab-panel active" id="panel_penetration_tests_de_penetration">
+            <div class="panel-meta">
+                <div class="panel-icon">🎯</div>
+                <h2>Tests de Pénétration</h2>
+                <p>Nos testeurs de pénétration simulent des techniques d'attaque réelles contre votre réseau, applications web, environnements cloud et infrastructure physique — trouvant les vulnérabilités que les scanners automatisés manquent. Chaque engagement est cadré, délimité dans le temps et livré avec un rapport technique clair.</p>
+                <a href="service-pen-testing-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tests réseau, application web & cloud</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tests internes et externes disponibles</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Techniques d'attaque réelles utilisées</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Rapport technique + résumé exécutif</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Engagements à prix fixe avec périmètre clair</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_penetration_scan_de_vulnerabilites">
+            <div class="panel-meta">
+                <div class="panel-icon">🔎</div>
+                <h2>Analyse de Vulnérabilités</h2>
+                <p>Analyse de vulnérabilités authentifiée de tous les actifs dans le périmètre, exécutée selon votre calendrier. Les résultats sont dédupliqués, les faux positifs supprimés et priorisés par exploitabilité réelle dans votre environnement — pas seulement par score CVSS brut.</p>
+                <a href="service-pen-testing-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Scans authentifiés de tous les actifs dans le périmètre</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Résultats priorisés par exploitabilité, pas seulement CVSS</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Faux positifs examinés et supprimés</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Suivi de remédiation inclus</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Retest des corrections confirmées sans frais supplémentaires</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_penetration_owasp">
+            <div class="panel-meta">
+                <div class="panel-icon">🌐</div>
+                <h2>Tests d'Applications Web OWASP Top 10</h2>
+                <p>L'OWASP Top 10 définit les risques de sécurité des applications web les plus critiques. Nos testeurs couvrent l'intégralité du Top 10, plus les failles de logique métier spécifiques à votre application.</p>
+                <a href="service-pen-testing-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Couverture complète de l'OWASP Top 10</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tests de sécurité des API inclus</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tests de vulnérabilités de logique métier</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Revue de l'authentification et gestion des sessions</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Résultats détaillés avec preuves de concept</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_penetration_evaluation_reseau">
+            <div class="panel-meta">
+                <div class="panel-icon">🌍</div>
+                <h2>Évaluation de Sécurité Réseau</h2>
+                <p>Évaluations réseau internes et externes couvrant votre périmètre, la segmentation interne, les règles de pare-feu et l'infrastructure sans fil. Nous identifions les mauvaises configurations, les relations de confiance excessives, les chemins de mouvement latéral et les opportunités d'escalade de privilèges.</p>
+                <a href="service-pen-testing-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Tests du périmètre externe et du réseau interne</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Revue des règles de pare-feu et identification des mauvaises configurations</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Analyse des chemins de mouvement latéral</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Évaluation de la sécurité des réseaux sans fil</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Résultats priorisés par impact métier</span></div></div>
+        </div>
+        <div class="tab-panel " id="panel_penetration_remediation">
+            <div class="panel-meta">
+                <div class="panel-icon">🔧</div>
+                <h2>Support de Remédiation & Vérification</h2>
+                <p>Notre engagement ne s'arrête pas au rapport. Nous accompagnons votre équipe dans la remédiation — répondant aux questions techniques, examinant les correctifs proposés et confirmant la bonne approche avant que des changements soient apportés. Une fois la remédiation terminée, nous retestons tous les résultats critiques et élevés.</p>
+                <a href="service-pen-testing-fr.html" class="panel-cta">En savoir plus sur ce service →</a>
+            </div>
+            <div class="panel-points"><div class="panel-point"><span class="panel-point-bullet">→</span><span>Conseils de remédiation rédigés pour les ingénieurs</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Support technique Q&R tout au long de la remédiation</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Retest de tous les résultats critiques et élevés</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Rapport de confirmation émis après le retest</span></div><div class="panel-point"><span class="panel-point-bullet">→</span><span>Accès continu à notre équipe sécurité pendant la remédiation</span></div></div>
+        </div>
+    </section>
+
+<section class="cta-section" style="padding:5rem 0;text-align:center;border-top:1px solid var(--border);margin-top:2rem;">
+    <div class="section-label">Prêt à Parler ?</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;margin-bottom:1rem;letter-spacing:-.02em;">Vous ne savez pas quels services vous conviennent ?</h2>
+    <p style="color:var(--text-secondary);margin-bottom:2.5rem;">Réservez une évaluation gratuite et nous vous dirons exactement ce que nous recommanderions — et pourquoi.</p>
+    <a href="book-assessment-fr.html" class="btn btn-primary">Réserver une Évaluation Gratuite</a>
+    <a href="what-we-do-fr.html" class="btn btn-secondary" style="margin-left:1rem;">Aperçu Complet des Services</a>
+</section>
+
+                <footer>
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="index-fr.html" class="logo">Liv<span>Biko</span></a>
+                    <p>Prestataire de Services Managés basé à Londres, offrant bureaux virtuels hébergés, services cloud Microsoft &amp; Oracle, cybersécurité et support IT managé 24/7.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="service-virtual-desktop-fr.html">🖥️ Bureau Virtuel Hébergé</a></li>
+                        <li><a href="service-microsoft-fr.html">☁️ Microsoft Azure &amp; M365</a></li>
+                        <li><a href="service-oracle-fr.html">🔶 Oracle OCI &amp; IA</a></li>
+                        <li><a href="service-managed-support-fr.html">🛠️ Support Managé</a></li>
+                        <li><a href="service-disaster-recovery-fr.html">💾 Reprise après Sinistre</a></li>
+                        <li><a href="service-cybersecurity-fr.html">🔒 Cybersécurité</a></li>
+                        <li><a href="service-pen-testing-fr.html">🎯 Tests de Pénétration</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Entreprise</h4>
+                    <ul>
+                        <li><a href="who-we-are-fr.html">Qui Sommes-Nous</a></li>
+                        <li><a href="what-we-do-fr.html">Ce que Nous Faisons</a></li>
+                        <li><a href="services-glossary-fr.html">Services Expliqués</a></li>
+                        <li><a href="index-fr.html#contact">Contact</a></li>
+                        <li><a href="book-assessment-fr.html">Réserver une Évaluation</a></li>
+                        <li><a href="index.html">🇬🇧 English Version</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Légal</h4>
+                    <ul>
+                        <li><a href="legal-privacy-fr.html">Politique de Confidentialité</a></li>
+                        <li><a href="legal-terms-fr.html">Conditions d'Utilisation</a></li>
+                        <li><a href="legal-sla-fr.html">SLA</a></li>
+                        <li><a href="legal-cyber-essentials-fr.html">Cyber Essentials</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 LivBiko. Tous droits réservés. &nbsp;|&nbsp; <a href="legal-privacy-fr.html" style="color:var(--text-secondary);text-decoration:none;">Confidentialité</a> &nbsp;|&nbsp; <a href="legal-terms-fr.html" style="color:var(--text-secondary);text-decoration:none;">Conditions</a> &nbsp;|&nbsp; <a href="index.html" style="color:var(--text-secondary);text-decoration:none;">English</a></p>
+            </div>
+        </footer>
+</div>
+
+<script>
+function switchGroup(gid) {
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('visible'));
+    document.querySelectorAll('.group-btn').forEach(b => b.classList.remove('active'));
+    const sec = document.getElementById('group_' + gid);
+    if (sec) sec.classList.add('visible');
+    document.querySelectorAll('.group-btn').forEach(b => {
+        if (b.getAttribute('onclick').includes("'" + gid + "'")) b.classList.add('active');
+    });
+    if (sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function switchTab(btn, gid) {
+    const bar = document.getElementById('tabbar_' + gid);
+    bar.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tid = btn.getAttribute('data-tab');
+    const sec = document.getElementById('group_' + gid);
+    sec.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById('panel_' + gid + '_' + tid);
+    if (panel) panel.classList.add('active');
+}
+document.addEventListener('DOMContentLoaded', () => switchGroup('heberge'));
+</script>
+</body>
+</html>

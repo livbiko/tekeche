@@ -1,0 +1,54 @@
+# tekeche-web -- static mirror of tekeche.com/www.tekeche.com for the OKE/
+# standby backup path (see ops/oci/dns.tf's 2026-07-18 FAILOVER steering
+# policy). No ConfigMap/Secret/DB dependency -- much simpler than tekeche-api.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tekeche-web
+  namespace: tekeche
+  labels:
+    app: tekeche-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tekeche-web
+  template:
+    metadata:
+      labels:
+        app: tekeche-web
+    spec:
+      imagePullSecrets:
+        - name: ocir-pull-secret
+      containers:
+        - name: tekeche-web
+          image: lhr.ocir.io/lr14abpkfrxj/tekeche-web:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "200m"
+              memory: "64Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101  # nginxinc/nginx-unprivileged's "nginx" user
+            allowPrivilegeEscalation: false

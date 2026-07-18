@@ -110,6 +110,10 @@ variable "lb_cert_id" {
 variable "dns_zone_name" { default = "tekeche.com" }
 variable "api_hostname" { default = "api" }
 variable "dns_ttl" { default = 30 }
+variable "livbiko_zone_name" {
+  default     = "livbiko.com"
+  description = "Separate registrar zone from tekeche.com -- own NS delegation, own steering policy"
+}
 
 # ── App ───────────────────────────────────────────────────────────────────────
 variable "github_repo_url" { default = "https://github.com/livbiko/tekeche-api" }

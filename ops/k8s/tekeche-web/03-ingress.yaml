@@ -1,0 +1,39 @@
+# Fronted by ingress-nginx (NodePort, not LoadBalancer) -- same reasoning as
+# tekeche-api's ingress: the existing single-public-IP OCI NLB's main-backends
+# set already reaches this cluster's ingress-nginx NodePort; no second public
+# LB needed. TLS secret provisioned manually (no cert-manager in this
+# cluster) from a freshly-issued win-acme cert (see MAINTENANCE_LOG
+# 2026-07-18 -- the cert originally bound in IIS has a non-exportable key).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tekeche-web
+  namespace: tekeche
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - tekeche.com
+        - www.tekeche.com
+      secretName: tekeche-web-tls
+  rules:
+    - host: tekeche.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tekeche-web
+                port:
+                  number: 8080
+    - host: www.tekeche.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tekeche-web
+                port:
+                  number: 8080

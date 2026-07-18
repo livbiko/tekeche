@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tekeche Admin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface2: #273447; --surface3: #1a2535;
+      --border: #334155; --text: #f1f5f9; --muted: #94a3b8; --muted2: #64748b;
+      --orange: #e8701a; --green: #10b981; --red: #ef4444;
+      --blue: #3b82f6; --yellow: #f59e0b; --purple: #8b5cf6;
+    }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; }
+
+    /* ── Login ── */
+    #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+    .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; }
+    .login-logo { font-size: 32px; font-weight: 800; color: var(--orange); text-align: center; margin-bottom: 4px; }
+    .login-sub { color: var(--muted); text-align: center; font-size: 14px; margin-bottom: 32px; }
+    label { display: block; color: var(--muted); font-size: 12px; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+    input, select, textarea { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-size: 14px; outline: none; transition: border-color .2s; margin-bottom: 14px; font-family: inherit; }
+    input:focus, select:focus, textarea:focus { border-color: var(--orange); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--orange); color: #fff; border: none; border-radius: 10px; padding: 11px 20px; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity .2s; }
+    .btn:hover { opacity: .88; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-block { display: flex; width: 100%; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--orange); color: var(--orange); margin-top: 10px; }
+    .btn-ghost { background: var(--surface2); color: var(--muted); border: none; }
+    .btn-green { background: rgba(16,185,129,.15); color: var(--green); border: 1.5px solid var(--green); }
+    .btn-red { background: rgba(239,68,68,.15); color: var(--red); border: 1.5px solid var(--red); }
+    .btn-blue { background: rgba(59,130,246,.15); color: var(--blue); border: 1.5px solid var(--blue); }
+    .btn-sm { padding: 7px 14px; font-size: 12px; border-radius: 8px; }
+    .err { color: var(--red); font-size: 13px; margin-bottom: 10px; min-height: 20px; }
+
+    /* ── App shell ── */
+    #app { display: none; }
+    .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 220px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; }
+    .sidebar-logo { padding: 20px; font-size: 20px; font-weight: 800; color: var(--orange); border-bottom: 1px solid var(--border); }
+    .sidebar-logo span { color: var(--muted); font-size: 11px; font-weight: 500; display: block; margin-top: 2px; }
+    .nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; color: var(--muted); font-size: 14px; font-weight: 500; transition: all .15s; border: none; background: none; width: 100%; text-align: left; }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: rgba(232,112,26,.12); color: var(--orange); font-weight: 600; }
+    .nav-icon { font-size: 17px; width: 22px; text-align: center; }
+    .sos-badge { background: var(--red); color: #fff; border-radius: 10px; font-size: 10px; font-weight: 700; padding: 2px 6px; margin-left: auto; }
+    .sidebar-footer { padding: 12px 8px; border-top: 1px solid var(--border); }
+    .admin-chip { padding: 10px 12px; border-radius: 10px; font-size: 13px; color: var(--muted); }
+    .main { margin-left: 220px; min-height: 100vh; }
+    .page { display: none; padding: 28px; }
+    .page.active { display: block; }
+    .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .page-sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+    /* ── Stats grid ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+    .stat-icon { font-size: 22px; margin-bottom: 10px; }
+    .stat-value { font-size: 26px; font-weight: 800; }
+    .stat-label { color: var(--muted); font-size: 12px; margin-top: 3px; }
+
+    /* ── Tables ── */
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .table-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .table-title { font-size: 15px; font-weight: 700; }
+    .table-actions { display: flex; gap: 8px; align-items: center; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 11px 16px; font-size: 11px; font-weight: 600; color: var(--muted2); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 12px 16px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--surface2); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+    .empty-row td { text-align: center; color: var(--muted); padding: 32px; }
+
+    /* ── Badges ── */
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .badge-pending  { background: rgba(245,158,11,.15); color: var(--yellow); }
+    .badge-verified { background: rgba(59,130,246,.15); color: var(--blue); }
+    .badge-approved { background: rgba(16,185,129,.15); color: var(--green); }
+    .badge-rejected { background: rgba(239,68,68,.15); color: var(--red); }
+    .badge-online   { background: rgba(16,185,129,.15); color: var(--green); }
+    .badge-offline  { background: rgba(100,116,139,.15); color: var(--muted2); }
+    .badge-completed{ background: rgba(16,185,129,.15); color: var(--green); }
+    .badge-cancelled{ background: rgba(239,68,68,.15); color: var(--red); }
+    .badge-searching{ background: rgba(245,158,11,.15); color: var(--yellow); }
+    .badge-in_progress { background: rgba(59,130,246,.15); color: var(--blue); }
+    .badge-active   { background: rgba(16,185,129,.15); color: var(--green); }
+    .badge-inactive { background: rgba(239,68,68,.15); color: var(--red); }
+
+    /* ── KYC docs ── */
+    .doc-thumbs { display: flex; gap: 6px; }
+    .doc-thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; cursor: pointer; border: 1.5px solid var(--border); }
+    .doc-thumb-empty { width: 40px; height: 40px; border-radius: 6px; background: var(--surface2); display: flex; align-items: center; justify-content: center; color: var(--border); font-size: 14px; }
+
+    /* ── Forms / Modals ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 50; align-items: center; justify-content: center; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--surface); border-radius: 20px; padding: 28px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea { margin-bottom: 0; }
+    .modal-footer { display: flex; gap: 10px; margin-top: 6px; }
+    .modal-footer .btn { flex: 1; }
+
+    /* ── Lightbox ── */
+    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.88); z-index: 100; align-items: center; justify-content: center; }
+    #lightbox.open { display: flex; }
+    #lightbox img { max-width: 90vw; max-height: 88vh; border-radius: 12px; object-fit: contain; }
+    #lb-close { position: fixed; top: 18px; right: 22px; background: none; border: none; color: #fff; font-size: 30px; cursor: pointer; }
+
+    /* ── SOS alerts ── */
+    .sos-feed { display: flex; flex-direction: column; gap: 12px; }
+    .sos-card { background: var(--surface); border: 1.5px solid var(--red); border-radius: 16px; padding: 18px; }
+    .sos-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .sos-title { color: var(--red); font-weight: 700; font-size: 15px; }
+    .sos-time { color: var(--muted2); font-size: 12px; }
+    .sos-detail { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .sos-new { animation: pulse-border .8s ease-in-out 3; }
+    @keyframes pulse-border { 0%,100% { border-color: var(--red); } 50% { border-color: #fca5a5; } }
+
+    /* ── Pagination ── */
+    .pagination { display: flex; gap: 6px; justify-content: center; padding: 16px; }
+    .page-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+    .page-btn.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+
+    /* ── Misc ── */
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast { position: fixed; bottom: 22px; right: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 20px; font-size: 14px; font-weight: 600; z-index: 200; transform: translateY(70px); opacity: 0; transition: all .25s; max-width: 320px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: var(--green); color: var(--green); }
+    .toast.error   { border-color: var(--red); color: var(--red); }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .filter-btn { background: var(--surface2); border: 1.5px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .filter-btn.active { border-color: var(--orange); color: var(--orange); background: rgba(232,112,26,.1); }
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+    .flex { display: flex; align-items: center; gap: 8px; }
+    .ml-auto { margin-left: auto; }
+    .text-muted { color: var(--muted); }
+    .text-sm { font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Login ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Tekeche</div>
+    <div class="login-sub">Panneau d'administration</div>
+    <div id="step-phone">
+      <div class="form-group"><label>Numéro admin</label><input id="phone-input" type="tel" placeholder="+22507XXXXXXXX"></div>
+      <div id="login-err" class="err"></div>
+      <button class="btn btn-block" id="otp-btn" onclick="sendOTP()">Envoyer le code OTP</button>
+    </div>
+    <div id="step-otp" style="display:none">
+      <div class="form-group"><label>Code OTP</label><input id="otp-input" type="text" placeholder="123456" maxlength="6"></div>
+      <div id="otp-err" class="err"></div>
+      <button class="btn btn-block" id="verify-btn" onclick="verifyOTP()">Se connecter</button>
+      <button class="btn btn-block btn-outline" onclick="showStep('phone')" style="margin-top:8px">← Retour</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── App ── -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">Tekeche <span>Administration</span></div>
+    <nav class="nav">
+      <button class="nav-item active" onclick="showPage('dashboard')"><span class="nav-icon">📊</span> Tableau de bord</button>
+      <button class="nav-item" onclick="showPage('kyc')"><span class="nav-icon">🪪</span> Vérification KYC</button>
+      <button class="nav-item" onclick="showPage('drivers')"><span class="nav-icon">🚗</span> Chauffeurs</button>
+      <button class="nav-item" onclick="showPage('trips')"><span class="nav-icon">📍</span> Courses</button>
+      <button class="nav-item" onclick="showPage('promos')"><span class="nav-icon">🏷</span> Codes promo</button>
+      <button class="nav-item" id="sos-nav" onclick="showPage('sos')"><span class="nav-icon">🚨</span> Alertes SOS <span class="sos-badge" id="sos-count" style="display:none">0</span></button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="admin-chip" id="admin-name-chip">Admin</div>
+      <button class="btn btn-ghost btn-block btn-sm" style="margin-top:6px" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Dashboard -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Tableau de bord</div>
+      <div class="page-sub">Vue d'ensemble de la plateforme</div>
+      <div class="stats-grid" id="stats-grid"><div class="text-muted">Chargement…</div></div>
+      <div class="table-wrap">
+        <div class="table-header"><div class="table-title">Courses récentes</div><button class="btn btn-ghost btn-sm" onclick="loadRecentTrips()">↻ Actualiser</button></div>
+        <table><thead><tr><th>Passager</th><th>Chauffeur</th><th>Tarif</th><th>Statut</th><th>Date</th></tr></thead>
+        <tbody id="recent-trips-body"></tbody></table>
+      </div>
+    </div>
+
+    <!-- KYC -->
+    <div class="page" id="page-kyc">
+      <div class="page-title">Vérification KYC</div>
+      <div class="page-sub">Examinez et approuvez les dossiers chauffeurs</div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="setKycFilter('verified',this)">En attente</button>
+        <button class="filter-btn" onclick="setKycFilter('pending',this)">Soumis</button>
+        <button class="filter-btn" onclick="setKycFilter('approved',this)">Approuvés</button>
+        <button class="filter-btn" onclick="setKycFilter('rejected',this)">Refusés</button>
+        <button class="filter-btn" onclick="setKycFilter('all',this)">Tous</button>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Chauffeur</th><th>Véhicule</th><th>Documents</th><th>Statut KYC</th><th>Actions</th></tr></thead>
+        <tbody id="kyc-body"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Drivers -->
+    <div class="page" id="page-drivers">
+      <div class="page-title">Chauffeurs</div>
+      <div class="page-sub">Gérez tous les chauffeurs de la plateforme</div>
+      <div class="flex" style="margin-bottom:16px">
+        <div class="filter-row" style="margin-bottom:0">
+          <button class="filter-btn active" onclick="setDriverFilter('all',this)">Tous</button>
+          <button class="filter-btn" onclick="setDriverFilter('online',this)">En ligne</button>
+        </div>
+        <button class="btn btn-sm ml-auto" onclick="openModal('modal-add-driver')">+ Nouveau chauffeur</button>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Nom</th><th>Téléphone</th><th>Véhicule</th><th>Note</th><th>Courses</th><th>Statut</th><th>KYC</th><th>Actions</th></tr></thead>
+        <tbody id="drivers-body"></tbody></table>
+      </div>
+      <div class="pagination" id="drivers-pagination"></div>
+    </div>
+
+    <!-- Trips -->
+    <div class="page" id="page-trips">
+      <div class="page-title">Courses</div>
+      <div class="page-sub">Historique et suivi en temps réel</div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="setTripFilter('',this)">Toutes</button>
+        <button class="filter-btn" onclick="setTripFilter('searching',this)">Recherche</button>
+        <button class="filter-btn" onclick="setTripFilter('in_progress',this)">En cours</button>
+        <button class="filter-btn" onclick="setTripFilter('completed',this)">Terminées</button>
+        <button class="filter-btn" onclick="setTripFilter('cancelled',this)">Annulées</button>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Passager</th><th>Chauffeur</th><th>Départ</th><th>Arrivée</th><th>Tarif</th><th>Statut</th><th>Date</th></tr></thead>
+        <tbody id="trips-body"></tbody></table>
+      </div>
+      <div class="pagination" id="trips-pagination"></div>
+    </div>
+
+    <!-- Promos -->
+    <div class="page" id="page-promos">
+      <div class="page-title">Codes promotionnels</div>
+      <div class="page-sub">Créez et gérez les codes de réduction</div>
+      <button class="btn btn-sm" style="margin-bottom:16px" onclick="openModal('modal-add-promo')">+ Nouveau code promo</button>
+      <div class="table-wrap">
+        <table><thead><tr><th>Code</th><th>Type</th><th>Valeur</th><th>Utilisations</th><th>Expiration</th><th>Statut</th><th>Action</th></tr></thead>
+        <tbody id="promos-body"></tbody></table>
+      </div>
+    </div>
+
+    <!-- SOS -->
+    <div class="page" id="page-sos">
+      <div class="page-title">🚨 Alertes SOS</div>
+      <div class="page-sub">Alertes en temps réel envoyées par les passagers</div>
+      <div class="sos-feed" id="sos-feed">
+        <div class="text-muted" style="padding:20px">Aucune alerte SOS pour l'instant. Les alertes apparaissent ici en temps réel.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="modal-add-driver">
+  <div class="modal">
+    <div class="modal-title">Nouveau chauffeur</div>
+    <div class="form-row">
+      <div class="form-group"><label>Nom complet</label><input id="d-name" placeholder="Kouamé Jean"></div>
+      <div class="form-group"><label>Téléphone</label><input id="d-phone" placeholder="+22507XXXXXXXX"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Type de véhicule</label>
+        <select id="d-vtype"><option value="moto">Moto</option><option value="standard" selected>Standard</option><option value="comfort">Comfort</option><option value="xl">XL</option></select>
+      </div>
+      <div class="form-group"><label>Plaque</label><input id="d-plate" placeholder="AB 1234 CD"></div>
+    </div>
+    <div class="form-group"><label>Modèle véhicule</label><input id="d-model" placeholder="Toyota Corolla 2020"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-driver')">Annuler</button>
+      <button class="btn" id="save-driver-btn" onclick="saveDriver()">Créer le chauffeur</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-promo">
+  <div class="modal">
+    <div class="modal-title">Nouveau code promo</div>
+    <div class="form-row">
+      <div class="form-group"><label>Code</label><input id="p-code" placeholder="TEKE20" style="text-transform:uppercase"></div>
+      <div class="form-group"><label>Type</label>
+        <select id="p-type" onchange="updatePromoPreview()"><option value="percent">Pourcentage (%)</option><option value="fixed">Montant fixe (FCFA)</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Valeur</label><input id="p-value" type="number" placeholder="10" oninput="updatePromoPreview()"></div>
+      <div class="form-group"><label>Réduction max (FCFA)</label><input id="p-maxdisc" type="number" placeholder="500"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tarif minimum (FCFA)</label><input id="p-minfare" type="number" placeholder="500"></div>
+      <div class="form-group"><label>Limite d'utilisation</label><input id="p-limit" type="number" placeholder="100"></div>
+    </div>
+    <div class="form-group"><label>Date d'expiration</label><input id="p-expires" type="date"></div>
+    <div id="promo-preview" style="color:var(--orange);font-size:13px;margin-bottom:12px"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-promo')">Annuler</button>
+      <button class="btn" id="save-promo-btn" onclick="savePromo()">Créer le code</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-reject">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-title">Motif du refus KYC</div>
+    <div class="form-group"><label>Raison</label>
+      <select id="reject-reason">
+        <option value="">Sélectionner un motif</option>
+        <option>Document illisible ou flou</option>
+        <option>Document expiré</option>
+        <option>Document non conforme</option>
+        <option>Identité non vérifiable</option>
+        <option>Photo de véhicule insuffisante</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-reject')">Annuler</button>
+      <button class="btn btn-red" onclick="confirmReject()">Confirmer le refus</button>
+    </div>
+  </div>
+</div>
+
+<div id="lightbox" onclick="closeLb()"><button id="lb-close" onclick="closeLb()">✕</button><img id="lb-img" src="" alt=""></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const API = 'https://api.tekeche.com/api';
+let token = localStorage.getItem('tk_admin_token');
+let rejectDriverId = null;
+let kycFilter = 'verified';
+let driverFilter = 'all';
+let tripFilter = '';
+let driverPage = 1;
+let tripPage = 1;
+let sosAlerts = [];
+let sosUnread = 0;
+
+const DOC_LABELS = { national_id_front:'CNI recto', national_id_back:'CNI verso', drivers_license:'Permis', vehicle_photo:'Véhicule', selfie:'Selfie' };
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+async function sendOTP() {
+  const phone = v('phone-input');
+  if (!phone) return setErr('login-err','Numéro requis.');
+  setBtnLoading('otp-btn', true);
+  try {
+    await req('POST','/auth/send-otp',{phone, role:'admin'},false);
+    showStep('otp');
+  } catch(e){ setErr('login-err',e.message); }
+  finally { setBtnLoading('otp-btn', false, 'Envoyer le code OTP'); }
+}
+async function verifyOTP() {
+  const phone = v('phone-input'), code = v('otp-input');
+  if (!code) return setErr('otp-err','Code requis.');
+  setBtnLoading('verify-btn', true);
+  try {
+    const r = await req('POST','/auth/verify-otp',{phone, code, role:'admin'},false);
+    token = r.token;
+    localStorage.setItem('tk_admin_token', token);
+    $('admin-name-chip').textContent = r.user.name;
+    startApp();
+  } catch(e){ setErr('otp-err',e.message); }
+  finally { setBtnLoading('verify-btn', false, 'Se connecter'); }
+}
+function showStep(s) {
+  $('step-phone').style.display = s==='phone' ? 'block' : 'none';
+  $('step-otp').style.display  = s==='otp'   ? 'block' : 'none';
+}
+function logout() {
+  localStorage.removeItem('tk_admin_token');
+  token = null;
+  $('app').style.display = 'none';
+  $('login-screen').style.display = 'flex';
+}
+
+// ── App init ─────────────────────────────────────────────────────────────────
+function startApp() {
+  $('login-screen').style.display = 'none';
+  $('app').style.display = 'block';
+  loadDashboard();
+  connectSocket();
+}
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  $('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes("'"+name+"'")) n.classList.add('active');
+  });
+  if (name==='dashboard') loadDashboard();
+  if (name==='kyc') loadKyc();
+  if (name==='drivers') loadDrivers();
+  if (name==='trips') loadTrips();
+  if (name==='promos') loadPromos();
+  if (name==='sos') { sosUnread=0; renderSosBadge(); }
+}
+
+// ── Socket for SOS + live updates ────────────────────────────────────────────
+function connectSocket() {
+  if (typeof io === 'undefined') return; // socket.io not loaded
+  const socket = io('https://api.tekeche.com', { auth: { token }, transports: ['websocket','polling'] });
+  socket.on('sos_alert', (data) => {
+    sosAlerts.unshift(data);
+    sosUnread++;
+    renderSosBadge();
+    renderSosFeed();
+    toast(`🚨 SOS de ${data.passengerName || data.passengerPhone}`, 'error');
+  });
+}
+
+function renderSosBadge() {
+  const el = $('sos-count');
+  if (sosUnread > 0) { el.textContent = sosUnread; el.style.display='inline'; }
+  else el.style.display='none';
+}
+function renderSosFeed() {
+  const feed = $('sos-feed');
+  if (!sosAlerts.length) { feed.innerHTML = '<div class="text-muted" style="padding:20px">Aucune alerte SOS pour l\'instant.</div>'; return; }
+  feed.innerHTML = sosAlerts.map((a,i) => `
+    <div class="sos-card ${i===0?'sos-new':''}">
+      <div class="sos-card-header">
+        <div class="sos-title">🚨 SOS — ${a.passengerName||'Inconnu'} (${a.passengerPhone||''})</div>
+        <div class="sos-time">${fmtDate(a.timestamp)}</div>
+      </div>
+      <div class="sos-detail">
+        📍 <b>Position:</b> ${a.location}<br>
+        🚗 <b>Chauffeur:</b> ${a.driverInfo}<br>
+        💬 <b>SMS envoyés:</b> ${a.smsCount} contact(s)
+        ${a.tripId ? `<br>🔗 <b>Course:</b> ${a.tripId}` : ''}
+      </div>
+    </div>`).join('');
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const r = await req('GET','/admin/stats');
+    const s = r.stats;
+    $('stats-grid').innerHTML = [
+      ['totalUsers','Passagers','👥',s.totalUsers,''],
+      ['totalDrivers','Chauffeurs','🚗',s.totalDrivers,''],
+      ['activeDrivers','En ligne','🟢',s.activeDrivers,'badge-online'],
+      ['completedTrips','Courses terminées','✅',s.completedTrips,''],
+      ['totalTrips','Total courses','📍',s.totalTrips,''],
+      ['totalRevenue','Revenus','💰',s.totalRevenue.toLocaleString('fr-CI')+' FCFA',''],
+    ].map(([,label,icon,value]) => `
+      <div class="stat-card">
+        <div class="stat-icon">${icon}</div>
+        <div class="stat-value">${value}</div>
+        <div class="stat-label">${label}</div>
+      </div>`).join('');
+  } catch(e){ $('stats-grid').innerHTML = `<div class="text-muted">${e.message}</div>`; }
+  loadRecentTrips();
+}
+async function loadRecentTrips() {
+  const body = $('recent-trips-body');
+  body.innerHTML = '<tr><td colspan="5" class="text-muted" style="text-align:center;padding:20px">Chargement…</td></tr>';
+  try {
+    const r = await req('GET','/admin/trips?page=1');
+    body.innerHTML = r.trips.length ? r.trips.slice(0,8).map(t => `
+      <tr>
+        <td>${t.passenger?.name||t.passenger?.phone||'—'}</td>
+        <td>${t.driver?.name||'—'}</td>
+        <td style="color:var(--orange);font-weight:700">${(t.finalFare||t.estimatedFare||0).toLocaleString('fr-CI')} F</td>
+        <td><span class="badge badge-${t.status}">${tLabel(t.status)}</span></td>
+        <td class="text-muted">${fmtDate(t.createdAt)}</td>
+      </tr>`).join('') : '<tr class="empty-row"><td colspan="5">Aucune course.</td></tr>';
+  } catch(e){ body.innerHTML=`<tr class="empty-row"><td colspan="5">${e.message}</td></tr>`; }
+}
+
+// ── KYC ───────────────────────────────────────────────────────────────────────
+function setKycFilter(f, btn) {
+  kycFilter = f;
+  document.querySelectorAll('#page-kyc .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadKyc();
+}
+async function loadKyc() {
+  const body = $('kyc-body');
+  body.innerHTML = '<tr><td colspan="5" class="text-muted" style="text-align:center;padding:20px">Chargement…</td></tr>';
+  try {
+    const qs = kycFilter==='all' ? '' : `?kycStatus=${kycFilter}`;
+    const r = await req('GET','/admin/drivers'+qs);
+    body.innerHTML = r.drivers.length ? r.drivers.map(d => {
+      const docs = (d.kycDocuments||[]);
+      const thumbs = ['national_id_front','drivers_license','vehicle_photo'].map(type => {
+        const doc = docs.find(x=>x.type===type);
+        return doc
+          ? `<img class="doc-thumb" src="https://api.tekeche.com${doc.url}" title="${DOC_LABELS[type]}" onclick="openLb('https://api.tekeche.com${doc.url}')" loading="lazy">`
+          : `<div class="doc-thumb-empty" title="${DOC_LABELS[type]}">📄</div>`;
+      }).join('');
+      const canAction = d.kycStatus==='verified'||d.kycStatus==='pending';
+      return `<tr>
+        <td><b>${d.name}</b><br><span class="text-muted text-sm">${d.phone}</span></td>
+        <td class="text-sm text-muted">${d.vehicleType} · ${d.vehiclePlate}</td>
+        <td><div class="doc-thumbs">${thumbs}</div></td>
+        <td><span class="badge badge-${d.kycStatus}">${kycLabel(d.kycStatus)}</span></td>
+        <td>
+          <div class="flex">
+            ${canAction ? `<button class="btn btn-green btn-sm" onclick="approveKyc('${d._id}',this)">✓</button>
+            <button class="btn btn-red btn-sm" onclick="openReject('${d._id}')">✕</button>` : '<span class="text-muted text-sm">—</span>'}
+          </div>
+        </td>
+      </tr>`;
+    }).join('') : '<tr class="empty-row"><td colspan="5">Aucun chauffeur.</td></tr>';
+  } catch(e){ body.innerHTML=`<tr class="empty-row"><td colspan="5">${e.message}</td></tr>`; }
+}
+async function approveKyc(id, btn) {
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+  try {
+    await req('PATCH',`/admin/drivers/${id}/kyc`,{kycStatus:'approved'});
+    toast('KYC approuvé ✓','success');
+    loadKyc();
+  } catch(e){ toast(e.message,'error'); btn.disabled=false; btn.textContent='✓'; }
+}
+function openReject(id) { rejectDriverId=id; openModal('modal-reject'); }
+async function confirmReject() {
+  const reason = $('reject-reason').value;
+  if (!rejectDriverId) return;
+  try {
+    await req('PATCH',`/admin/drivers/${rejectDriverId}/kyc`,{kycStatus:'rejected',reason});
+    toast('KYC refusé','error');
+    closeModal('modal-reject');
+    loadKyc();
+  } catch(e){ toast(e.message,'error'); }
+}
+
+// ── Drivers ───────────────────────────────────────────────────────────────────
+function setDriverFilter(f, btn) {
+  driverFilter=f; driverPage=1;
+  document.querySelectorAll('#page-drivers .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadDrivers();
+}
+async function loadDrivers() {
+  const body = $('drivers-body');
+  body.innerHTML = '<tr><td colspan="8" class="text-muted" style="text-align:center;padding:20px">Chargement…</td></tr>';
+  try {
+    const qs = driverFilter==='online' ? `?isOnline=true&page=${driverPage}` : `?page=${driverPage}`;
+    const r = await req('GET','/admin/drivers'+qs);
+    body.innerHTML = r.drivers.length ? r.drivers.map(d => `
+      <tr>
+        <td><b>${d.name}</b></td>
+        <td>${d.phone}</td>
+        <td class="text-sm">${d.vehicleType} · ${d.vehiclePlate}</td>
+        <td>⭐ ${d.rating||5}</td>
+        <td>${d.totalTrips||0}</td>
+        <td><span class="badge badge-${d.isOnline?'online':'offline'}">${d.isOnline?'En ligne':'Hors ligne'}</span></td>
+        <td><span class="badge badge-${d.kycStatus}">${kycLabel(d.kycStatus)}</span></td>
+        <td>
+          <div class="flex">
+            <button class="btn btn-${d.isActive?'red':'green'} btn-sm" onclick="toggleDriver('${d._id}','${d.name}',${d.isActive},this)">${d.isActive?'Désactiver':'Activer'}</button>
+          </div>
+        </td>
+      </tr>`).join('') : '<tr class="empty-row"><td colspan="8">Aucun chauffeur.</td></tr>';
+    renderPagination('drivers-pagination', r.page, r.pages, p => { driverPage=p; loadDrivers(); });
+  } catch(e){ body.innerHTML=`<tr class="empty-row"><td colspan="8">${e.message}</td></tr>`; }
+}
+async function toggleDriver(id, name, isActive, btn) {
+  if (!confirm(`${isActive?'Désactiver':'Activer'} ${name} ?`)) return;
+  btn.disabled=true;
+  try {
+    await req('PATCH',`/admin/drivers/${id}/toggle`);
+    toast(`${name} ${isActive?'désactivé':'activé'}`,'success');
+    loadDrivers();
+  } catch(e){ toast(e.message,'error'); btn.disabled=false; }
+}
+async function saveDriver() {
+  const btn = $('save-driver-btn');
+  setBtnLoading('save-driver-btn', true);
+  try {
+    await req('POST','/admin/drivers',{
+      name: v('d-name'), phone: v('d-phone'),
+      vehicleType: v('d-vtype'), vehiclePlate: v('d-plate').toUpperCase(),
+      vehicleModel: v('d-model'),
+    });
+    toast('Chauffeur créé ✓','success');
+    closeModal('modal-add-driver');
+    loadDrivers();
+    ['d-name','d-phone','d-plate','d-model'].forEach(id => $(id).value='');
+  } catch(e){ toast(e.message,'error'); }
+  finally { setBtnLoading('save-driver-btn', false, 'Créer le chauffeur'); }
+}
+
+// ── Trips ─────────────────────────────────────────────────────────────────────
+function setTripFilter(f, btn) {
+  tripFilter=f; tripPage=1;
+  document.querySelectorAll('#page-trips .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadTrips();
+}
+async function loadTrips() {
+  const body = $('trips-body');
+  body.innerHTML = '<tr><td colspan="7" class="text-muted" style="text-align:center;padding:20px">Chargement…</td></tr>';
+  try {
+    const qs = (tripFilter ? `?status=${tripFilter}&` : '?') + `page=${tripPage}`;
+    const r = await req('GET','/admin/trips'+qs);
+    body.innerHTML = r.trips.length ? r.trips.map(t => `
+      <tr>
+        <td>${t.passenger?.name||t.passenger?.phone||'—'}</td>
+        <td>${t.driver?.name||'—'}<br><span class="text-muted text-sm">${t.driver?.vehiclePlate||''}</span></td>
+        <td class="text-sm text-muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.pickup?.address||'—'}</td>
+        <td class="text-sm text-muted" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.dropoff?.address||'—'}</td>
+        <td style="color:var(--orange);font-weight:700">${(t.finalFare||t.estimatedFare||0).toLocaleString('fr-CI')} F</td>
+        <td><span class="badge badge-${t.status}">${tLabel(t.status)}</span></td>
+        <td class="text-muted text-sm">${fmtDate(t.createdAt)}</td>
+      </tr>`).join('') : '<tr class="empty-row"><td colspan="7">Aucune course.</td></tr>';
+    renderPagination('trips-pagination', r.page, r.pages, p => { tripPage=p; loadTrips(); });
+  } catch(e){ body.innerHTML=`<tr class="empty-row"><td colspan="7">${e.message}</td></tr>`; }
+}
+
+// ── Promos ────────────────────────────────────────────────────────────────────
+async function loadPromos() {
+  const body = $('promos-body');
+  body.innerHTML = '<tr><td colspan="7" class="text-muted" style="text-align:center;padding:20px">Chargement…</td></tr>';
+  try {
+    const r = await req('GET','/admin/promos');
+    body.innerHTML = r.promos.length ? r.promos.map(p => `
+      <tr>
+        <td><b style="color:var(--orange)">${p.code}</b></td>
+        <td>${p.discountType==='percent'?'Pourcentage':'Fixe'}</td>
+        <td>${p.discountType==='percent'? p.discountValue+'%' : p.discountValue.toLocaleString('fr-CI')+' F'}</td>
+        <td>${p.usageCount||0}${p.usageLimit?'/'+p.usageLimit:''}</td>
+        <td class="text-muted text-sm">${p.expiresAt ? new Date(p.expiresAt).toLocaleDateString('fr-CI') : 'Illimité'}</td>
+        <td><span class="badge badge-${p.isActive?'active':'inactive'}">${p.isActive?'Actif':'Inactif'}</span></td>
+        <td>${p.isActive ? `<button class="btn btn-red btn-sm" onclick="deactivatePromo('${p._id}',this)">Désactiver</button>` : '—'}</td>
+      </tr>`).join('') : '<tr class="empty-row"><td colspan="7">Aucun code promo.</td></tr>';
+  } catch(e){ body.innerHTML=`<tr class="empty-row"><td colspan="7">${e.message}</td></tr>`; }
+}
+async function savePromo() {
+  setBtnLoading('save-promo-btn', true);
+  try {
+    await req('POST','/admin/promos',{
+      code: v('p-code').toUpperCase(),
+      discountType: v('p-type'),
+      discountValue: Number(v('p-value')),
+      maxDiscount: v('p-maxdisc') ? Number(v('p-maxdisc')) : undefined,
+      minFare: v('p-minfare') ? Number(v('p-minfare')) : undefined,
+      usageLimit: v('p-limit') ? Number(v('p-limit')) : undefined,
+      expiresAt: v('p-expires') || undefined,
+    });
+    toast('Code promo créé ✓','success');
+    closeModal('modal-add-promo');
+    loadPromos();
+  } catch(e){ toast(e.message,'error'); }
+  finally { setBtnLoading('save-promo-btn', false, 'Créer le code'); }
+}
+async function deactivatePromo(id, btn) {
+  if (!confirm('Désactiver ce code promo ?')) return;
+  btn.disabled=true;
+  try {
+    await req('DELETE',`/admin/promos/${id}`);
+    toast('Code désactivé','success');
+    loadPromos();
+  } catch(e){ toast(e.message,'error'); btn.disabled=false; }
+}
+function updatePromoPreview() {
+  const type=v('p-type'), val=v('p-value');
+  if (!val) { $('promo-preview').textContent=''; return; }
+  $('promo-preview').textContent = type==='percent'
+    ? `Réduction de ${val}% sur le tarif`
+    : `Réduction de ${Number(val).toLocaleString('fr-CI')} FCFA`;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+async function req(method, path, body, auth=true) {
+  const headers = {'Content-Type':'application/json'};
+  if (auth && token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(API+path, {method, headers, body: body ? JSON.stringify(body) : undefined});
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message||'Erreur');
+  return data;
+}
+const $ = id => document.getElementById(id);
+const v = id => $(id)?.value?.trim()||'';
+function setErr(id,msg){ const el=$(id); el.textContent=msg; }
+function openModal(id){ $(id).classList.add('open'); }
+function closeModal(id){ $(id).classList.remove('open'); }
+function openLb(src){ $('lb-img').src=src; $('lightbox').classList.add('open'); }
+function closeLb(){ $('lightbox').classList.remove('open'); }
+function setBtnLoading(id, loading, label='') {
+  const btn=$(id);
+  btn.disabled=loading;
+  btn.innerHTML=loading ? '<span class="spinner"></span>' : label;
+}
+let toastTimer;
+function toast(msg, type='success') {
+  const t=$('toast'); t.textContent=msg; t.className=`toast ${type} show`;
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d=new Date(iso), now=new Date();
+  const diff=Math.floor((now-d)/1000);
+  if (diff<60) return 'À l\'instant';
+  if (diff<3600) return `Il y a ${Math.floor(diff/60)} min`;
+  if (diff<86400) return `Il y a ${Math.floor(diff/3600)} h`;
+  return d.toLocaleDateString('fr-CI',{day:'numeric',month:'short',year:'numeric'});
+}
+function kycLabel(s){ return {pending:'En attente',verified:'Soumis',approved:'Approuvé',rejected:'Refusé'}[s]||s; }
+function tLabel(s){ return {searching:'Recherche',accepted:'Acceptée',driver_arriving:'En route',in_progress:'En cours',completed:'Terminée',cancelled:'Annulée'}[s]||s; }
+function renderPagination(containerId, current, total, onClick) {
+  const c=$(containerId);
+  if (total<=1){ c.innerHTML=''; return; }
+  let html='';
+  for(let i=1;i<=Math.min(total,8);i++){
+    html+=`<button class="page-btn${i===current?' active':''}" onclick="(${onClick.toString()})(${i})">${i}</button>`;
+  }
+  c.innerHTML=html;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+if (token) {
+  req('GET','/auth/profile').then(r => {
+    $('admin-name-chip').textContent = r.user?.name||'Admin';
+    startApp();
+  }).catch(()=>{ localStorage.removeItem('tk_admin_token'); token=null; });
+}
+</script>
+<!-- Socket.io client for real-time SOS alerts -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</body>
+</html>

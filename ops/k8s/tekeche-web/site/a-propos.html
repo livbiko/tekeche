@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <meta name="description" content="À propos de Tekeche — Notre mission, notre histoire et notre équipe à Abidjan, Côte d'Ivoire.">
+  <title>À propos — Tekeche</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .about-hero {
+      background: var(--dark); padding: 140px 0 80px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .about-hero::before {
+      content:''; position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .about-hero .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .18; }
+    .about-hero .b1 { width: 400px; height: 400px; background: var(--orange); top: -100px; right: -80px; }
+    .about-hero .b2 { width: 350px; height: 350px; background: var(--green); bottom: -80px; left: -60px; }
+    .about-hero-content { position: relative; z-index: 1; }
+
+    .mission-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .mission-visual {
+      background: var(--dark); border-radius: var(--radius-lg);
+      padding: 48px; display: flex; flex-direction: column; align-items: center; gap: 20px;
+    }
+    .mission-emoji { font-size: 72px; }
+    .mission-tagline {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 1.6rem; color: #fff; text-align: center; line-height: 1.3;
+    }
+    .mission-tagline span { color: var(--orange); }
+
+    .values-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;
+    }
+    .value-card {
+      background: var(--gray-50); border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-lg); padding: 32px; text-align: center;
+      transition: all .25s;
+    }
+    .value-card:hover { border-color: var(--orange); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .value-emoji { font-size: 44px; margin-bottom: 16px; display: block; }
+    .value-card h3 { margin-bottom: 10px; color: var(--dark); }
+    .value-card p { color: var(--gray-600); font-size: .95rem; line-height: 1.6; }
+
+    .stats-banner {
+      background: var(--orange); padding: 60px 0;
+    }
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center;
+    }
+    .stat-block strong {
+      display: block; font-family: 'Syne', sans-serif; font-size: 2.8rem;
+      font-weight: 800; color: #fff; margin-bottom: 6px;
+    }
+    .stat-block span { font-size: .95rem; color: rgba(255,255,255,.8); }
+
+    .timeline { max-width: 700px; margin: 0 auto; position: relative; }
+    .timeline::before {
+      content:''; position: absolute; left: 20px; top: 0; bottom: 0;
+      width: 2px; background: var(--gray-200);
+    }
+    .tl-item { display: flex; gap: 28px; margin-bottom: 36px; position: relative; }
+    .tl-dot {
+      width: 42px; height: 42px; border-radius: 50%; background: var(--orange);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      flex-shrink: 0; position: relative; z-index: 1;
+    }
+    .tl-body { padding-top: 8px; }
+    .tl-year {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: .8rem; text-transform: uppercase; letter-spacing: 2px;
+      color: var(--orange); margin-bottom: 4px;
+    }
+    .tl-body h4 { color: var(--dark); margin-bottom: 6px; }
+    .tl-body p { font-size: .9rem; color: var(--gray-600); line-height: 1.6; }
+
+    .team-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;
+    }
+    .team-card {
+      background: var(--gray-50); border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-lg); padding: 28px; text-align: center;
+      transition: all .2s;
+    }
+    .team-card:hover { border-color: var(--orange); }
+    .team-avatar {
+      width: 72px; height: 72px; border-radius: 50%; background: var(--orange);
+      color: #fff; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .team-card h4 { color: var(--dark); margin-bottom: 4px; }
+    .team-role { font-size: .85rem; color: var(--orange); font-weight: 600; margin-bottom: 8px; }
+    .team-card p { font-size: .85rem; color: var(--gray-600); line-height: 1.5; }
+
+    .cta-band {
+      background: var(--dark); border-radius: var(--radius-lg);
+      padding: 56px; text-align: center;
+    }
+    .cta-band h2 { color: #fff; margin-bottom: 16px; }
+    .cta-band p { color: rgba(255,255,255,.65); font-size: 1.05rem; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    @media (max-width: 768px) {
+      .mission-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner container">
+      <a href="index.html" class="nav-logo">Tekeche</a>
+      <div class="nav-links">
+        <a href="index.html">Accueil</a>
+        <a href="index.html#services">Services</a>
+        <a href="chauffeur.html">Devenir Chauffeur</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <a href="index.html#telecharger" class="btn-nav">Télécharger l'app</a>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="index.html">Accueil</a>
+      <a href="index.html#services">Services</a>
+      <a href="chauffeur.html">Devenir Chauffeur</a>
+      <a href="contact.html">Contact</a>
+      <a href="index.html#telecharger" class="btn-mobile-dl" onclick="closeMobile()">Télécharger l'app</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="about-hero">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="about-hero-content container">
+      <div class="sec-label" style="margin-bottom:16px">Notre histoire</div>
+      <h1 style="color:#fff;margin-bottom:16px">Né à Abidjan,<br><em>pour l'Afrique</em></h1>
+      <p style="color:rgba(255,255,255,.7);font-size:1.1rem;max-width:560px;margin:0 auto">
+        Tekeche est né d'une conviction simple : chaque Abidjanais mérite un transport sûr, transparent et accessible. Nous construisons la solution.
+      </p>
+    </div>
+  </section>
+
+  <!-- MISSION -->
+  <section class="section">
+    <div class="container">
+      <div class="mission-grid">
+        <div>
+          <div class="sec-label" style="margin-bottom:12px">Notre mission</div>
+          <h2 style="margin-bottom:20px">Transformer le transport urbain en Côte d'Ivoire</h2>
+          <p style="color:var(--gray-600);font-size:1.05rem;line-height:1.75;margin-bottom:20px">
+            Dans une métropole de plus de 5 millions d'habitants, l'accès à un transport fiable et sécurisé reste un défi quotidien. Tekeche change cela.
+          </p>
+          <p style="color:var(--gray-600);font-size:1.05rem;line-height:1.75;margin-bottom:28px">
+            Nous connectons des passagers à des chauffeurs vérifiés grâce à une technologie conçue pour le contexte local : paiement mobile, SMS OTP, cartes adaptées aux infrastructures d'Abidjan.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="width:32px;height:32px;border-radius:50%;background:var(--orange-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">✓</span>
+              <span style="color:var(--dark);font-weight:500">Chauffeurs certifiés par vérification biométrique KYC</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="width:32px;height:32px;border-radius:50%;background:var(--orange-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">✓</span>
+              <span style="color:var(--dark);font-weight:500">Prix fixes calculés avant confirmation, sans surprise</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="width:32px;height:32px;border-radius:50%;background:var(--orange-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">✓</span>
+              <span style="color:var(--dark);font-weight:500">Paiement par Orange Money, MTN MoMo, Wave et espèces</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="width:32px;height:32px;border-radius:50%;background:var(--orange-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">✓</span>
+              <span style="color:var(--dark);font-weight:500">Bouton SOS d'urgence intégré à chaque trajet</span>
+            </div>
+          </div>
+        </div>
+        <div class="mission-visual">
+          <div class="mission-emoji">🚀</div>
+          <div class="mission-tagline">Révolutionner le transport <span>made in Côte d'Ivoire</span></div>
+          <p style="color:rgba(255,255,255,.55);font-size:.9rem;text-align:center;line-height:1.6">
+            Fondée en 2024 · Abidjan, Côte d'Ivoire
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-banner">
+    <div class="container">
+      <div class="stats-row">
+        <div class="stat-block"><strong>500+</strong><span>Chauffeurs certifiés</span></div>
+        <div class="stat-block"><strong>10+</strong><span>Communes desservies</span></div>
+        <div class="stat-block"><strong>4.9★</strong><span>Note moyenne app</span></div>
+        <div class="stat-block"><strong>24/7</strong><span>Support disponible</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUES -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Nos valeurs</div>
+        <h2>Ce en quoi nous croyons</h2>
+        <p>Chaque décision que nous prenons est guidée par quatre valeurs fondamentales.</p>
+      </div>
+      <div class="values-grid">
+        <div class="value-card">
+          <span class="value-emoji">🛡️</span>
+          <h3>Sécurité avant tout</h3>
+          <p>La sécurité des passagers et des chauffeurs est notre priorité numéro un. KYC, SOS, surveillance IA — nous n'acceptons aucun compromis.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-emoji">🔍</span>
+          <h3>Transparence totale</h3>
+          <p>Prix affichés avant confirmation, chauffeur identifié, trajet partageable. Nous croyons en une totale transparence à chaque étape.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-emoji">🌍</span>
+          <h3>Local d'abord</h3>
+          <p>Conçu pour la Côte d'Ivoire, par des Ivoiriens. Paiements mobiles locaux, cartographie adaptée, support en langues locales à venir.</p>
+        </div>
+        <div class="value-card">
+          <span class="value-emoji">⚡</span>
+          <h3>Innovation continue</h3>
+          <p>Nous investissons dans la technologie pour améliorer chaque trajet : IA de sécurité, algorithmes de tarification, dispatching intelligent.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="section" style="background:var(--gray-50)">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">Notre parcours</div>
+        <h2>L'histoire d'Tekeche</h2>
+      </div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot">💡</div>
+          <div class="tl-body">
+            <div class="tl-year">Début 2024</div>
+            <h4>L'idée naît à Abidjan</h4>
+            <p>Confrontés aux dangers du transport informel et à l'absence de solutions sécurisées, les fondateurs décident de créer Tekeche.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">🔨</div>
+          <div class="tl-body">
+            <div class="tl-year">Mi-2024</div>
+            <h4>Développement et premiers tests</h4>
+            <p>L'équipe technique développe les applications iOS et Android, intègre Google Maps et les paiements CinetPay. Premiers tests avec 20 chauffeurs pilotes à Cocody.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">🚀</div>
+          <div class="tl-body">
+            <div class="tl-year">Fin 2024</div>
+            <h4>Lancement bêta à Abidjan</h4>
+            <p>Lancement sur invitation dans les communes de Cocody, Plateau et Marcory. 500+ chauffeurs rejoignent la plateforme en moins de 3 mois.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">🌟</div>
+          <div class="tl-body">
+            <div class="tl-year">2025</div>
+            <h4>Déploiement sur tout Abidjan</h4>
+            <p>Couverture étendue à toutes les communes d'Abidjan. Lancement de MotoRapide, IvoireComfort et Livraison Express.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">🌍</div>
+          <div class="tl-body">
+            <div class="tl-year">2026 et au-delà</div>
+            <h4>Expansion régionale</h4>
+            <p>Objectif : Bouaké, Yamoussoukro, puis les grandes métropoles d'Afrique de l'Ouest. Tekeche devient le leader du transport sécurisé en Afrique francophone.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-head">
+        <div class="sec-label">L'équipe</div>
+        <h2>Les bâtisseurs d'Tekeche</h2>
+        <p>Une équipe ivoirienne passionnée par la tech, la mobilité et l'impact social.</p>
+      </div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">KK</div>
+          <h4>Konan Kouamé</h4>
+          <div class="team-role">CEO & Co-fondateur</div>
+          <p>10 ans d'expérience en entrepreneuriat tech à Abidjan. Passionné de mobilité urbaine.</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:var(--green)">AT</div>
+          <h4>Affoué Touré</h4>
+          <div class="team-role">CTO & Co-fondatrice</div>
+          <p>Ingénieure en informatique, experte React Native et architecture backend Node.js.</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#3B82F6">SB</div>
+          <h4>Seydou Bamba</h4>
+          <div class="team-role">Head of Operations</div>
+          <p>Gestion de la flotte chauffeurs, processus KYC et partenariats institutionnels.</p>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar" style="background:#8B5CF6">FK</div>
+          <h4>Fatou Kone</h4>
+          <div class="team-role">Head of Marketing</div>
+          <p>Stratégie de croissance, community management et relations publiques en Côte d'Ivoire.</p>
+        </div>
+      </div>
+      <p style="text-align:center;color:var(--gray-400);margin-top:32px;font-size:.9rem">
+        Nous recrutons ! Envoyez votre candidature à <a href="mailto:jobs@tekeche.com" style="color:var(--orange);font-weight:600">jobs@tekeche.com</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="cta-band">
+        <h2>Rejoignez l'aventure Tekeche</h2>
+        <p>Passager, chauffeur ou partenaire — il y a une place pour vous dans notre écosystème.</p>
+        <div class="cta-btns">
+          <a href="index.html#telecharger" class="btn-primary">Télécharger l'app</a>
+          <a href="chauffeur.html" class="btn-outline" style="border-color:rgba(255,255,255,.3);color:#fff">Devenir chauffeur</a>
+        </div>
+        <div style="margin-top:28px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <a href="https://play.google.com/store/apps/details?id=com.tekeche.app" target="_blank" rel="noopener">
+            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Passager — Google Play" height="52">
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.tekechedrivefr.app" target="_blank" rel="noopener">
+            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Chauffeur — Google Play" height="52">
+          </a>
+        </div>
+        <p style="color:rgba(255,255,255,.4);font-size:.82rem;margin-top:8px">Passager &nbsp;·&nbsp; Chauffeur</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Tekeche</div>
+          <p>L'application de transport la plus sécurisée de Côte d'Ivoire. Disponible à Abidjan.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" width="18" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+            <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></a>
+          </div>
+          <div class="footer-badges" style="margin:1rem 0;">
+            <a href="https://play.google.com/store/apps/details?id=com.tekeche.app" target="_blank" rel="noopener">
+              <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Disponible sur Google Play" height="48">
+            </a>
+          </div>
+          <div class="footer-contact">
+            <div>📧 contact@tekeche.com</div>
+            <div>📞 +225 07 00 00 00</div>
+            <div>📍 Cocody, Abidjan, CI</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <a href="index.html#services">IvoireGo</a>
+          <a href="index.html#services">MotoRapide</a>
+          <a href="index.html#services">IvoireComfort</a>
+          <a href="index.html#services">IvoireXL</a>
+          <a href="index.html#services">Livraison Express</a>
+        </div>
+        <div class="footer-col">
+          <h4>Entreprise</h4>
+          <a href="a-propos.html">À propos</a>
+          <a href="chauffeur.html">Devenir chauffeur</a>
+          <a href="index.html#securite">Sécurité</a>
+          <a href="blog.html">Blog</a>
+          <a href="presse.html">Presse</a>
+        </div>
+        <div class="footer-col">
+          <h4>Aide & Légal</h4>
+          <a href="contact.html">Centre d'aide</a>
+          <a href="contact.html">Nous contacter</a>
+          <a href="cgu.html">CGU</a>
+          <a href="confidentialite.html">Confidentialité</a>
+          <a href="cookies.html">Cookies</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Tekeche SARL — Enregistré au RCCM d'Abidjan — Tous droits réservés</p>
+        <p>Opérateur agréé OSER · Licence VTC Côte d'Ivoire · Données protégées ARTCI</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

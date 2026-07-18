@@ -1,0 +1,36 @@
+# Same NodePort-via-existing-NLB reasoning as tekeche-web/tekeche-api's
+# ingresses. TLS secret provisioned manually from the cert exported off
+# BikoDC's WebHosting store (see MAINTENANCE_LOG 2026-07-18).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: livbiko-web
+  namespace: tekeche
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - livbiko.com
+        - www.livbiko.com
+      secretName: livbiko-web-tls
+  rules:
+    - host: livbiko.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: livbiko-web
+                port:
+                  number: 8080
+    - host: www.livbiko.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: livbiko-web
+                port:
+                  number: 8080

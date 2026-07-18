@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <meta name="description" content="Le blog de Tekeche — Actualités, conseils transport et nouvelles d'Abidjan.">
+  <title>Blog — Tekeche</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .blog-hero {
+      background: var(--dark); padding: 140px 0 80px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .blog-hero::before {
+      content:''; position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .blog-hero-content { position: relative; z-index: 1; }
+
+    .blog-categories {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+      margin-top: 28px;
+    }
+    .cat-btn {
+      padding: 8px 20px; border-radius: 50px; font-size: .85rem; font-weight: 600;
+      font-family: 'Syne', sans-serif; cursor: pointer; transition: all .2s;
+      border: 1.5px solid rgba(255,255,255,.2); color: rgba(255,255,255,.7);
+      background: transparent;
+    }
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--orange); border-color: var(--orange); color: #fff;
+    }
+
+    .blog-featured {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+      margin-bottom: 48px;
+    }
+    .post-card {
+      background: #fff; border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-lg); overflow: hidden; transition: all .25s;
+      display: flex; flex-direction: column;
+    }
+    .post-card:hover { border-color: var(--orange); box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .post-cover {
+      height: 200px; display: flex; align-items: center; justify-content: center;
+      font-size: 64px;
+    }
+    .post-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+    .post-meta {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+    }
+    .post-cat {
+      background: var(--orange-light); color: var(--orange);
+      font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      padding: 3px 10px; border-radius: 20px; font-family: 'Syne', sans-serif;
+    }
+    .post-date { font-size: .82rem; color: var(--gray-400); }
+    .post-card h3 { color: var(--dark); margin-bottom: 10px; line-height: 1.35; }
+    .post-card p { color: var(--gray-600); font-size: .9rem; line-height: 1.65; margin-bottom: 20px; flex: 1; }
+    .post-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--gray-100); padding-top: 16px; margin-top: auto;
+    }
+    .post-author {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .author-av {
+      width: 32px; height: 32px; border-radius: 50%;
+      color: #fff; font-weight: 700; font-family: 'Syne', sans-serif; font-size: .75rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .author-name { font-size: .85rem; font-weight: 600; color: var(--dark); }
+    .read-link {
+      color: var(--orange); font-size: .85rem; font-weight: 700;
+      font-family: 'Syne', sans-serif; transition: opacity .2s;
+    }
+    .read-link:hover { opacity: .75; }
+
+    .blog-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .blog-featured .post-card:first-child .post-cover { background: linear-gradient(135deg, #1A1A2E 0%, #162032 100%); }
+    .blog-featured .post-card:last-child .post-cover { background: linear-gradient(135deg, #1A3A2E 0%, #0d2318 100%); }
+    .post-cover.orange { background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%); }
+    .post-cover.blue { background: linear-gradient(135deg, #3B82F6 0%, #1d4ed8 100%); }
+    .post-cover.purple { background: linear-gradient(135deg, #8B5CF6 0%, #6d28d9 100%); }
+
+    .newsletter-band {
+      background: var(--dark); border-radius: var(--radius-lg);
+      padding: 48px; text-align: center; margin-top: 60px;
+    }
+    .newsletter-band h3 { color: #fff; margin-bottom: 12px; }
+    .newsletter-band p { color: rgba(255,255,255,.6); margin-bottom: 24px; font-size: .95rem; }
+    .nl-form { display: flex; gap: 10px; max-width: 420px; margin: 0 auto; }
+    .nl-form input {
+      flex: 1; padding: 12px 18px; border-radius: 50px;
+      border: 1.5px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08);
+      color: #fff; font-size: .95rem; outline: none;
+    }
+    .nl-form input::placeholder { color: rgba(255,255,255,.4); }
+    .nl-form input:focus { border-color: var(--orange); }
+    .nl-form button {
+      background: var(--orange); color: #fff; padding: 12px 24px;
+      border-radius: 50px; border: none; font-family: 'Syne', sans-serif;
+      font-weight: 700; cursor: pointer; white-space: nowrap; transition: all .2s;
+    }
+    .nl-form button:hover { background: var(--orange-dark); }
+
+    @media (max-width: 768px) {
+      .blog-featured { grid-template-columns: 1fr; }
+      .nl-form { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner container">
+      <a href="index.html" class="nav-logo">Tekeche</a>
+      <div class="nav-links">
+        <a href="index.html">Accueil</a>
+        <a href="index.html#services">Services</a>
+        <a href="chauffeur.html">Devenir Chauffeur</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <a href="index.html#telecharger" class="btn-nav">Télécharger l'app</a>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="index.html">Accueil</a>
+      <a href="index.html#services">Services</a>
+      <a href="chauffeur.html">Devenir Chauffeur</a>
+      <a href="contact.html">Contact</a>
+      <a href="index.html#telecharger" class="btn-mobile-dl" onclick="closeMobile()">Télécharger l'app</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="blog-hero">
+    <div class="blog-hero-content container">
+      <div class="sec-label" style="margin-bottom:16px">Blog Tekeche</div>
+      <h1 style="color:#fff;margin-bottom:16px">Actualités &amp;<br><em>Conseils Transport</em></h1>
+      <p style="color:rgba(255,255,255,.7);font-size:1.05rem;max-width:500px;margin:0 auto">
+        Conseils pratiques, nouvelles de l'équipe et décryptages sur la mobilité à Abidjan.
+      </p>
+      <div class="blog-categories">
+        <button class="cat-btn active">Tout</button>
+        <button class="cat-btn">Sécurité</button>
+        <button class="cat-btn">Chauffeurs</button>
+        <button class="cat-btn">Actualités</button>
+        <button class="cat-btn">Conseils</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED POSTS -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-head" style="text-align:left;margin-bottom:32px">
+        <div class="sec-label">À la une</div>
+        <h2>Articles récents</h2>
+      </div>
+
+      <div class="blog-featured">
+        <div class="post-card">
+          <div class="post-cover">🛡️</div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span class="post-cat">Sécurité</span>
+              <span class="post-date">15 janvier 2025</span>
+            </div>
+            <h3>5 raisons pour lesquelles Tekeche est l'application la plus sécurisée d'Abidjan</h3>
+            <p>KYC biométrique, bouton SOS, surveillance IA des trajets… Découvrez comment Tekeche protège chaque passager à chaque kilomètre parcouru dans les rues d'Abidjan.</p>
+            <div class="post-footer">
+              <div class="post-author">
+                <div class="author-av" style="background:var(--orange)">FK</div>
+                <span class="author-name">Fatou Kone</span>
+              </div>
+              <a href="#" class="read-link">Lire →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-cover">🚗</div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span class="post-cat">Chauffeurs</span>
+              <span class="post-date">8 janvier 2025</span>
+            </div>
+            <h3>Comment nos chauffeurs gagnent jusqu'à 450 000 FCFA par mois</h3>
+            <p>Rencontre avec Kouassi, chauffeur Tekeche depuis 6 mois. Il nous explique comment il a doublé ses revenus grâce à la plateforme tout en gérant lui-même ses horaires.</p>
+            <div class="post-footer">
+              <div class="post-author">
+                <div class="author-av" style="background:var(--green)">SB</div>
+                <span class="author-name">Seydou Bamba</span>
+              </div>
+              <a href="#" class="read-link">Lire →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOG GRID -->
+      <div class="blog-grid">
+        <div class="post-card">
+          <div class="post-cover orange">💳</div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span class="post-cat">Conseils</span>
+              <span class="post-date">2 janvier 2025</span>
+            </div>
+            <h3>Orange Money, MTN MoMo ou Wave : quel paiement choisir pour vos courses ?</h3>
+            <p>Guide complet des méthodes de paiement mobile acceptées sur Tekeche et leurs avantages.</p>
+            <div class="post-footer">
+              <div class="post-author">
+                <div class="author-av" style="background:var(--orange)">FK</div>
+                <span class="author-name">Fatou Kone</span>
+              </div>
+              <a href="#" class="read-link">Lire →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-cover blue">📍</div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span class="post-cat">Actualités</span>
+              <span class="post-date">20 décembre 2024</span>
+            </div>
+            <h3>Tekeche s'étend à Yopougon et Abobo</h3>
+            <p>À partir de janvier 2025, les résidents de Yopougon et Abobo pourront commander un Tekeche depuis leur quartier.</p>
+            <div class="post-footer">
+              <div class="post-author">
+                <div class="author-av" style="background:#3B82F6">AT</div>
+                <span class="author-name">Affoué Touré</span>
+              </div>
+              <a href="#" class="read-link">Lire →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-cover purple">🛵</div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span class="post-cat">Conseils</span>
+              <span class="post-date">12 décembre 2024</span>
+            </div>
+            <h3>MotoRapide : traverser le Plateau en 8 minutes chrono</h3>
+            <p>Nos moto-taxis certifiés évitent les embouteillages du Plateau. Casque fourni, tarif fixe, chauffeur vérifié.</p>
+            <div class="post-footer">
+              <div class="post-author">
+                <div class="author-av" style="background:#8B5CF6">KK</div>
+                <span class="author-name">Konan Kouamé</span>
+              </div>
+              <a href="#" class="read-link">Lire →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEWSLETTER -->
+      <div class="newsletter-band">
+        <h3>Restez informé</h3>
+        <p>Recevez nos derniers articles et actualités directement dans votre boîte mail.</p>
+        <div class="nl-form">
+          <input type="email" placeholder="votre@email.com" id="nl-email">
+          <button onclick="subscribeNl()">S'abonner</button>
+        </div>
+        <p id="nl-msg" style="color:rgba(255,255,255,.7);font-size:.85rem;margin-top:10px;height:20px"></p>
+        <div style="margin-top:24px;border-top:1px solid rgba(255,255,255,.1);padding-top:24px">
+          <p style="color:rgba(255,255,255,.5);font-size:.85rem;margin-bottom:12px">Téléchargez l'application Tekeche</p>
+          <a href="https://play.google.com/store/apps/details?id=com.tekeche.app" target="_blank" rel="noopener">
+            <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Disponible sur Google Play" height="48">
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Tekeche</div>
+          <p>L'application de transport la plus sécurisée de Côte d'Ivoire. Disponible à Abidjan.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" width="18" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+            <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" width="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></a>
+          </div>
+          <div class="footer-badges" style="margin:1rem 0;">
+            <a href="https://play.google.com/store/apps/details?id=com.tekeche.app" target="_blank" rel="noopener">
+              <img src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png" alt="Disponible sur Google Play" height="48">
+            </a>
+          </div>
+          <div class="footer-contact">
+            <div>📧 contact@tekeche.com</div>
+            <div>📞 +225 07 00 00 00</div>
+            <div>📍 Cocody, Abidjan, CI</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <a href="index.html#services">IvoireGo</a>
+          <a href="index.html#services">MotoRapide</a>
+          <a href="index.html#services">IvoireComfort</a>
+          <a href="index.html#services">IvoireXL</a>
+          <a href="index.html#services">Livraison Express</a>
+        </div>
+        <div class="footer-col">
+          <h4>Entreprise</h4>
+          <a href="a-propos.html">À propos</a>
+          <a href="chauffeur.html">Devenir chauffeur</a>
+          <a href="index.html#securite">Sécurité</a>
+          <a href="blog.html">Blog</a>
+          <a href="presse.html">Presse</a>
+        </div>
+        <div class="footer-col">
+          <h4>Aide & Légal</h4>
+          <a href="contact.html">Centre d'aide</a>
+          <a href="contact.html">Nous contacter</a>
+          <a href="cgu.html">CGU</a>
+          <a href="confidentialite.html">Confidentialité</a>
+          <a href="cookies.html">Cookies</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Tekeche SARL — Enregistré au RCCM d'Abidjan — Tous droits réservés</p>
+        <p>Opérateur agréé OSER · Licence VTC Côte d'Ivoire · Données protégées ARTCI</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    function subscribeNl() {
+      const email = document.getElementById('nl-email')?.value;
+      const msg = document.getElementById('nl-msg');
+      if (!email || !email.includes('@')) { msg.textContent = '⚠️ Email invalide.'; return; }
+      msg.textContent = '✅ Merci ! Vous recevrez nos prochains articles.';
+      document.getElementById('nl-email').value = '';
+    }
+  </script>
+</body>
+</html>

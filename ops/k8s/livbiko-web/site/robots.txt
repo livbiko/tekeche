@@ -1,0 +1,34 @@
+# robots.txt — LivBiko.com
+# Updated: 2026-05-02
+# Upload this file to: https://livbiko.com/robots.txt (domain ROOT)
+
+User-agent: *
+Allow: /
+
+# ── Block /test/ staging folder from ALL crawlers ────────────────
+Disallow: /test/
+
+# ── Noindex pages — preserve crawl budget ────────────────────────
+Disallow: /thank-you.html
+Disallow: /thank-you-fr.html
+Disallow: /legal-privacy.html
+Disallow: /legal-privacy-fr.html
+Disallow: /legal-terms.html
+Disallow: /legal-terms-fr.html
+Disallow: /legal-sla.html
+Disallow: /legal-sla-fr.html
+
+# ── Old redirect stubs ────────────────────────────────────────────
+Disallow: /virtual-desktop.html
+Disallow: /azure-m365.html
+Disallow: /oracle-oci-ai.html
+Disallow: /managed-support.html
+Disallow: /disaster-recovery.html
+Disallow: /cybersecurity.html
+Disallow: /pen-testing.html
+Disallow: /privacy-policy.html
+Disallow: /cyber-essentials.html
+Disallow: /sla.html
+Disallow: /terms-of-service.html
+
+Sitemap: https://livbiko.com/sitemap.xml

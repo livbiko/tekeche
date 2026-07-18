@@ -1,0 +1,56 @@
+# livbiko-web -- static mirror of livbiko.com/www.livbiko.com for the OKE/
+# standby backup path (see ops/oci/dns.tf's 2026-07-18 FAILOVER steering
+# policy). No ConfigMap/Secret/DB dependency of its own (the /api and
+# /socket.io locations in nginx.conf proxy to the existing tekeche-api
+# service, which carries its own config/secrets separately).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livbiko-web
+  namespace: tekeche
+  labels:
+    app: livbiko-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: livbiko-web
+  template:
+    metadata:
+      labels:
+        app: livbiko-web
+    spec:
+      imagePullSecrets:
+        - name: ocir-pull-secret
+      containers:
+        - name: livbiko-web
+          image: lhr.ocir.io/lr14abpkfrxj/livbiko-web:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "32Mi"
+            limits:
+              cpu: "200m"
+              memory: "64Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101  # nginxinc/nginx-unprivileged's "nginx" user
+            allowPrivilegeEscalation: false
