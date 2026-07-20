@@ -114,6 +114,38 @@ variable "livbiko_zone_name" {
   default     = "livbiko.com"
   description = "Separate registrar zone from tekeche.com -- own NS delegation, own steering policy"
 }
+variable "kendebabi_zone_name" {
+  default     = "kendebabi.com"
+  description = "Separate registrar zone from tekeche.com -- own NS delegation, own steering policy"
+}
+
+# ── Livbiko Palo Alto VM-Series (isolated VCN, parallel to SRX) ──────────────
+variable "livbiko_pa_vcn_cidr" { default = "10.10.0.0/16" }
+variable "livbiko_pa_mgmt_subnet_cidr" { default = "10.10.0.0/24" }
+variable "livbiko_pa_untrust_subnet_cidr" { default = "10.10.1.0/24" }
+variable "livbiko_pa_trust_subnet_cidr" { default = "10.10.2.0/24" }
+
+variable "livbiko_pa_image_id" {
+  description = <<-EOT
+    Palo Alto VM-Series compartment-local image OCID. NOT the same as the
+    raw marketplace listing package's image-id (...avclo4t6q...) -- that ID
+    isn't directly launchable without a working Partner Image Catalog
+    subscription (`oci compute pic subscription create` errored on both
+    compartment-id and listing-id as "invalid OCID format" despite both
+    being valid -- looks like a real CLI bug, not a mistake in the IDs).
+    Launched instead via the OCI Console's Marketplace flow, which handles
+    the subscription internally and produced this working compartment-local
+    copy.
+  EOT
+  default     = "ocid1.image.oc1..aaaaaaaavllyrqipl3ydfqdmbr7ho7uxsfe6k4gu33whzbbxkwongiymxc5a"
+}
+# Console defaulted to E5.Flex (newer AMD Genoa gen) rather than the E4.Flex
+# originally planned -- same 4 OCPU/64GB sizing intent, accepted as-is rather
+# than reshaping an already-running (billing) instance for a cosmetic diff.
+variable "livbiko_pa_shape" { default = "VM.Standard.E5.Flex" }
+variable "livbiko_pa_ocpus" { default = 4 }
+variable "livbiko_pa_memory_gb" { default = 64 }
+variable "livbiko_pa_trust_private_ip" { default = "10.10.2.10" }
 
 # ── App ───────────────────────────────────────────────────────────────────────
 variable "github_repo_url" { default = "https://github.com/livbiko/tekeche-api" }
