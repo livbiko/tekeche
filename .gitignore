@@ -54,3 +54,6 @@ ops/oci/*.tfplan
 ops/oci/apply-*.txt
 ops/oci/plan-*.txt
 ops/oci/PktMon.txt
+ops/bot-fleet/fleet-state.json
+ops/bot-fleet/logs/
+ops/bot-fleet/STOP

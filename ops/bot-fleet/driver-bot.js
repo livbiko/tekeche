@@ -109,6 +109,51 @@ async function handleTripRequest(payload) {
   }
 }
 
+// Recovers a trip left stranded by an earlier crash/restart of this same
+// identity's process — in-memory activeTrip state doesn't survive a process
+// restart, but the Trip document does, and dispatch already marked this
+// driver unavailable/assigned to it. Without this, an orphaned trip sits at
+// whatever status it was in forever (nothing else will ever progress it).
+async function recoverActiveTrip() {
+  let trip;
+  try {
+    const res = await freshClient().get('/drivers/active-trip');
+    trip = res.data.trip;
+  } catch (err) {
+    log(TAG, `active-trip check failed: ${err.response?.data?.message || err.message}`);
+    return;
+  }
+  if (!trip) return;
+
+  log(TAG, `recovering orphaned trip=${trip._id} (was status=${trip.status})`);
+  activeTrip = { tripId: trip._id };
+
+  try {
+    if (trip.status === 'accepted') {
+      await travelTo(trip.pickup.coordinates.lat, trip.pickup.coordinates.lng, 'recovering: en route to passenger');
+      await freshClient().put(`/drivers/trips/${trip._id}/status`, { status: 'driver_arriving' });
+      await sleep(2000);
+      await freshClient().put(`/drivers/trips/${trip._id}/status`, { status: 'in_progress' });
+    } else if (trip.status === 'driver_arriving') {
+      await sleep(2000);
+      await freshClient().put(`/drivers/trips/${trip._id}/status`, { status: 'in_progress' });
+    }
+    // Recovered trips use the trip document's own real dropoff coordinates
+    // (unlike the live dispatch payload, which only carries a dropoff
+    // address) — this path actually has better data than the happy path.
+    if (trip.dropoff?.coordinates?.lat) {
+      await travelTo(trip.dropoff.coordinates.lat, trip.dropoff.coordinates.lng, 'recovering: driving to destination');
+    }
+    await freshClient().put(`/drivers/trips/${trip._id}/status`, { status: 'completed' });
+    log(TAG, `recovered trip=${trip._id} completed`);
+  } catch (err) {
+    log(TAG, `recovery error for trip=${trip._id}: ${err.response?.data?.message || err.message}`);
+  } finally {
+    activeTrip = null;
+    idleSince = Date.now();
+  }
+}
+
 async function maybeRelocate() {
   if (activeTrip) return;
   if (Date.now() - idleSince < IDLE_RELOCATE_MS) return;
@@ -138,11 +183,14 @@ socket.on('new_ride_request', (payload) => { handleTripRequest(payload).catch(e 
 socket.on('woyo_new_passenger', (payload) => log(TAG, `woyo_new_passenger trip=${payload.tripId} totalPassengers=${payload.totalPassengers}`));
 socket.on('trip_cancelled_by_passenger', () => { log(TAG, 'trip cancelled by passenger'); activeTrip = null; idleSince = Date.now(); });
 
-// GPS heartbeat + idle-relocation check
-gpsTimer = setInterval(() => {
-  if (!activeTrip) sendLocation(pos.lat, pos.lng);
-  maybeRelocate().catch(e => log(TAG, `relocate error: ${e.message}`));
-}, GPS_INTERVAL_MS);
+// Recover any trip orphaned by a previous crash of this identity before
+// doing anything else, then start the normal GPS/idle-relocation loop.
+recoverActiveTrip().finally(() => {
+  gpsTimer = setInterval(() => {
+    if (!activeTrip) sendLocation(pos.lat, pos.lng);
+    maybeRelocate().catch(e => log(TAG, `relocate error: ${e.message}`));
+  }, GPS_INTERVAL_MS);
+});
 
 process.on('SIGINT', () => { log(TAG, 'shutting down'); socket.disconnect(); process.exit(0); });
 process.on('SIGTERM', () => { log(TAG, 'shutting down'); socket.disconnect(); process.exit(0); });
