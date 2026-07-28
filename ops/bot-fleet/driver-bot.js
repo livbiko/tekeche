@@ -154,14 +154,20 @@ async function recoverActiveTrip() {
   }
 }
 
+let relocating = false; // guards against the 8s GPS timer re-entering maybeRelocate() while a previous relocation's travelTo() is still mid-flight — without this, overlapping calls raced to update pos independently, causing erratic zig-zag jumps instead of one smooth move
 async function maybeRelocate() {
-  if (activeTrip) return;
+  if (activeTrip || relocating) return;
   if (Date.now() - idleSince < IDLE_RELOCATE_MS) return;
-  const zone = randomZone();
-  const dest = jitterPoint(zone.lat, zone.lng, 1.0);
-  log(TAG, `idle ${Math.round((Date.now() - idleSince) / 60000)}min — relocating toward ${zone.name}`);
-  await travelTo(dest.lat, dest.lng, `relocating to ${zone.name}`);
-  idleSince = Date.now();
+  relocating = true;
+  try {
+    const zone = randomZone();
+    const dest = jitterPoint(zone.lat, zone.lng, 1.0);
+    log(TAG, `idle ${Math.round((Date.now() - idleSince) / 60000)}min — relocating toward ${zone.name}`);
+    await travelTo(dest.lat, dest.lng, `relocating to ${zone.name}`);
+  } finally {
+    relocating = false;
+    idleSince = Date.now();
+  }
 }
 
 // ── Socket lifecycle ──────────────────────────────────────────────────────
