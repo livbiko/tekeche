@@ -364,3 +364,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fixed a real production bug found via the bot fleet's orphaned-trip sweep: driver.controller.js's updateTripStatus guard only excluded already-completed trips, not cancelled ones, allowing a driver's in-flight status update to resurrect a cancelled trip. Not bot-fleet-specific -- same race possible with real users. Tightened guard to exclude both completed and cancelled. Cleaned up the one corrupted trip this exposed. Reloaded tekeche-api live, healthy. Same accepted 1/9 baseline.
 
+
+## Build #38 — 2026-07-28 18:07
+
+- **API commit**: 57753aaf (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Found and fixed the real ongoing source of orphaned trips (was steady ~1 per 15min even after all prior fixes): rides.controller.js's pool-matching assigns a second trip to an already-busy driver directly at the DB level via pool_pickup_added, an event driver-bot.js never listened for. Traced conclusively via one case (trip never appearing anywhere in its assigned driver's own log despite being DB-assigned to them). Added the missing handler, progresses pooled trips independently of the primary trip through the same proven status-update API. Deployed live, clean restart, zero errors, 20-day clock preserved. Same accepted 1/9 baseline.
+

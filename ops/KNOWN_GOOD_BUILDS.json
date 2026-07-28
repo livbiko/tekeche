@@ -479,5 +479,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  38,
+        "dateCreated":  "2026-07-28T18:07:11.2405459+01:00",
+        "apiCommit":  "57753aaf589e228913bd1f10b86930bbb393f34f",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Found and fixed the real ongoing source of orphaned trips (was steady ~1 per 15min even after all prior fixes): rides.controller.js\u0027s pool-matching assigns a second trip to an already-busy driver directly at the DB level via pool_pickup_added, an event driver-bot.js never listened for. Traced conclusively via one case (trip never appearing anywhere in its assigned driver\u0027s own log despite being DB-assigned to them). Added the missing handler, progresses pooled trips independently of the primary trip through the same proven status-update API. Deployed live, clean restart, zero errors, 20-day clock preserved. Same accepted 1/9 baseline.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
