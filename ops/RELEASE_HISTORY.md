@@ -314,3 +314,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Phase 5 of 20-day bot QA fleet: PM2 deployment (tekeche-bot-fleet, fork mode). Registered, validated (briefly went live during registration, verified fully harmless and cleanly recoverable), then deliberately left stopped for Phase 6's explicit go-live. Same accepted 1/9 baseline.
 
+
+## Build #33 — 2026-07-28 14:56
+
+- **API commit**: a586b5c1 (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed a real orphaned-trip bug found while checking on the live 20-day fleet: driver-bot.js in-memory trip state didn't survive a process restart, leaving trips permanently stuck. Now recovers via GET /drivers/active-trip on startup. Deployed live (fleet restarted, 20-day clock correctly preserved at original 2026-07-28T13:47:22Z start, 23/23 drivers reconnected cleanly, zero orphaned trips post-restart). Same accepted 1/9 baseline.
+

@@ -1373,3 +1373,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_14-35-07_before-deploy-the-bot-qa-fleet-scheduler"`
 
+
+## 2026-07-28 14:53:16 — Before: Add orphaned-trip recovery to driver-bot.js and redeploy the live 20-day fleet
+
+- **ID**: 2026-07-28_14-53-14_before-add-orphaned-trip-recovery-to-dri
+- **Reason**: 
+- **API commit**: a586b5c1  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 575.9 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_14-53-14_before-add-orphaned-trip-recovery-to-dri"`
+
