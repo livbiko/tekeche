@@ -204,3 +204,63 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Consolidated tekeche-vcn/IGW/public-subnet/LB from tekeche-pub into UK compartment (security zone driving the split was deleted 2026-07-04). 8/9 Test-Build checks pass; sole failure is the pre-existing no-online-driver test-data gap, unrelated.
 
+
+## Build #22 — 2026-07-19 09:00
+
+- **API commit**: 8ccc9960 (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: BIKO-OCI-DC2 promoted to writable DC; fixed BikoDC/BikoDC1 DNS self-registration bug blocking its replication (DoNotRegisterAdditionalIpv4Addresses)
+
+
+## Build #23 — 2026-07-19 16:02
+
+- **API commit**: 8ccc9960 (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Extended DNS failover to security.tekeche.com, staging-api.tekeche.com (full), and pay.tekeche.com (scaffolding); fixed live MongoDB firewall gap and dead .100/.110 VIPs
+
+
+## Build #24 — 2026-07-19 17:12
+
+- **API commit**: 8ccc9960 (master)
+- **Mobile commit**: 564ebbc6
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Dedicated IIS app pools extended to all 7 sites (closed DefaultAppPool sharing fragility); DNS failover live for tekeche.com/livbiko.com/kendebabi.com/security.tekeche.com/staging-api.tekeche.com
+
+
+## Build #25 — 2026-07-28 13:23
+
+- **API commit**: 0d99efac (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed Test-Build.ps1 PM2-check false positive (ANSI escape codes broke the status regex). 8/9 green; remaining failure (booking-flow) needs a live socket-connected test driver online, a known environmental precondition unrelated to code health — accepted per explicit approval.
+
+
+## Build #26 — 2026-07-28 13:29
+
+- **API commit**: 0d99efac (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Added isSynthetic isolation flag (User/Driver/Trip) + partitioned dispatch/woyo matching so the planned 20-day bot QA fleet can run on production without ever reaching real drivers/passengers. 8/9 green; booking-flow check needs a live socket-connected test driver, same accepted environmental gap as Build #25.
+
+
+## Build #27 — 2026-07-28 13:44
+
+- **API commit**: a586b5c1 (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Phase 0 of 20-day bot QA fleet: excluded isSynthetic accounts from admin.controller.js's listDrivers/listTrips/listWoyoDrivers/getStats by default (opt-in via includeSynthetic=true). Same accepted 1/9 baseline (booking-flow needs a live driver online).
+

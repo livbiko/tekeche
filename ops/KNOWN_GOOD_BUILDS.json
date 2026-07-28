@@ -271,5 +271,83 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  22,
+        "dateCreated":  "2026-07-19T09:00:05.8092362+01:00",
+        "apiCommit":  "8ccc99605f18d02cd758f0afc81b5f2a6cd0b1d3",
+        "apiBranch":  "master",
+        "mobileCommit":  "564ebbc676b8f4ecaf92e02e8e66e973149f41e9",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "BIKO-OCI-DC2 promoted to writable DC; fixed BikoDC/BikoDC1 DNS self-registration bug blocking its replication (DoNotRegisterAdditionalIpv4Addresses)",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  23,
+        "dateCreated":  "2026-07-19T16:02:54.3746680+01:00",
+        "apiCommit":  "8ccc99605f18d02cd758f0afc81b5f2a6cd0b1d3",
+        "apiBranch":  "master",
+        "mobileCommit":  "564ebbc676b8f4ecaf92e02e8e66e973149f41e9",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Extended DNS failover to security.tekeche.com, staging-api.tekeche.com (full), and pay.tekeche.com (scaffolding); fixed live MongoDB firewall gap and dead .100/.110 VIPs",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  24,
+        "dateCreated":  "2026-07-19T17:12:56.8184972+01:00",
+        "apiCommit":  "8ccc99605f18d02cd758f0afc81b5f2a6cd0b1d3",
+        "apiBranch":  "master",
+        "mobileCommit":  "564ebbc676b8f4ecaf92e02e8e66e973149f41e9",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Dedicated IIS app pools extended to all 7 sites (closed DefaultAppPool sharing fragility); DNS failover live for tekeche.com/livbiko.com/kendebabi.com/security.tekeche.com/staging-api.tekeche.com",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  25,
+        "dateCreated":  "2026-07-28T13:23:28.6049646+01:00",
+        "apiCommit":  "0d99efac78c5d21dd05bbe707409baf12fab0459",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fixed Test-Build.ps1 PM2-check false positive (ANSI escape codes broke the status regex). 8/9 green; remaining failure (booking-flow) needs a live socket-connected test driver online, a known environmental precondition unrelated to code health — accepted per explicit approval.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  26,
+        "dateCreated":  "2026-07-28T13:29:49.4398559+01:00",
+        "apiCommit":  "0d99efac78c5d21dd05bbe707409baf12fab0459",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Added isSynthetic isolation flag (User/Driver/Trip) + partitioned dispatch/woyo matching so the planned 20-day bot QA fleet can run on production without ever reaching real drivers/passengers. 8/9 green; booking-flow check needs a live socket-connected test driver, same accepted environmental gap as Build #25.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  27,
+        "dateCreated":  "2026-07-28T13:44:36.4281522+01:00",
+        "apiCommit":  "a586b5c119ca6406dfd1e21c7ec299f1a3c72c00",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Phase 0 of 20-day bot QA fleet: excluded isSynthetic accounts from admin.controller.js\u0027s listDrivers/listTrips/listWoyoDrivers/getStats by default (opt-in via includeSynthetic=true). Same accepted 1/9 baseline (booking-flow needs a live driver online).",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

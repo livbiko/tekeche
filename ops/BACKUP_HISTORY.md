@@ -1001,3 +1001,351 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-18_00-12-00_before-bikodc1-route-fix-10-0-0-0-16-via"`
 
+
+## 2026-07-18 08:32:35 — Before: tekeche.com registrar NS cutover to OCI DNS
+
+- **ID**: 2026-07-18_08-32-32_before-tekeche-com-registrar-ns-cutover
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-18_08-32-32_before-tekeche-com-registrar-ns-cutover"`
+
+
+## 2026-07-18 12:17:41 — Before: rename TEKECHE-RODC to BIKOOCIDC2, cleanup orphaned metadata, re-promote as writable DC
+
+- **ID**: 2026-07-18_12-17-36_before-rename-tekeche-rodc-to-bikoocidc2
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-18_12-17-36_before-rename-tekeche-rodc-to-bikoocidc2"`
+
+
+## 2026-07-18 21:11:38 — Before: BIKOOCIDC2 investigation + orphaned AD metadata cleanup
+
+- **ID**: 2026-07-18_21-11-34_before-bikoocidc2-investigation-orphaned
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-18_21-11-34_before-bikoocidc2-investigation-orphaned"`
+
+
+## 2026-07-19 08:24:08 — Before: fix BikoDC/BikoDC1 DNS self-registration polluting DC identity records (register=PRIMARY)
+
+- **ID**: 2026-07-19_08-24-06_before-fix-bikodc-bikodc1-dns-self-regis
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_08-24-06_before-fix-bikodc-bikodc1-dns-self-regis"`
+
+
+## 2026-07-19 09:23:19 — Before: remove dead .100/.110 VIP IP bindings from BikoDC/BikoDC1 Ethernet0
+
+- **ID**: 2026-07-19_09-23-17_before-remove-dead-100-110-vip-ip-bindin
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_09-23-17_before-remove-dead-100-110-vip-ip-bindin"`
+
+
+## 2026-07-19 09:37:29 — Before: livbiko.com registrar NS cutover to OCI DNS
+
+- **ID**: 2026-07-19_09-37-27_before-livbiko-com-registrar-ns-cutover
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_09-37-27_before-livbiko-com-registrar-ns-cutover"`
+
+
+## 2026-07-19 09:56:50 — Before: repoint local split-horizon kendebabi.com/tekeche.com DNS zones from dead .100 VIP to .101
+
+- **ID**: 2026-07-19_09-56-48_before-repoint-local-split-horizon-kende
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_09-56-48_before-repoint-local-split-horizon-kende"`
+
+
+## 2026-07-19 10:47:51 — Before: add 10.0.0.0/16 route via SRX on BikoDC2 (matches BikoDC/BikoDC1 fix)
+
+- **ID**: 2026-07-19_10-47-48_before-add-10-0-0-0-16-route-via-srx-on
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_10-47-48_before-add-10-0-0-0-16-route-via-srx-on"`
+
+
+## 2026-07-19 11:21:07 — Before: OCI/on-prem failover drain drill (re-verify after todays AD/DNS/network changes)
+
+- **ID**: 2026-07-19_11-21-05_before-oci-on-prem-failover-drain-drill
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_11-21-05_before-oci-on-prem-failover-drain-drill"`
+
+
+## 2026-07-19 12:38:40 — Before: add MongoDB - Allow OCI VCN firewall rule on BikoDC1 (fixes standby-to-BikoDC1 connectivity gap)
+
+- **ID**: 2026-07-19_12-38-38_before-add-mongodb-allow-oci-vcn-firewal
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_12-38-38_before-add-mongodb-allow-oci-vcn-firewal"`
+
+
+## 2026-07-19 15:00:55 — Before: kendebabi.com registrar NS cutover to OCI DNS
+
+- **ID**: 2026-07-19_15-00-53_before-kendebabi-com-registrar-ns-cutove
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_15-00-53_before-kendebabi-com-registrar-ns-cutove"`
+
+
+## 2026-07-19 15:09:55 — Before: verify standby serves security.tekeche.com /security/* route (drain test)
+
+- **ID**: 2026-07-19_15-09-53_before-verify-standby-serves-security-te
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_15-09-53_before-verify-standby-serves-security-te"`
+
+
+## 2026-07-19 15:37:50 — Before: verify standby serves staging-api.tekeche.com (drain test)
+
+- **ID**: 2026-07-19_15-37-48_before-verify-standby-serves-staging-api
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_15-37-48_before-verify-standby-serves-staging-api"`
+
+
+## 2026-07-19 16:12:30 — Before: comprehensive failover drain test across all 5 domains after todays session
+
+- **ID**: 2026-07-19_16-12-28_before-comprehensive-failover-drain-test
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_16-12-28_before-comprehensive-failover-drain-test"`
+
+
+## 2026-07-19 16:28:25 — Before: create Standby-KendebabiSync scheduled task for kendebabi.com uploads sync
+
+- **ID**: 2026-07-19_16-28-23_before-create-standby-kendebabisync-sche
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_16-28-23_before-create-standby-kendebabisync-sche"`
+
+
+## 2026-07-19 16:57:19 — Before: extend dedicated IIS app pools to remaining 6 sites sharing DefaultAppPool
+
+- **ID**: 2026-07-19_16-57-17_before-extend-dedicated-iis-app-pools-to
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-19_16-57-17_before-extend-dedicated-iis-app-pools-to"`
+
+
+## 2026-07-20 17:39:53 — Before deploy Palo Alto VM-Series Bundle1 PAYGO in new isolated livbiko-pa-vcn with VTAP mirroring
+
+- **ID**: 2026-07-20_17-39-51_before-deploy-palo-alto-vm-series-bundle
+- **Reason**: User approved OCI Marketplace PA VM-Series deployment for passive traffic monitoring, isolated VCN, zero blast radius on existing resources
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low - new isolated resources only, no existing infra touched
+- **DB dump**: 523 KB
+- **Files affected**: ops/oci/livbiko_pa_vcn.tf (new)
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-20_17-39-51_before-deploy-palo-alto-vm-series-bundle"`
+
+
+## 2026-07-20 20:29:39 — Before live drain test of BikoDC-OCI failover (user-requested fresh drill)
+
+- **ID**: 2026-07-20_20-29-36_before-live-drain-test-of-bikodc-oci-fai
+- **Reason**: User requested a fresh live failover verification after tonight's isolated Palo Alto VCN build, to confirm nothing regressed the existing api.tekeche.com failover path
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low - same drain/verify/restore pattern proven clean in every prior drill, briefly routes real traffic through OCI standby
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-20_20-29-36_before-live-drain-test-of-bikodc-oci-fai"`
+
+
+## 2026-07-21 08:58:24 — Before: retry livbiko_pa VTAP terraform apply diagnostic
+
+- **ID**: 2026-07-21_08-58-21_before-retry-livbiko-pa-vtap-terraform-a
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-21_08-58-21_before-retry-livbiko-pa-vtap-terraform-a"`
+
+
+## 2026-07-21 15:15:12 — Before: Run DISM StartComponentCleanup on BikoDC1 to reclaim WinSxS space on C:
+
+- **ID**: 2026-07-21_15-15-10_before-run-dism-startcomponentcleanup-on
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-21_15-15-10_before-run-dism-startcomponentcleanup-on"`
+
+
+## 2026-07-22 16:28:25 — Before: Add explicit 'manage capture-filters' IAM policy grant for Administrators in livbiko-pa compartment, retry VTAP creation
+
+- **ID**: 2026-07-22_16-28-23_before-add-explicit-manage-capture-filte
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-22_16-28-23_before-add-explicit-manage-capture-filte"`
+
+
+## 2026-07-24 16:40:07 — Before: Add Woyo as a third app variant in tekeche-mobile (branding, region-aware landing screen, EAS profiles)
+
+- **ID**: 2026-07-24_16-40-05_before-add-woyo-as-a-third-app-variant-i
+- **Reason**: 
+- **API commit**: 8ccc9960  (master)
+- **Mobile commit**: 564ebbc6 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-24_16-40-05_before-add-woyo-as-a-third-app-variant-i"`
+
+
+## 2026-07-24 17:08:17 — Before: Set WOYO_APP_TOKEN environment variable in tekeche-api's .env
+
+- **ID**: 2026-07-24_17-08-12_before-set-woyo-app-token-environment-va
+- **Reason**: 
+- **API commit**: 0d99efac  (master)
+- **Mobile commit**: eb04db9c (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-24_17-08-12_before-set-woyo-app-token-environment-va"`
+
+
+## 2026-07-25 03:06:02 — Before: Reboot BikoDC to activate Windows Hypervisor Platform for Android emulator acceleration
+
+- **ID**: 2026-07-25_03-06-01_before-reboot-bikodc-to-activate-windows
+- **Reason**: 
+- **API commit**: 0d99efac  (master)
+- **Mobile commit**: 0eb6bed9 (main)
+- **Impact**: Low
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-25_03-06-01_before-reboot-bikodc-to-activate-windows"`
+
+
+## 2026-07-25 17:58:20 — Before NouvellesDuPays OKE deploy + LB/DNS wiring
+
+- **ID**: 2026-07-25_17-58-17_before-nouvellesdupays-oke-deploy-lb-dns
+- **Reason**: New app going live on shared OKE cluster + OCI LB
+- **API commit**: 0d99efac  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Medium (new namespace, additive LB/DNS changes only)
+- **DB dump**: 523 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-25_17-58-17_before-nouvellesdupays-oke-deploy-lb-dns"`
+
+
+## 2026-07-28 13:00:33 — Before: Add isSynthetic flag to Driver/Booking models and partition dispatch matching for 20-day bot simulation
+
+- **ID**: 2026-07-28_13-00-29_before-add-issynthetic-flag-to-driver-bo
+- **Reason**: 
+- **API commit**: 0d99efac  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 546.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_13-00-29_before-add-issynthetic-flag-to-driver-bo"`
+
+
+## 2026-07-28 13:19:11 — Before: Fix ANSI-escape-code false positive in Test-Build.ps1 PM2 status check
+
+- **ID**: 2026-07-28_13-19-10_before-fix-ansi-escape-code-false-positi
+- **Reason**: 
+- **API commit**: 0d99efac  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 546.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_13-19-10_before-fix-ansi-escape-code-false-positi"`
+
+
+## 2026-07-28 13:40:14 — Before: Add isSynthetic exclusion to admin.controller.js driver lists and stats endpoints
+
+- **ID**: 2026-07-28_13-40-12_before-add-issynthetic-exclusion-to-admi
+- **Reason**: 
+- **API commit**: cbb30f57  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 547 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_13-40-12_before-add-issynthetic-exclusion-to-admi"`
+
+
+## 2026-07-28 13:48:32 — Before: Provision 35 synthetic bot User+Driver identity pairs on production for the 20-day QA fleet
+
+- **ID**: 2026-07-28_13-48-30_before-provision-35-synthetic-bot-user-d
+- **Reason**: 
+- **API commit**: a586b5c1  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 547 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_13-48-30_before-provision-35-synthetic-bot-user-d"`
+
