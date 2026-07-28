@@ -284,3 +284,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Phase 2 of 20-day bot QA fleet: driver-bot.js runtime, verified end-to-end against production (real synthetic passenger request -> real dispatch -> bot accept -> full status lifecycle, correct isSynthetic isolation throughout). Same accepted 1/9 baseline.
 
+
+## Build #30 — 2026-07-28 14:18
+
+- **API commit**: a586b5c1 (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Phase 3 of 20-day bot QA fleet: passenger-bot.js runtime, verified alongside a driver bot against production (correct active-trip detection and randomized request scheduling). Same accepted 1/9 baseline.
+
