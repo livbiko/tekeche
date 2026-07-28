@@ -264,3 +264,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Phase 0 of 20-day bot QA fleet: excluded isSynthetic accounts from admin.controller.js's listDrivers/listTrips/listWoyoDrivers/getStats by default (opt-in via includeSynthetic=true). Same accepted 1/9 baseline (booking-flow needs a live driver online).
 
+
+## Build #28 — 2026-07-28 13:54
+
+- **API commit**: a586b5c1 (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Phase 1 of 20-day bot QA fleet: provisioned 35 synthetic User+Driver identity pairs (5 moto, 13 standard, 5 comfort, 4 xl, 8 woyo) across 10 real Abidjan communes, all isSynthetic:true, kycStatus:approved, currently isOnline:false pending Phase 4's scheduler. Idempotency verified (re-run created zero duplicates). Manifest at ops/bot-fleet/manifest.json. Same accepted 1/9 baseline.
+
+
+## Build #29 — 2026-07-28 14:09
+
+- **API commit**: a586b5c1 (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Phase 2 of 20-day bot QA fleet: driver-bot.js runtime, verified end-to-end against production (real synthetic passenger request -> real dispatch -> bot accept -> full status lifecycle, correct isSynthetic isolation throughout). Same accepted 1/9 baseline.
+
