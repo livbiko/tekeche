@@ -18,6 +18,8 @@ const { loadManifest, log } = require('./lib');
 const DRY_RUN = process.argv.includes('--dry-run');
 const RUN_DAYS = 20;
 const TICK_MS = 60 * 1000;
+const SWEEP_MS = 5 * 60 * 1000;
+const STALE_TRIP_MS = 30 * 60 * 1000; // past driver-bot's 25-min max travel time, plus margin
 const LOG_DIR = path.join(__dirname, 'logs');
 const STATE_PATH = path.join(__dirname, 'fleet-state.json');
 const STOP_PATH = path.join(__dirname, 'STOP');
@@ -157,6 +159,55 @@ function stopAll() {
   for (const index of Array.from(running.keys())) stopBot(index);
 }
 
+// ── Orphaned-trip sweep ───────────────────────────────────────────────────
+// Backstop for driver-bot.js's own startup recovery: that only fires if the
+// SAME identity happens to come back as a driver on its next process start.
+// If a role-reassignment moves it to passenger instead (exactly what
+// happened live: a driver bot got killed mid-trip on a scheduler restart,
+// and the fresh reconcile() reassigned that identity to passenger — no
+// driver-bot instance for it ever ran again to trigger recovery), the trip
+// is orphaned forever with nothing role-specific to catch it. This sweep is
+// role-independent: it directly resolves any synthetic trip stuck past a
+// generous staleness threshold, regardless of which bot (if any) currently
+// owns that identity.
+let mongoosePromise = null;
+function getMongoose() {
+  if (!mongoosePromise) {
+    const API_DIR = 'C:/inetpub/wwwroot/tekeche/tekeche-api';
+    const mongoose = require(path.join(API_DIR, 'node_modules/mongoose'));
+    const envLine = fs.readFileSync(path.join(API_DIR, '.env'), 'utf8').split(/\r?\n/).find(l => l.startsWith('MONGODB_URI='));
+    mongoosePromise = mongoose.connect(envLine.slice('MONGODB_URI='.length)).then(() => ({
+      Trip: require(path.join(API_DIR, 'src/models/Trip')),
+      Driver: require(path.join(API_DIR, 'src/models/Driver')),
+    }));
+  }
+  return mongoosePromise;
+}
+
+async function sweepOrphanedTrips() {
+  if (DRY_RUN) return;
+  try {
+    const { Trip, Driver } = await getMongoose();
+    const stale = await Trip.find({
+      isSynthetic: true,
+      status: { $in: ['accepted', 'driver_arriving', 'in_progress'] },
+      updatedAt: { $lt: new Date(Date.now() - STALE_TRIP_MS) },
+    });
+    if (!stale.length) return;
+    log('scheduler', `sweep: found ${stale.length} orphaned trip(s)`);
+    for (const trip of stale) {
+      await Trip.findByIdAndUpdate(trip._id, {
+        status: 'cancelled', cancelledBy: 'system',
+        cancelReason: 'Orphaned trip swept by scheduler (stale past travel-time cap)',
+      });
+      if (trip.driver) await Driver.findByIdAndUpdate(trip.driver, { isAvailable: true });
+      log('scheduler', `sweep: cancelled orphaned trip=${trip._id} (was ${trip.status})`);
+    }
+  } catch (err) {
+    log('scheduler', `sweep error: ${err.message}`);
+  }
+}
+
 // ── State (survives scheduler restarts under PM2) ───────────────────────
 function loadOrInitState() {
   if (fs.existsSync(STATE_PATH)) return JSON.parse(fs.readFileSync(STATE_PATH, 'utf8'));
@@ -206,6 +257,9 @@ function main() {
 
   tick();
   setInterval(tick, TICK_MS);
+
+  sweepOrphanedTrips().catch(e => log('scheduler', `sweep error: ${e.message}`));
+  setInterval(() => sweepOrphanedTrips().catch(e => log('scheduler', `sweep error: ${e.message}`)), SWEEP_MS);
 }
 
 process.on('SIGINT', () => { stopAll(); process.exit(0); });
