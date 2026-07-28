@@ -374,3 +374,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Found and fixed the real ongoing source of orphaned trips (was steady ~1 per 15min even after all prior fixes): rides.controller.js's pool-matching assigns a second trip to an already-busy driver directly at the DB level via pool_pickup_added, an event driver-bot.js never listened for. Traced conclusively via one case (trip never appearing anywhere in its assigned driver's own log despite being DB-assigned to them). Added the missing handler, progresses pooled trips independently of the primary trip through the same proven status-update API. Deployed live, clean restart, zero errors, 20-day clock preserved. Same accepted 1/9 baseline.
 
+
+## Build #39 — 2026-07-28 21:09
+
+- **API commit**: 57753aaf (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed a systemic zombie-process gap found via a full OS-level process audit: identity #7 had two processes running simultaneously for hours (a driver whose socket died but process never exited, plus a genuinely ancient pre-launch leftover with zero log output ever). Root cause: stopBot() deleted from tracking the instant SIGTERM was sent, without confirming actual termination, and nothing periodically verified tracked-as-active drivers were still genuinely connected. Added confirmed-termination (SIGTERM + 5s grace + SIGKILL fallback, reconcile() awaits before replacing) and a 5-minute DB-backed driver-liveness sweep. Manually cleaned up both zombies, redeployed, verified exactly 35 processes (no dupes/gaps) and 18/18 drivers online matching the window target precisely. Same accepted 1/9 baseline.
+

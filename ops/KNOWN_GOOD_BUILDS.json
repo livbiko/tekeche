@@ -492,5 +492,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  39,
+        "dateCreated":  "2026-07-28T21:09:03.5353334+01:00",
+        "apiCommit":  "57753aaf589e228913bd1f10b86930bbb393f34f",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fixed a systemic zombie-process gap found via a full OS-level process audit: identity #7 had two processes running simultaneously for hours (a driver whose socket died but process never exited, plus a genuinely ancient pre-launch leftover with zero log output ever). Root cause: stopBot() deleted from tracking the instant SIGTERM was sent, without confirming actual termination, and nothing periodically verified tracked-as-active drivers were still genuinely connected. Added confirmed-termination (SIGTERM + 5s grace + SIGKILL fallback, reconcile() awaits before replacing) and a 5-minute DB-backed driver-liveness sweep. Manually cleaned up both zombies, redeployed, verified exactly 35 processes (no dupes/gaps) and 18/18 drivers online matching the window target precisely. Same accepted 1/9 baseline.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

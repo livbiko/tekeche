@@ -1445,3 +1445,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_18-04-29_before-add-pool-pickup-added-handler-to"`
 
+
+## 2026-07-28 21:04:41 — Before: Add confirmed-termination and periodic driver-liveness checks to scheduler.js and redeploy the live fleet
+
+- **ID**: 2026-07-28_21-04-40_before-add-confirmed-termination-and-per
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 678.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_21-04-40_before-add-confirmed-termination-and-per"`
+
