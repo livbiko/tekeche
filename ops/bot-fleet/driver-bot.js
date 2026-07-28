@@ -189,6 +189,30 @@ socket.on('new_ride_request', (payload) => { handleTripRequest(payload).catch(e 
 socket.on('woyo_new_passenger', (payload) => log(TAG, `woyo_new_passenger trip=${payload.tripId} totalPassengers=${payload.totalPassengers}`));
 socket.on('trip_cancelled_by_passenger', () => { log(TAG, 'trip cancelled by passenger'); activeTrip = null; idleSince = Date.now(); });
 
+// Pooling assigns a second passenger straight onto a driver already handling
+// a trip — rides.controller.js writes driver+status:'accepted' on the DB
+// directly and notifies via this event, not new_ride_request. Without a
+// handler here, that second trip was silently orphaned: never appearing
+// anywhere in this bot's own state, invisible until the scheduler's sweep
+// caught it ~30 minutes later. Progressed independently of activeTrip since
+// a pooled pickup rides along with the primary trip, not instead of it.
+socket.on('pool_pickup_added', (payload) => {
+  log(TAG, `pool_pickup_added trip=${payload.tripId} fare=${payload.fare}`);
+  (async () => {
+    try {
+      await sleep(2000);
+      await freshClient().put(`/drivers/trips/${payload.tripId}/status`, { status: 'driver_arriving' });
+      await sleep(2000);
+      await freshClient().put(`/drivers/trips/${payload.tripId}/status`, { status: 'in_progress' });
+      await sleep(5 * 60 * 1000 + Math.random() * 5 * 60 * 1000); // rides along with the main route
+      await freshClient().put(`/drivers/trips/${payload.tripId}/status`, { status: 'completed' });
+      log(TAG, `pool pickup trip=${payload.tripId} completed`);
+    } catch (err) {
+      log(TAG, `pool pickup trip=${payload.tripId} error: ${err.response?.data?.message || err.message}`);
+    }
+  })();
+});
+
 // Recover any trip orphaned by a previous crash of this identity before
 // doing anything else, then start the normal GPS/idle-relocation loop.
 recoverActiveTrip().finally(() => {
