@@ -1361,3 +1361,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_14-26-09_before-add-20-day-window-scheduler-that"`
 
+
+## 2026-07-28 14:35:08 — Before: Deploy the bot QA fleet scheduler as a PM2-managed process on BikoDC
+
+- **ID**: 2026-07-28_14-35-07_before-deploy-the-bot-qa-fleet-scheduler
+- **Reason**: 
+- **API commit**: a586b5c1  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 574.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_14-35-07_before-deploy-the-bot-qa-fleet-scheduler"`
+

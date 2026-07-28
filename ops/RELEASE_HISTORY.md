@@ -304,3 +304,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Phase 4 of 20-day bot QA fleet: scheduler.js window orchestration, verified in dry-run mode after fixing a real apportionment bug (start/end fields leaking into the percentage math). All 5 windows confirmed to sum to exactly 35 with zero pool overflow. Midnight-6am is an explicit idle gap per user decision. Same accepted 1/9 baseline.
 
+
+## Build #32 — 2026-07-28 14:43
+
+- **API commit**: a586b5c1 (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Phase 5 of 20-day bot QA fleet: PM2 deployment (tekeche-bot-fleet, fork mode). Registered, validated (briefly went live during registration, verified fully harmless and cleanly recoverable), then deliberately left stopped for Phase 6's explicit go-live. Same accepted 1/9 baseline.
+

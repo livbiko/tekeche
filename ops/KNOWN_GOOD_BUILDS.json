@@ -401,5 +401,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  32,
+        "dateCreated":  "2026-07-28T14:43:59.1578875+01:00",
+        "apiCommit":  "a586b5c119ca6406dfd1e21c7ec299f1a3c72c00",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Phase 5 of 20-day bot QA fleet: PM2 deployment (tekeche-bot-fleet, fork mode). Registered, validated (briefly went live during registration, verified fully harmless and cleanly recoverable), then deliberately left stopped for Phase 6\u0027s explicit go-live. Same accepted 1/9 baseline.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
