@@ -42,9 +42,14 @@ Write-Host ""
 
 # ── 1. PM2 process running ────────────────────────────────────────────────────
 Check "PM2 tekeche-api is running" {
-    # pm2 jlist produces JSON with duplicate env keys that ConvertFrom-Json rejects; use text output instead
+    # pm2 jlist produces JSON with duplicate env keys that ConvertFrom-Json rejects; use text output instead.
+    # pm2 show emits ANSI colour codes even when piped (e.g. "[32m[1monline[22m[39m"),
+    # which sit between "status" and "online" in the raw text and break a naive
+    # box-drawing regex — strip them before matching.
     $text = (pm2 show tekeche-api 2>$null | Out-String)
-    $text -match '│\s*status\s*│\s*online\s*│'
+    $esc = [char]27
+    $plain = $text -replace "$esc\[[0-9;]*[a-zA-Z]", ''
+    $plain -match '│\s*status\s*│\s*online\s*│'
 }
 
 # ── 2. API health ─────────────────────────────────────────────────────────────
