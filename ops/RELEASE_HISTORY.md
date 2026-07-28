@@ -354,3 +354,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fixed idle-relocation re-entrancy bug in driver-bot.js: the 8s GPS timer could re-enter maybeRelocate() while a previous relocation's travelTo() was still mid-flight (idleSince not reset until completion), causing overlapping concurrent relocations racing on pos -- visible as erratic zig-zag movement instead of one smooth move. Added a relocating guard. Deployed live, clean restart, zero errors, 20-day clock preserved at original start. Same accepted 1/9 baseline.
 
+
+## Build #37 — 2026-07-28 16:33
+
+- **API commit**: 57753aaf (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed a real production bug found via the bot fleet's orphaned-trip sweep: driver.controller.js's updateTripStatus guard only excluded already-completed trips, not cancelled ones, allowing a driver's in-flight status update to resurrect a cancelled trip. Not bot-fleet-specific -- same race possible with real users. Tightened guard to exclude both completed and cancelled. Cleaned up the one corrupted trip this exposed. Reloaded tekeche-api live, healthy. Same accepted 1/9 baseline.
+

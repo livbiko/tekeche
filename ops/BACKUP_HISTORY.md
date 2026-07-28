@@ -1421,3 +1421,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_16-22-51_before-fix-idle-relocation-re-entrancy-b"`
 
+
+## 2026-07-28 16:30:37 — Before: Guard updateTripStatus against resurrecting cancelled trips in driver.controller.js
+
+- **ID**: 2026-07-28_16-30-36_before-guard-updatetripstatus-against-re
+- **Reason**: 
+- **API commit**: a586b5c1  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 591.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_16-30-36_before-guard-updatetripstatus-against-re"`
+

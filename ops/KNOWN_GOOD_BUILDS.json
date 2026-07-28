@@ -466,5 +466,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  37,
+        "dateCreated":  "2026-07-28T16:33:06.0386957+01:00",
+        "apiCommit":  "57753aaf589e228913bd1f10b86930bbb393f34f",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fixed a real production bug found via the bot fleet\u0027s orphaned-trip sweep: driver.controller.js\u0027s updateTripStatus guard only excluded already-completed trips, not cancelled ones, allowing a driver\u0027s in-flight status update to resurrect a cancelled trip. Not bot-fleet-specific -- same race possible with real users. Tightened guard to exclude both completed and cancelled. Cleaned up the one corrupted trip this exposed. Reloaded tekeche-api live, healthy. Same accepted 1/9 baseline.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
