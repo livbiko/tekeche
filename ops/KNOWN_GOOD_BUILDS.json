@@ -388,5 +388,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  31,
+        "dateCreated":  "2026-07-28T14:30:17.5110707+01:00",
+        "apiCommit":  "a586b5c119ca6406dfd1e21c7ec299f1a3c72c00",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Phase 4 of 20-day bot QA fleet: scheduler.js window orchestration, verified in dry-run mode after fixing a real apportionment bug (start/end fields leaking into the percentage math). All 5 windows confirmed to sum to exactly 35 with zero pool overflow. Midnight-6am is an explicit idle gap per user decision. Same accepted 1/9 baseline.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

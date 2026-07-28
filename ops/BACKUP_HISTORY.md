@@ -1349,3 +1349,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_13-48-30_before-provision-35-synthetic-bot-user-d"`
 
+
+## 2026-07-28 14:26:11 — Before: Add 20-day window scheduler that starts/stops bot fleet driver and passenger processes on production
+
+- **ID**: 2026-07-28_14-26-09_before-add-20-day-window-scheduler-that
+- **Reason**: 
+- **API commit**: a586b5c1  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 574 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_14-26-09_before-add-20-day-window-scheduler-that"`
+
