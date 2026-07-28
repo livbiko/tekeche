@@ -324,3 +324,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fixed a real orphaned-trip bug found while checking on the live 20-day fleet: driver-bot.js in-memory trip state didn't survive a process restart, leaving trips permanently stuck. Now recovers via GET /drivers/active-trip on startup. Deployed live (fleet restarted, 20-day clock correctly preserved at original 2026-07-28T13:47:22Z start, 23/23 drivers reconnected cleanly, zero orphaned trips post-restart). Same accepted 1/9 baseline.
 
+
+## Build #34 — 2026-07-28 15:44
+
+- **API commit**: a586b5c1 (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed a real gap found during a live fleet status check: driver-bot.js's startup recovery only caught orphans that came back as a driver; a scheduler restart's role reshuffle can reassign an identity to passenger instead, leaving the trip permanently orphaned with nothing role-specific to catch it. 6 real orphaned trips found live (from the earlier redeploy's reshuffle). Added a role-independent periodic sweep to scheduler.js (every 5min, 30min staleness threshold) as a backstop. Deployed live: redeployed, sweep immediately cleaned up 5 stale trips on startup with zero errors, 23/23 drivers reconnected correctly, 0 remaining stale trips post-sweep. Same accepted 1/9 baseline.
+

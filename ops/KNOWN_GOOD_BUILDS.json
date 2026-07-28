@@ -427,5 +427,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  34,
+        "dateCreated":  "2026-07-28T15:44:14.1410912+01:00",
+        "apiCommit":  "a586b5c119ca6406dfd1e21c7ec299f1a3c72c00",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fixed a real gap found during a live fleet status check: driver-bot.js\u0027s startup recovery only caught orphans that came back as a driver; a scheduler restart\u0027s role reshuffle can reassign an identity to passenger instead, leaving the trip permanently orphaned with nothing role-specific to catch it. 6 real orphaned trips found live (from the earlier redeploy\u0027s reshuffle). Added a role-independent periodic sweep to scheduler.js (every 5min, 30min staleness threshold) as a backstop. Deployed live: redeployed, sweep immediately cleaned up 5 stale trips on startup with zero errors, 23/23 drivers reconnected correctly, 0 remaining stale trips post-sweep. Same accepted 1/9 baseline.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

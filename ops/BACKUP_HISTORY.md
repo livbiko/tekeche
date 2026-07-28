@@ -1385,3 +1385,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_14-53-14_before-add-orphaned-trip-recovery-to-dri"`
 
+
+## 2026-07-28 15:37:47 — Before: Add periodic orphaned-trip sweep to scheduler.js and redeploy the live 20-day fleet
+
+- **ID**: 2026-07-28_15-37-45_before-add-periodic-orphaned-trip-sweep
+- **Reason**: 
+- **API commit**: a586b5c1  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 583.4 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_15-37-45_before-add-periodic-orphaned-trip-sweep"`
+
