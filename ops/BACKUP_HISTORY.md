@@ -1409,3 +1409,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_16-08-18_before-switch-bot-fleet-from-public-api"`
 
+
+## 2026-07-28 16:22:54 — Before: Fix idle-relocation re-entrancy bug in driver-bot.js and redeploy the live fleet
+
+- **ID**: 2026-07-28_16-22-51_before-fix-idle-relocation-re-entrancy-b
+- **Reason**: 
+- **API commit**: a586b5c1  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 590.9 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_16-22-51_before-fix-idle-relocation-re-entrancy-b"`
+

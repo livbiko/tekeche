@@ -453,5 +453,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  36,
+        "dateCreated":  "2026-07-28T16:25:42.0981599+01:00",
+        "apiCommit":  "a586b5c119ca6406dfd1e21c7ec299f1a3c72c00",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fixed idle-relocation re-entrancy bug in driver-bot.js: the 8s GPS timer could re-enter maybeRelocate() while a previous relocation\u0027s travelTo() was still mid-flight (idleSince not reset until completion), causing overlapping concurrent relocations racing on pos -- visible as erratic zig-zag movement instead of one smooth move. Added a relocating guard. Deployed live, clean restart, zero errors, 20-day clock preserved at original start. Same accepted 1/9 baseline.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
