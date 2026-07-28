@@ -19,8 +19,16 @@ function getEnv(key) {
 }
 
 const JWT_SECRET = getEnv('JWT_SECRET');
-const API_BASE   = 'https://api.tekeche.com/api';
-const SOCKET_URL = 'https://api.tekeche.com';
+// All 35 bots run on the same machine as tekeche-api itself. Hitting the
+// public domain meant every bot's traffic arrived at the server sharing one
+// egress IP, colliding in app.js's per-IP rate limiters (100 req/15min
+// overall, 5 req/min on /rides/request) — 35 synthetic users artificially
+// collapsed into the request budget of one. Both limiters already skip
+// 127.0.0.1 explicitly, so hitting the API directly over localhost avoids
+// this cleanly with zero changes to production rate-limiting code. Trades
+// away NLB/public-DNS path realism, which isn't what this exercise tests.
+const API_BASE   = 'http://127.0.0.1:5000/api';
+const SOCKET_URL = 'http://127.0.0.1:5000';
 
 // Mirrors signTokens() in auth.controller.js exactly (id, role, jti, type,
 // same expiresIn) so bot tokens are indistinguishable in shape from real ones.
