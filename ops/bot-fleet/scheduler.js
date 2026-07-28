@@ -20,6 +20,8 @@ const RUN_DAYS = 20;
 const TICK_MS = 60 * 1000;
 const SWEEP_MS = 5 * 60 * 1000;
 const STALE_TRIP_MS = 30 * 60 * 1000; // past driver-bot's 25-min max travel time, plus margin
+const STOP_GRACE_MS = 5000; // SIGTERM grace period before SIGKILL fallback
+const LIVENESS_SWEEP_MS = 5 * 60 * 1000;
 const LOG_DIR = path.join(__dirname, 'logs');
 const STATE_PATH = path.join(__dirname, 'fleet-state.json');
 const STOP_PATH = path.join(__dirname, 'STOP');
@@ -108,12 +110,33 @@ function computeAssignment(manifest, window, seed) {
 // ── Process management ──────────────────────────────────────────────────
 const running = new Map(); // index -> { proc, role }
 
+// Returns a Promise that resolves once the process has actually exited (or a
+// grace period elapses and we SIGKILL it) — NOT just once SIGTERM was sent.
+// Found live: a driver bot whose socket died silently left the Node process
+// itself running forever, invisible to reconcile() because the old code
+// deleted it from `running` the instant SIGTERM was sent, before confirming
+// anything actually died. That let a zombie and its replacement coexist,
+// both driving the same identity, for hours.
 function stopBot(index) {
   const entry = running.get(index);
-  if (!entry) return;
+  if (!entry) return Promise.resolve();
   log('scheduler', `stopping ${entry.role} bot #${index}`);
-  if (!DRY_RUN) entry.proc.kill('SIGTERM');
   running.delete(index);
+  if (DRY_RUN || !entry.proc) return Promise.resolve();
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => { if (!settled) { settled = true; resolve(); } };
+    entry.proc.once('exit', finish);
+    entry.proc.kill('SIGTERM');
+    setTimeout(() => {
+      if (!settled) {
+        log('scheduler', `bot #${index} did not exit within ${STOP_GRACE_MS / 1000}s of SIGTERM — forcing SIGKILL`);
+        try { entry.proc.kill('SIGKILL'); } catch {}
+        finish();
+      }
+    }, STOP_GRACE_MS);
+  });
 }
 
 function startBot(index, role, manifestEntry) {
@@ -134,15 +157,21 @@ function startBot(index, role, manifestEntry) {
   running.set(index, { proc, role });
 }
 
-function reconcile(manifest, assignment) {
+async function reconcile(manifest, assignment) {
   const desired = new Map(); // index -> 'driver' | 'passenger'
   for (const index of assignment.drivers.keys()) desired.set(index, 'driver');
   for (const index of assignment.passengers) desired.set(index, 'passenger');
 
-  // Stop anything whose desired role changed (or that's no longer active at all).
+  // Stop anything whose desired role changed (or that's no longer active at
+  // all) and WAIT for confirmed termination before starting replacements —
+  // otherwise a slow-to-die old process and its fresh replacement can run
+  // the same identity simultaneously.
+  const stopPromises = [];
   for (const [index, entry] of running) {
-    if (desired.get(index) !== entry.role) stopBot(index);
+    if (desired.get(index) !== entry.role) stopPromises.push(stopBot(index));
   }
+  await Promise.all(stopPromises);
+
   // Start anything newly desired that isn't already running with that role,
   // staggered so 35 processes don't all connect in the same instant.
   let delay = 0;
@@ -156,7 +185,7 @@ function reconcile(manifest, assignment) {
 
 function stopAll() {
   log('scheduler', `stopping all ${running.size} active bots`);
-  for (const index of Array.from(running.keys())) stopBot(index);
+  return Promise.all(Array.from(running.keys()).map(stopBot));
 }
 
 // ── Orphaned-trip sweep ───────────────────────────────────────────────────
@@ -208,6 +237,35 @@ async function sweepOrphanedTrips() {
   }
 }
 
+// ── Dead-driver liveness sweep ────────────────────────────────────────────
+// Found live: a driver bot's socket died (network blip) but the Node process
+// itself never exited — nothing in driver-bot.js causes it to exit on
+// repeated reconnect failure, and the scheduler only reacts to an actual
+// 'exit' event, so a process that goes silent-but-alive was invisible
+// indefinitely. This directly checks the DB's isOnline flag (managed by the
+// server itself on socket connect/disconnect) against what we're currently
+// tracking as an active driver, and force-restarts any mismatch. A restart
+// triggered on a driver that was already mid-reconnect is a harmless no-op
+// cost; leaving a real zombie running silently for hours is not.
+async function sweepDeadDrivers(manifest) {
+  if (DRY_RUN) return;
+  try {
+    const { Driver } = await getMongoose();
+    for (const [index, entry] of Array.from(running.entries())) {
+      if (entry.role !== 'driver') continue;
+      const manifestEntry = manifest.find(m => m.index === index);
+      const d = await Driver.findById(manifestEntry.driverId).select('isOnline').lean();
+      if (d && !d.isOnline) {
+        log('scheduler', `liveness: bot #${index} (driver) shows isOnline=false while tracked as active — restarting`);
+        await stopBot(index);
+        startBot(index, 'driver', manifestEntry);
+      }
+    }
+  } catch (err) {
+    log('scheduler', `liveness sweep error: ${err.message}`);
+  }
+}
+
 // ── State (survives scheduler restarts under PM2) ───────────────────────
 function loadOrInitState() {
   if (fs.existsSync(STATE_PATH)) return JSON.parse(fs.readFileSync(STATE_PATH, 'utf8'));
@@ -229,13 +287,13 @@ function main() {
   function tick() {
     if (fs.existsSync(STOP_PATH)) {
       log('scheduler', 'STOP file present — shutting down fleet');
-      stopAll();
-      process.exit(0);
+      stopAll().then(() => process.exit(0));
+      return;
     }
     if (Date.now() >= endsAt.getTime()) {
       log('scheduler', '20-day run complete — shutting down fleet');
-      stopAll();
-      process.exit(0);
+      stopAll().then(() => process.exit(0));
+      return;
     }
 
     const now = new Date();
@@ -260,9 +318,11 @@ function main() {
 
   sweepOrphanedTrips().catch(e => log('scheduler', `sweep error: ${e.message}`));
   setInterval(() => sweepOrphanedTrips().catch(e => log('scheduler', `sweep error: ${e.message}`)), SWEEP_MS);
+
+  setInterval(() => sweepDeadDrivers(manifest).catch(e => log('scheduler', `liveness sweep error: ${e.message}`)), LIVENESS_SWEEP_MS);
 }
 
-process.on('SIGINT', () => { stopAll(); process.exit(0); });
-process.on('SIGTERM', () => { stopAll(); process.exit(0); });
+process.on('SIGINT', () => { stopAll().then(() => process.exit(0)); });
+process.on('SIGTERM', () => { stopAll().then(() => process.exit(0)); });
 
 main();
