@@ -334,3 +334,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fixed a real gap found during a live fleet status check: driver-bot.js's startup recovery only caught orphans that came back as a driver; a scheduler restart's role reshuffle can reassign an identity to passenger instead, leaving the trip permanently orphaned with nothing role-specific to catch it. 6 real orphaned trips found live (from the earlier redeploy's reshuffle). Added a role-independent periodic sweep to scheduler.js (every 5min, 30min staleness threshold) as a backstop. Deployed live: redeployed, sweep immediately cleaned up 5 stale trips on startup with zero errors, 23/23 drivers reconnected correctly, 0 remaining stale trips post-sweep. Same accepted 1/9 baseline.
 
+
+## Build #35 — 2026-07-28 16:20
+
+- **API commit**: a586b5c1 (master)
+- **Mobile commit**: dd0df115
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed the root cause of recurring orphaned trips found during a live status check: all 35 bots shared one rate-limit bucket by hitting the public API endpoint from the same machine (100 req/15min overall, 5 req/min on /rides/request), causing scattered 429s (~50 across 25 of 35 bots) including on the recovery mechanism's own completion calls. Switched lib.js to hit localhost directly (127.0.0.1:5000), which both rate limiters already explicitly exempt -- zero changes to production rate-limiting code. Deployed live: 23/23 drivers reconnected cleanly, zero errors since restart, 20-day clock preserved at original 2026-07-28T13:47:22Z start. Same accepted 1/9 baseline.
+

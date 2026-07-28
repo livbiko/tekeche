@@ -440,5 +440,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  35,
+        "dateCreated":  "2026-07-28T16:20:31.1758263+01:00",
+        "apiCommit":  "a586b5c119ca6406dfd1e21c7ec299f1a3c72c00",
+        "apiBranch":  "master",
+        "mobileCommit":  "dd0df115fcb5f3b8ceb66eea077a68a3edf38489",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fixed the root cause of recurring orphaned trips found during a live status check: all 35 bots shared one rate-limit bucket by hitting the public API endpoint from the same machine (100 req/15min overall, 5 req/min on /rides/request), causing scattered 429s (~50 across 25 of 35 bots) including on the recovery mechanism\u0027s own completion calls. Switched lib.js to hit localhost directly (127.0.0.1:5000), which both rate limiters already explicitly exempt -- zero changes to production rate-limiting code. Deployed live: 23/23 drivers reconnected cleanly, zero errors since restart, 20-day clock preserved at original 2026-07-28T13:47:22Z start. Same accepted 1/9 baseline.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

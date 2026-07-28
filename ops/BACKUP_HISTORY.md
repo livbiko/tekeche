@@ -1397,3 +1397,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_15-37-45_before-add-periodic-orphaned-trip-sweep"`
 
+
+## 2026-07-28 16:08:19 — Before: Switch bot fleet from public API endpoint to localhost to bypass rate-limit collision
+
+- **ID**: 2026-07-28_16-08-18_before-switch-bot-fleet-from-public-api
+- **Reason**: 
+- **API commit**: a586b5c1  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 590.9 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_16-08-18_before-switch-bot-fleet-from-public-api"`
+
