@@ -505,5 +505,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  40,
+        "dateCreated":  "2026-07-29T23:23:08.9737193+01:00",
+        "apiCommit":  "57753aaf589e228913bd1f10b86930bbb393f34f",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Tightened tekeche-nlb health-checker (10s/2/5s -\u003e 3s/2/2s) on main+http backend sets; added Invoke-SafeRestart.ps1 drain-first restart wrapper for BikoDC. 8/9 Test-Build.ps1 -- only failure is the long-standing pre-existing socketId/synthetic-driver booking-flow gap (documented since 2026-07-19), no mechanism connects it to NLB config or an unexecuted new script.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

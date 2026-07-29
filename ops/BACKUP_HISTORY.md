@@ -1457,3 +1457,51 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-28_21-04-40_before-add-confirmed-termination-and-per"`
 
+
+## 2026-07-29 11:36:10 — Before: Delete duplicate Gagnoa Localite record and update 225woyo.com copy for the Abidjan-vs-rest-of-country split
+
+- **ID**: 2026-07-29_11-36-08_before-delete-duplicate-gagnoa-localite
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 982.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-29_11-36-08_before-delete-duplicate-gagnoa-localite"`
+
+
+## 2026-07-29 12:01:31 — Before: Fix Woyo quartier-level fare matching bug in woyo.tsx and push via OTA update
+
+- **ID**: 2026-07-29_12-01-29_before-fix-woyo-quartier-level-fare-matc
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: dd0df115 (main)
+- **Impact**: Low
+- **DB dump**: 990.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-29_12-01-29_before-fix-woyo-quartier-level-fare-matc"`
+
+
+## 2026-07-29 22:05:23 — Before: fix bot-fleet crash-restart gap and investigate exit code 3221225786
+
+- **ID**: 2026-07-29_22-05-18_before-fix-bot-fleet-crash-restart-gap-a
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1117.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-29_22-05-18_before-fix-bot-fleet-crash-restart-gap-a"`
+
+
+## 2026-07-29 23:14:41 — Before: tighten tekeche-nlb health-checker + add safe-restart drain wrapper
+
+- **ID**: 2026-07-29_23-14-32_before-tighten-tekeche-nlb-health-checke
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1123.4 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-29_23-14-32_before-tighten-tekeche-nlb-health-checke"`
+

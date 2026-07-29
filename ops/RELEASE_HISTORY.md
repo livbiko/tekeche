@@ -384,3 +384,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fixed a systemic zombie-process gap found via a full OS-level process audit: identity #7 had two processes running simultaneously for hours (a driver whose socket died but process never exited, plus a genuinely ancient pre-launch leftover with zero log output ever). Root cause: stopBot() deleted from tracking the instant SIGTERM was sent, without confirming actual termination, and nothing periodically verified tracked-as-active drivers were still genuinely connected. Added confirmed-termination (SIGTERM + 5s grace + SIGKILL fallback, reconcile() awaits before replacing) and a 5-minute DB-backed driver-liveness sweep. Manually cleaned up both zombies, redeployed, verified exactly 35 processes (no dupes/gaps) and 18/18 drivers online matching the window target precisely. Same accepted 1/9 baseline.
 
+
+## Build #40 — 2026-07-29 23:23
+
+- **API commit**: 57753aaf (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Tightened tekeche-nlb health-checker (10s/2/5s -> 3s/2/2s) on main+http backend sets; added Invoke-SafeRestart.ps1 drain-first restart wrapper for BikoDC. 8/9 Test-Build.ps1 -- only failure is the long-standing pre-existing socketId/synthetic-driver booking-flow gap (documented since 2026-07-19), no mechanism connects it to NLB config or an unexecuted new script.
+
