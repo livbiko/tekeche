@@ -518,5 +518,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  41,
+        "dateCreated":  "2026-07-30T08:46:20.0507615+01:00",
+        "apiCommit":  "57753aaf589e228913bd1f10b86930bbb393f34f",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Active-active fault-tolerance build for api.tekeche.com: Redis cross-node fan-out to OCI standby, 50/50 active-active NLB split, empirically-verified MongoDB election resilience, plus a critical fix (isSynthetic exact-match bug that prevented real dispatch from ever matching a real driver) deployed fleet-wide to BikoDC/BikoDC1/OCI standby.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

@@ -215,12 +215,19 @@ socket.on('pool_pickup_added', (payload) => {
 
 // Recover any trip orphaned by a previous crash of this identity before
 // doing anything else, then start the normal GPS/idle-relocation loop.
-recoverActiveTrip().finally(() => {
-  gpsTimer = setInterval(() => {
+// Jittered (not a fixed setInterval) so that ~35 bots starting within
+// seconds of each other don't stay phase-locked on the same GPS_INTERVAL_MS
+// cadence indefinitely — found live 2026-07-29: a fleet-wide restart
+// reliably crashed every bot ~60-90s later, right when identical 8s GPS
+// ticks across every driver bot had drifted into a synchronized cluster.
+function scheduleGpsTick() {
+  gpsTimer = setTimeout(() => {
     if (!activeTrip) sendLocation(pos.lat, pos.lng);
     maybeRelocate().catch(e => log(TAG, `relocate error: ${e.message}`));
-  }, GPS_INTERVAL_MS);
-});
+    scheduleGpsTick();
+  }, GPS_INTERVAL_MS + Math.random() * GPS_INTERVAL_MS * 0.5);
+}
+recoverActiveTrip().finally(scheduleGpsTick);
 
 process.on('SIGINT', () => { log(TAG, 'shutting down'); socket.disconnect(); process.exit(0); });
 process.on('SIGTERM', () => { log(TAG, 'shutting down'); socket.disconnect(); process.exit(0); });

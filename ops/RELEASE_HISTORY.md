@@ -394,3 +394,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Tightened tekeche-nlb health-checker (10s/2/5s -> 3s/2/2s) on main+http backend sets; added Invoke-SafeRestart.ps1 drain-first restart wrapper for BikoDC. 8/9 Test-Build.ps1 -- only failure is the long-standing pre-existing socketId/synthetic-driver booking-flow gap (documented since 2026-07-19), no mechanism connects it to NLB config or an unexecuted new script.
 
+
+## Build #41 — 2026-07-30 08:46
+
+- **API commit**: 57753aaf (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Active-active fault-tolerance build for api.tekeche.com: Redis cross-node fan-out to OCI standby, 50/50 active-active NLB split, empirically-verified MongoDB election resilience, plus a critical fix (isSynthetic exact-match bug that prevented real dispatch from ever matching a real driver) deployed fleet-wide to BikoDC/BikoDC1/OCI standby.
+

@@ -368,3 +368,436 @@ resource "oci_dns_steering_policy_attachment" "livbiko_www" {
   zone_id            = oci_dns_zone.livbiko.id
   domain_name        = "www.${var.livbiko_zone_name}"
 }
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ── 2026-07-19: DNS-layer FAILOVER for kendebabi.com ────────────────────────
+#
+# Extends the same pattern to kendebabi.com. Unlike tekeche.com/livbiko.com,
+# this is a self-contained PHP+MySQL app (no separate API), so real MySQL
+# replication (BikoDC -> standby, see ops/MAINTENANCE_LOG.md 2026-07-19) and
+# a PHP-FPM+nginx setup on the standby (10.0.2.10) were needed before this
+# DNS layer meant anything -- both done and verified same session. Every
+# record below mirrors what's live at register.com exactly (verified via
+# public DNS 2026-07-19). Mail here is best-effort forwarding
+# (inbound.registeredsite.com), no DMARC -- lower stakes than livbiko.com's
+# strict-DMARC M365 email.
+# ═══════════════════════════════════════════════════════════════════════════
+
+resource "oci_dns_zone" "kendebabi" {
+  compartment_id = var.compartment_id
+  name           = var.kendebabi_zone_name
+  zone_type      = "PRIMARY"
+
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_rrset" "kendebabi_mx" {
+  zone_name_or_id = oci_dns_zone.kendebabi.id
+  domain          = var.kendebabi_zone_name
+  rtype           = "MX"
+  items {
+    domain = var.kendebabi_zone_name
+    rtype  = "MX"
+    rdata  = "10 inbound.registeredsite.com."
+    ttl    = 3600
+  }
+}
+
+resource "oci_dns_rrset" "kendebabi_txt" {
+  zone_name_or_id = oci_dns_zone.kendebabi.id
+  domain          = var.kendebabi_zone_name
+  rtype           = "TXT"
+  items {
+    domain = var.kendebabi_zone_name
+    rtype  = "TXT"
+    rdata  = "\"brevo-code:5c35bafe9c0e1d809352079e54a4a554\""
+    ttl    = 3600
+  }
+  items {
+    domain = var.kendebabi_zone_name
+    rtype  = "TXT"
+    rdata  = "\"v=spf1 include:_spf.emfwd.name-services.com mx ?all\""
+    ttl    = 3600
+  }
+  items {
+    domain = var.kendebabi_zone_name
+    rtype  = "TXT"
+    rdata  = "\"google-site-verification=atF-yrEuCoHXNLFxtohR6odsnRwmQA29Ud4rAP8ab8M\""
+    ttl    = 3600
+  }
+}
+
+resource "oci_health_checks_http_monitor" "kendebabi_onprem_health" {
+  compartment_id      = var.compartment_id
+  display_name        = "${var.project_name}-kendebabi-onprem-health"
+  interval_in_seconds = 30
+  protocol            = "HTTP"
+  targets             = [var.mx68_public_ip]
+  port                = 80
+  path                = "/"
+  is_enabled          = true
+  headers = {
+    Host = var.kendebabi_zone_name
+  }
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy" "kendebabi_failover" {
+  compartment_id          = var.compartment_id
+  display_name            = "${var.project_name}-kendebabi-failover"
+  template                = "FAILOVER"
+  health_check_monitor_id = oci_health_checks_http_monitor.kendebabi_onprem_health.id
+  ttl                     = var.dns_ttl
+
+  answers {
+    name  = "onprem"
+    rtype = "A"
+    rdata = var.mx68_public_ip
+    pool  = "onprem"
+  }
+  answers {
+    name  = "oci-nlb"
+    rtype = "A"
+    rdata = oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address
+    pool  = "oci-nlb"
+  }
+
+  rules {
+    rule_type = "FILTER"
+    default_answer_data {
+      answer_condition = "answer.isDisabled != true"
+      should_keep      = true
+    }
+  }
+
+  rules {
+    rule_type = "HEALTH"
+  }
+
+  rules {
+    rule_type = "PRIORITY"
+    default_answer_data {
+      answer_condition = "answer.pool == 'onprem'"
+      value            = 1
+    }
+    default_answer_data {
+      answer_condition = "answer.pool == 'oci-nlb'"
+      value            = 99
+    }
+  }
+
+  rules {
+    rule_type     = "LIMIT"
+    default_count = 1
+  }
+
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy_attachment" "kendebabi_apex" {
+  steering_policy_id = oci_dns_steering_policy.kendebabi_failover.id
+  zone_id            = oci_dns_zone.kendebabi.id
+  domain_name        = var.kendebabi_zone_name
+}
+
+resource "oci_dns_steering_policy_attachment" "kendebabi_www" {
+  steering_policy_id = oci_dns_steering_policy.kendebabi_failover.id
+  zone_id            = oci_dns_zone.kendebabi.id
+  domain_name        = "www.${var.kendebabi_zone_name}"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ── 2026-07-19: DNS-layer FAILOVER for security.tekeche.com ────────────────
+#
+# security.tekeche.com is NOT a separate app -- it's served by the same
+# tekeche-api process as api.tekeche.com, at the /security/* route (see
+# proxy-security-tekeche's web.config, IIS ARR rewrite). The standby
+# already runs the identical tekeche-api process, so this only needed a new
+# nginx server block there (rewrite -> /security/*, proxying to the same
+# 127.0.0.1:5000 the standby's own api.tekeche.com block already uses) plus
+# copying security.tekeche.com's own dedicated cert -- no new backend
+# process, no MySQL/data layer involved. Verified end-to-end via the real
+# NLB path (drain on-prem, confirm 302->./login from the standby, restore)
+# before touching this zone.
+#
+# pay.tekeche.com and staging-api.tekeche.com deliberately NOT extended:
+# pay has no backend process running at all right now (incomplete payment
+# integration, see project_payment_gateway_dr_gap memory) and staging-api
+# is a non-production test environment -- neither warrants this investment
+# today. Revisit pay.tekeche.com once its backend actually exists.
+#
+# Unlike tekeche.com/livbiko.com/kendebabi.com, tekeche.com's zone is
+# ALREADY live/authoritative (cut over 2026-07-18) -- this isn't a
+# zero-risk pre-cutover build, it's a live change to a production zone.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# security.tekeche.com already has a live, unmanaged static A record in this
+# zone (added out-of-band, same category as the tekeche.com/www.tekeche.com
+# ones noted above) -- deleted via direct OCI CLI immediately before this
+# apply so the steering-policy attachment can take its place with no gap.
+
+resource "oci_health_checks_http_monitor" "security_onprem_health" {
+  compartment_id      = var.compartment_id
+  display_name        = "${var.project_name}-security-onprem-health"
+  interval_in_seconds = 30
+  protocol            = "HTTP"
+  targets             = [var.mx68_public_ip]
+  port                = 80
+  path                = "/"
+  is_enabled          = true
+  headers = {
+    Host = "security.${var.dns_zone_name}"
+  }
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy" "security_failover" {
+  compartment_id          = var.compartment_id
+  display_name            = "${var.project_name}-security-failover"
+  template                = "FAILOVER"
+  health_check_monitor_id = oci_health_checks_http_monitor.security_onprem_health.id
+  ttl                     = var.dns_ttl
+
+  answers {
+    name  = "onprem"
+    rtype = "A"
+    rdata = var.mx68_public_ip
+    pool  = "onprem"
+  }
+  answers {
+    name  = "oci-nlb"
+    rtype = "A"
+    rdata = oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address
+    pool  = "oci-nlb"
+  }
+
+  rules {
+    rule_type = "FILTER"
+    default_answer_data {
+      answer_condition = "answer.isDisabled != true"
+      should_keep      = true
+    }
+  }
+
+  rules {
+    rule_type = "HEALTH"
+  }
+
+  rules {
+    rule_type = "PRIORITY"
+    default_answer_data {
+      answer_condition = "answer.pool == 'onprem'"
+      value            = 1
+    }
+    default_answer_data {
+      answer_condition = "answer.pool == 'oci-nlb'"
+      value            = 99
+    }
+  }
+
+  rules {
+    rule_type     = "LIMIT"
+    default_count = 1
+  }
+
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy_attachment" "security_apex" {
+  steering_policy_id = oci_dns_steering_policy.security_failover.id
+  zone_id            = oci_dns_zone.tekeche.id
+  domain_name        = "security.${var.dns_zone_name}"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ── 2026-07-19: DNS-layer FAILOVER for staging-api.tekeche.com ─────────────
+#
+# staging-api.tekeche.com is a real, independently-running tekeche-api
+# process (ecosystem.config.js's "staging" app: APP_ENV=staging, PORT=5001)
+# connected to its own isolated MongoDB Atlas cluster
+# (cluster0.gb0orks.mongodb.net/tekeche-staging) -- NOT the on-prem rs0
+# replica set, so unlike kendebabi.com this needed zero data replication.
+# Deployed the identical codebase (already present on the standby for
+# production) as a second PM2 process there, its own nginx server block +
+# dedicated cert. Verified end-to-end via the real NLB path (drain on-prem,
+# confirm real {"env":"staging"} health response from the standby, restore).
+# ═══════════════════════════════════════════════════════════════════════════
+
+resource "oci_health_checks_http_monitor" "staging_api_onprem_health" {
+  compartment_id      = var.compartment_id
+  display_name        = "${var.project_name}-staging-api-onprem-health"
+  interval_in_seconds = 30
+  protocol            = "HTTP"
+  targets             = [var.mx68_public_ip]
+  port                = 80
+  path                = "/health"
+  is_enabled          = true
+  headers = {
+    Host = "staging-api.${var.dns_zone_name}"
+  }
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy" "staging_api_failover" {
+  compartment_id          = var.compartment_id
+  display_name            = "${var.project_name}-staging-api-failover"
+  template                = "FAILOVER"
+  health_check_monitor_id = oci_health_checks_http_monitor.staging_api_onprem_health.id
+  ttl                     = var.dns_ttl
+
+  answers {
+    name  = "onprem"
+    rtype = "A"
+    rdata = var.mx68_public_ip
+    pool  = "onprem"
+  }
+  answers {
+    name  = "oci-nlb"
+    rtype = "A"
+    rdata = oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address
+    pool  = "oci-nlb"
+  }
+
+  rules {
+    rule_type = "FILTER"
+    default_answer_data {
+      answer_condition = "answer.isDisabled != true"
+      should_keep      = true
+    }
+  }
+
+  rules {
+    rule_type = "HEALTH"
+  }
+
+  rules {
+    rule_type = "PRIORITY"
+    default_answer_data {
+      answer_condition = "answer.pool == 'onprem'"
+      value            = 1
+    }
+    default_answer_data {
+      answer_condition = "answer.pool == 'oci-nlb'"
+      value            = 99
+    }
+  }
+
+  rules {
+    rule_type     = "LIMIT"
+    default_count = 1
+  }
+
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy_attachment" "staging_api_apex" {
+  steering_policy_id = oci_dns_steering_policy.staging_api_failover.id
+  zone_id            = oci_dns_zone.tekeche.id
+  domain_name        = "staging-api.${var.dns_zone_name}"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ── 2026-07-19: DNS SCAFFOLDING (only) for pay.tekeche.com ──────────────────
+#
+# pay.tekeche.com has NO backend process running at all right now -- the
+# Wave Checkout payment gateway integration was never completed (credentials
+# never obtained, see project_payment_gateway_dr_gap memory). Explicit user
+# decision: build the DNS scaffolding now so it's ready whenever the
+# payment gateway goes live, but do NOT attempt a functional failover test
+# -- there's nothing real on either side to validate (on-prem itself
+# already 502s). The health monitor below will report "onprem" unhealthy
+# indefinitely until a real backend exists on port 5002; that's expected,
+# not a bug. No standby-side work (no nginx block, no process) was done
+# for this one -- purely the OCI DNS layer.
+# ═══════════════════════════════════════════════════════════════════════════
+
+resource "oci_health_checks_http_monitor" "pay_onprem_health" {
+  compartment_id      = var.compartment_id
+  display_name        = "${var.project_name}-pay-onprem-health"
+  interval_in_seconds = 30
+  protocol            = "HTTP"
+  targets             = [var.mx68_public_ip]
+  port                = 80
+  path                = "/"
+  is_enabled          = true
+  headers = {
+    Host = "pay.${var.dns_zone_name}"
+  }
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy" "pay_failover" {
+  compartment_id          = var.compartment_id
+  display_name            = "${var.project_name}-pay-failover"
+  template                = "FAILOVER"
+  health_check_monitor_id = oci_health_checks_http_monitor.pay_onprem_health.id
+  ttl                     = var.dns_ttl
+
+  answers {
+    name  = "onprem"
+    rtype = "A"
+    rdata = var.mx68_public_ip
+    pool  = "onprem"
+  }
+  answers {
+    name  = "oci-nlb"
+    rtype = "A"
+    rdata = oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address
+    pool  = "oci-nlb"
+  }
+
+  rules {
+    rule_type = "FILTER"
+    default_answer_data {
+      answer_condition = "answer.isDisabled != true"
+      should_keep      = true
+    }
+  }
+
+  rules {
+    rule_type = "HEALTH"
+  }
+
+  rules {
+    rule_type = "PRIORITY"
+    default_answer_data {
+      answer_condition = "answer.pool == 'onprem'"
+      value            = 1
+    }
+    default_answer_data {
+      answer_condition = "answer.pool == 'oci-nlb'"
+      value            = 99
+    }
+  }
+
+  rules {
+    rule_type     = "LIMIT"
+    default_count = 1
+  }
+
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy_attachment" "pay_apex" {
+  steering_policy_id = oci_dns_steering_policy.pay_failover.id
+  zone_id            = oci_dns_zone.tekeche.id
+  domain_name        = "pay.${var.dns_zone_name}"
+}

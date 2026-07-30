@@ -36,6 +36,13 @@ ops/recovery-points/
 # local backup copy of tekeche-api (contains real .env files + node_modules)
 DCFILES/
 
+# k8s Secret manifests with plaintext creds inline (e.g. Redis Sentinel's
+# auth-pass) -- only *-create-secret.ps1 scripts (which apply via kubectl,
+# never commit the literal value) are tracked, matching the woyo repo's
+# convention. Found 2026-07-30 when 07-sentinel-secret.yaml showed up
+# untracked with a real password in it.
+ops/k8s/**/*-secret.yaml
+
 # OCI Terraform secrets
 ops/oci/terraform.tfvars
 ops/oci/terraform.tfvars.bak*

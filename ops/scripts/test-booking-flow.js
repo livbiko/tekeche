@@ -44,6 +44,12 @@ async function main() {
   const driver = await db.collection('drivers').findOne({
     isOnline: true, isAvailable: true, socketId: { $ne: null },
     vehicleType: 'standard', kycStatus: { $in: ['verified', 'approved'] },
+    // Excludes ops/bot-fleet's synthetic QA drivers (isSynthetic:true) without
+    // requiring the field to be present — real drivers created before the bot
+    // fleet existed have no isSynthetic field at all, and {isSynthetic:false}
+    // wouldn't match those (Mongo doesn't match $exists:false docs on an exact
+    // false query).
+    isSynthetic: { $ne: true },
   });
   if (!driver) fail('No online+available standard driver found — open Tekeche Driver app and go online first');
   pass(`${driver.name} (${driver.email}) | kyc=${driver.kycStatus} | socket=${driver.socketId.slice(0,8)}...`);

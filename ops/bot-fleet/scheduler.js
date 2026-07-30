@@ -109,6 +109,10 @@ function computeAssignment(manifest, window, seed) {
 
 // ── Process management ──────────────────────────────────────────────────
 const running = new Map(); // index -> { proc, role }
+// Process refs currently being taken down on purpose (stopBot/reconcile) —
+// checked by the exit handler so an intentional stop never triggers an
+// auto-respawn race against reconcile()'s own replacement start.
+const stopping = new Set();
 
 // Returns a Promise that resolves once the process has actually exited (or a
 // grace period elapses and we SIGKILL it) — NOT just once SIGTERM was sent.
@@ -124,9 +128,10 @@ function stopBot(index) {
   running.delete(index);
   if (DRY_RUN || !entry.proc) return Promise.resolve();
 
+  stopping.add(entry.proc);
   return new Promise((resolve) => {
     let settled = false;
-    const finish = () => { if (!settled) { settled = true; resolve(); } };
+    const finish = () => { if (!settled) { settled = true; stopping.delete(entry.proc); resolve(); } };
     entry.proc.once('exit', finish);
     entry.proc.kill('SIGTERM');
     setTimeout(() => {
@@ -137,6 +142,41 @@ function stopBot(index) {
       }
     }, STOP_GRACE_MS);
   });
+}
+
+// Found live 2026-07-29: BikoDC's unplanned crash/reboot left all 35 bots
+// dying repeatedly ~60-90s after every fresh batch start (Windows fault
+// 0xC0000409/STATUS_STACK_BUFFER_OVERRUN), invisible until now because
+// nothing but a window-boundary role change ever called startBot() again —
+// an unexpected exit outside that was silently permanent. Root cause of the
+// native fault itself wasn't isolated (single-bot runs are stable; only the
+// full ~35-concurrent-process batch reproduces it) — this doesn't fix that,
+// it makes the fleet recover from it automatically instead of staying dark.
+const RESPAWN_WINDOW_MS = 10 * 60 * 1000;
+const RESPAWN_MAX_ATTEMPTS = 8; // per identity, per rolling window
+const RESPAWN_BASE_DELAY_MS = 3000;
+const RESPAWN_MAX_DELAY_MS = 60000;
+const crashHistory = new Map(); // index -> [timestamp, ...] within the rolling window
+
+function scheduleRespawn(index, role, manifestEntry, code) {
+  const now = Date.now();
+  const history = (crashHistory.get(index) || []).filter(t => now - t < RESPAWN_WINDOW_MS);
+  history.push(now);
+  crashHistory.set(index, history);
+
+  if (history.length > RESPAWN_MAX_ATTEMPTS) {
+    log('scheduler', `bot #${index} (${role}) crashed ${history.length}x in ${RESPAWN_WINDOW_MS / 60000}min (last code=${code}) — giving up auto-restart, needs manual attention`);
+    return;
+  }
+
+  const delay = Math.min(RESPAWN_BASE_DELAY_MS * 2 ** (history.length - 1), RESPAWN_MAX_DELAY_MS);
+  log('scheduler', `bot #${index} (${role}) exited unexpectedly (code=${code}) — respawning in ${Math.round(delay / 1000)}s (attempt ${history.length}/${RESPAWN_MAX_ATTEMPTS})`);
+  setTimeout(() => {
+    // Skip if something else (a window-boundary reconcile) already restarted
+    // this identity in the meantime — don't run it twice.
+    if (running.has(index)) return;
+    startBot(index, role, manifestEntry);
+  }, delay);
 }
 
 function startBot(index, role, manifestEntry) {
@@ -153,6 +193,8 @@ function startBot(index, role, manifestEntry) {
   proc.on('exit', (code) => {
     log('scheduler', `bot #${index} (${role}) exited code=${code}`);
     if (running.get(index)?.proc === proc) running.delete(index);
+    if (stopping.has(proc)) return; // intentional stop — caller owns any replacement
+    scheduleRespawn(index, role, manifestEntry, code);
   });
   running.set(index, { proc, role });
 }

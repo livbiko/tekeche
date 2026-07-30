@@ -1505,3 +1505,159 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-29_23-14-32_before-tighten-tekeche-nlb-health-checke"`
 
+
+## 2026-07-29 23:27:08 — Before: real end-to-end test of Invoke-SafeRestart.ps1 (full OS restart of BikoDC)
+
+- **ID**: 2026-07-29_23-26-56_before-real-end-to-end-test-of-invoke-sa
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1125.2 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-29_23-26-56_before-real-end-to-end-test-of-invoke-sa"`
+
+
+## 2026-07-30 01:18:55 — Before: Un-drain 192.168.1.101:443 on OCI NLB main-backends (restore BikoDC to production traffic rotation)
+
+- **ID**: 2026-07-30_01-18-50_before-un-drain-192-168-1-101-443-on-oci
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1127.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_01-18-50_before-un-drain-192-168-1-101-443-on-oci"`
+
+
+## 2026-07-30 01:44:09 — Before: Restart tekeche-api on OCI standby to confirm/activate Redis cross-node adapter
+
+- **ID**: 2026-07-30_01-44-07_before-restart-tekeche-api-on-oci-standb
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1127.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_01-44-07_before-restart-tekeche-api-on-oci-standb"`
+
+
+## 2026-07-30 01:52:13 — Before: Flip OCI standby to active NLB backend (50/50 active-active with BikoDC)
+
+- **ID**: 2026-07-30_01-52-11_before-flip-oci-standby-to-active-nlb-ba
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1127.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_01-52-11_before-flip-oci-standby-to-active-nlb-ba"`
+
+
+## 2026-07-30 01:59:30 — Before: rs.stepDown() resilience test on BikoDC MongoDB primary
+
+- **ID**: 2026-07-30_01-59-28_before-rs-stepdown-resilience-test-on-bi
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1127.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_01-59-28_before-rs-stepdown-resilience-test-on-bi"`
+
+
+## 2026-07-30 02:14:32 — Before: fix test-booking-flow.js isSynthetic filter gap
+
+- **ID**: 2026-07-30_02-14-29_before-fix-test-booking-flow-js-issynthe
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1128.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_02-14-29_before-fix-test-booking-flow-js-issynthe"`
+
+
+## 2026-07-30 03:07:59 — Before: fix isSynthetic exact-match dispatch bug (dispatch/woyo/rides)
+
+- **ID**: 2026-07-30_03-07-57_before-fix-issynthetic-exact-match-dispa
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1128 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_03-07-57_before-fix-issynthetic-exact-match-dispa"`
+
+
+## 2026-07-30 08:43:29 — Before: set test driver online for Test-Build.ps1 booking-flow check
+
+- **ID**: 2026-07-30_08-43-27_before-set-test-driver-online-for-test-b
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1128.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_08-43-27_before-set-test-driver-online-for-test-b"`
+
+
+## 2026-07-30 08:56:27 — Before: restart bot-fleet scheduler under PM2 + reset stale bot online state
+
+- **ID**: 2026-07-30_08-56-25_before-restart-bot-fleet-scheduler-under
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1128 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_08-56-25_before-restart-bot-fleet-scheduler-under"`
+
+
+## 2026-07-30 09:06:31 — Before: rewrite BikoDC pm2-resurrect.cmd to deterministic delete+start pattern
+
+- **ID**: 2026-07-30_09-06-30_before-rewrite-bikodc-pm2-resurrect-cmd
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1131 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_09-06-30_before-rewrite-bikodc-pm2-resurrect-cmd"`
+
+
+## 2026-07-30 09:11:58 — Before: fix BikoDC1 pm2-resurrect.cmd missing call bug
+
+- **ID**: 2026-07-30_09-11-56_before-fix-bikodc1-pm2-resurrect-cmd-mis
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1133.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_09-11-56_before-fix-bikodc1-pm2-resurrect-cmd-mis"`
+
+
+## 2026-07-30 09:25:39 — Before: set test driver online for Test-Build.ps1 + Set-KnownGood
+
+- **ID**: 2026-07-30_09-25-37_before-set-test-driver-online-for-test-b
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1138.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_09-25-37_before-set-test-driver-online-for-test-b"`
+
+
+## 2026-07-30 18:46:39 — Before: un-drain BikoDC port-80 backend on OCI NLB http-backends set
+
+- **ID**: 2026-07-30_18-46-36_before-un-drain-bikodc-port-80-backend-o
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1258.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_18-46-36_before-un-drain-bikodc-port-80-backend-o"`
+

@@ -1,30 +1,42 @@
 # ── IAM for VTAP (traffic mirroring) ───────────────────────────────────────────
-# Standard, Oracle-documented required policy for the VTAP service itself to
-# write mirrored traffic into the target VNIC. Not the same as the calling
-# user/group having "manage vtaps" rights (which the tenancy admin already
-# has, and which was NOT the actual blocker) -- this is a service-principal
-# grant, same pattern already used for Cloud Guard and OKE in this project.
-# Confirmed via `oci iam policy list` that no existing policy covered this;
-# apply of oci_core_vtap.livbiko_pa_trust_mirror failed 404 without it.
-# NOT YET WORKING: "Allow service vtap to use ..." fails at apply time with
-# `400-InvalidParameter, Service {vtap} does not exist` -- that exact
-# service-principal name is rejected by this tenancy's Identity control
-# plane. The Administrators group already holds tenancy-wide
-# "manage all-resources" (confirmed via `oci iam policy list` against the
-# tenancy root), which normally would cover this -- so the CreateVtap 404
-# really does look like it needs its own service-principal grant, same
-# family as the existing OKE/Cloud Guard/KMS service policies in this repo,
-# just not under the name "vtap". Left disabled rather than guessing further
-# against a live tenancy; the OCI Console's policy builder (autocomplete
-# over valid service names) is the more reliable path here, same as how the
-# marketplace image issue was resolved via Console instead of CLI.
+# The earlier "allow service vtap to ..." theory was wrong: that 404's error
+# text ("service Core Vtap need policy to access this resource") is OCI's
+# generic templated wording for any Core-API authorization failure (same
+# phrasing shows up for plain VCN creation failures too, per a Cloud
+# Customer Connect report) -- it does not mean a real service-principal
+# grant is needed, and "vtap" was correctly rejected as an invalid service
+# name for exactly that reason.
 #
-# resource "oci_identity_policy" "vtap_service_policy" {
-#   compartment_id = var.tenancy_ocid
-#   name           = "${var.project_name}-vtap-service-policy"
-#   description    = "Allow the VTAP service to write mirrored traffic into target VNICs in the UK compartment"
-#
-#   statements = [
-#     "Allow service <CORRECT_NAME_TBD> to use virtual-network-family in compartment id ${var.compartment_id}",
-#   ]
-# }
+# Real cause: OCI's policy reference lists `vtaps` as its own individual
+# resource type, explicitly NOT part of the `virtual-network-family`
+# aggregate. Administrators already holds tenancy-wide "manage all-resources"
+# (confirmed via `oci iam policy list`), which should cover this, but OCI's
+# `all-resources` aggregate is known to lag behind for newer individual
+# resource types -- this explicit grant closes that gap.
+resource "oci_identity_policy" "vtap_group_policy" {
+  compartment_id = var.tenancy_ocid
+  name           = "${var.project_name}-vtap-group-policy"
+  description    = "Explicit vtaps grant for Administrators in the UK compartment (all-resources doesn't yet cover this individual resource type)"
+
+  statements = [
+    "Allow group Administrators to manage vtaps in compartment id ${var.compartment_id}",
+  ]
+}
+
+# 2026-07-22: per OCI's own policy reference (Details for Verb + Resource-Type
+# Combinations), CreateVtap requires VTAP_CREATE *and* CAPTURE_FILTER_ATTACH
+# (in the capture filter's compartment) *and* VCN_ATTACH (in the VCN's
+# compartment) -- capture-filters is a separate resource-type from vtaps.
+# The capture filter itself (oci_core_capture_filter.livbiko_pa_mirror_all)
+# already created fine under all-resources, but CAPTURE_FILTER_ATTACH is a
+# distinct permission from CAPTURE_FILTER_CREATE and may lag the aggregate
+# the same way vtaps did. Explicit grant closes that gap if so.
+resource "oci_identity_policy" "capture_filter_group_policy" {
+  compartment_id = var.tenancy_ocid
+  name           = "${var.project_name}-capture-filter-group-policy"
+  description    = "Explicit capture-filters grant for Administrators in the UK compartment (CreateVtap needs CAPTURE_FILTER_ATTACH specifically)"
+
+  statements = [
+    "Allow group Administrators to manage capture-filters in compartment id ${var.compartment_id}",
+  ]
+}

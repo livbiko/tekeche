@@ -56,8 +56,16 @@ $StandbyBackendName = "10.0.2.10:443"
 
 function Set-Drain([bool]$Drain) {
     foreach ($b in $Backends) {
+        # NB: "oci nlb backend update" has no --force option (unlike health-checker/network-load-balancer
+        # update) -- passing it errors with a CLI usage message that silently vanished into Out-Null,
+        # so the drain call never actually ran. Found by testing this exact command by hand.
         oci nlb backend update --network-load-balancer-id $NlbId --backend-set-name $b.Set `
-            --backend-name $b.Name --is-drain $Drain.ToString().ToLower() --force | Out-Null
+            --backend-name $b.Name --is-drain $Drain.ToString().ToLower() | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "oci nlb backend update failed (exit $LASTEXITCODE) on $($b.Set)/$($b.Name) -- see output above" }
+        # oci nlb backend update is async (returns a work request) -- must wait for it to land
+        # before verifying, same as Test-Failover.ps1's proven pattern. Checking immediately
+        # after issuing the update reads the pre-update state and false-fails every time.
+        Start-Sleep -Seconds 8
         $state = (oci nlb backend get --network-load-balancer-id $NlbId --backend-set-name $b.Set `
             --backend-name $b.Name --output json | ConvertFrom-Json).data.'is-drain'
         Write-Host "    $($b.Set)/$($b.Name) is-drain = $state"

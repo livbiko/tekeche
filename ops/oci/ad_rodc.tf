@@ -1,12 +1,13 @@
-# ── OCI-hosted Read-Only Domain Controller ────────────────────────────────────
+# ── OCI-hosted Domain Controller (BIKO-OCI-DC2) ───────────────────────────────
 # Gives OCI-hosted hosts a local AD replica (AD Site "OCI-London", already
 # created out-of-band via PowerShell -- see ops/MAINTENANCE_LOG.md 2026-07-13
 # "AD Phase A") instead of every Kerberos/LDAP round-trip crossing the
-# BikoFW-SRX <-> OCI VPN. RODC (not writable): standard guidance for a DC in a
-# less-trusted/more-exposed cloud location, especially since livbiko.local is
-# shared with unrelated systems outside Tekeche (ALBANDC/GUIZODC/PASCALEDC/
-# JUMPBOX -- see project_hadr_phase1_tier1_2026_07_12 memory). Never holds
-# FSMO roles -- those stay on-prem (BikoDC) by design.
+# BikoFW-SRX <-> OCI VPN. Writable DC (superseded the original RODC design,
+# 2026-07-18) -- never holds FSMO roles though, those stay on-prem (BikoDC) by
+# design. livbiko.local is shared with unrelated systems outside Tekeche
+# (ALBANDC/GUIZODC/PASCALEDC/JUMPBOX -- see project_hadr_phase1_tier1_2026_07_12
+# memory), so this still needs to be scoped/handled carefully despite being
+# writable now.
 #
 # Security-list rules for AD replication traffic already exist on
 # oci_core_security_list.private (networking.tf) and the SRX-side VPN policy
@@ -15,9 +16,9 @@
 # reached by the on-prem DCs.
 #
 # NOTE: this resource only provisions the VM. Domain-join + DC promotion
-# (Install-ADDSDomainController -ReadOnlyReplica) is a separate, deliberate
-# manual step over an OCI Bastion session -- not automated here, since that's
-# the actual HIGH RISK moment (writes to the shared AD forest) and needs to
+# (Install-ADDSDomainController, writable) is a separate, deliberate manual
+# step over an OCI Bastion session -- not automated here, since that's the
+# actual HIGH RISK moment (writes to the shared AD forest) and needs to
 # happen under direct observation, not unattended at boot.
 #
 # WinRM is enabled via cloudbase-init user_data (not the Oracle Cloud Agent's
@@ -50,7 +51,7 @@ data "oci_core_images" "windows_server_2025" {
 resource "oci_core_instance" "rodc" {
   compartment_id      = var.compartment_id
   availability_domain = var.availability_domain != "" ? var.availability_domain : data.oci_identity_availability_domains.ads.availability_domains[0].name
-  display_name        = "${var.project_name}-rodc"
+  display_name        = "BIKO-OCI-DC2"
   shape               = var.rodc_shape
 
   shape_config {
@@ -68,8 +69,8 @@ resource "oci_core_instance" "rodc" {
     subnet_id        = oci_core_subnet.private.id
     private_ip       = var.rodc_private_ip
     assign_public_ip = false
-    display_name     = "${var.project_name}-rodc-vnic"
-    hostname_label   = "${var.project_name}-rodc"
+    display_name     = "biko-oci-dc2-vnic"
+    hostname_label   = "biko-oci-dc2"
   }
 
   # Local Administrator password is left to OCI's default auto-generated

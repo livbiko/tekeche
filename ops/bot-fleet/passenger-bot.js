@@ -73,7 +73,10 @@ async function waitForTripToResolve() {
     }
     if (!active) return;
     log(TAG, `waiting on active trip=${active._id} status=${active.status}`);
-    await sleep(15000);
+    // Jittered — see driver-bot.js's scheduleGpsTick for why: identical
+    // fixed intervals across ~35 concurrently-started bots drift into
+    // synchronized bursts that correlated with a fleet-wide crash 2026-07-29.
+    await sleep(15000 + Math.random() * 7500);
   }
 }
 
