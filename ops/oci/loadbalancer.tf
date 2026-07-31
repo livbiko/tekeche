@@ -5,9 +5,10 @@
 # TCP-only health checks -- i.e. it was already being used exactly like an NLB.
 # This is a like-for-like architecture swap, not a behavior change, except:
 #   - No cookie-based session persistence (X-TEKECHE-LB) -- NLB has no L7
-#     awareness. Low-impact here: only one backend is ever actively serving at
-#     a time (backup=false primary / backup=true fallback), not load-spread
-#     across multiple simultaneously-active backends.
+#     awareness. Was low-impact at the time (only one backend served at once),
+#     but note: as of the 2026-07-30 active-active build, BikoDC and the OCI
+#     standby both run backup=false (true 50/50 FIVE_TUPLE split) -- see
+#     standby_vm below. Only the OKE nodes remain backup=true fallback-only.
 #   - is_preserve_source_destination = false, matching the old listener's
 #     backend_tcp_proxy_protocol_version = 0 (client IP was never conveyed to
 #     backends before either).
@@ -23,7 +24,7 @@ resource "oci_network_load_balancer_network_load_balancer" "main" {
   }
 }
 
-# ── Backend Set — TCP passthrough, on-prem primary + OCI standby/OKE backup ────
+# ── Backend Set — TCP passthrough, on-prem + OCI standby active-active, OKE backup ────
 # TLS is terminated at the backend (on-prem IIS / OCI standby Nginx).
 resource "oci_network_load_balancer_backend_set" "main" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.main.id
@@ -38,8 +39,8 @@ resource "oci_network_load_balancer_backend_set" "main" {
   health_checker {
     protocol          = "TCP"
     port              = 443
-    interval_in_millis = 10000
-    timeout_in_millis  = 5000
+    interval_in_millis = 3000
+    timeout_in_millis  = 2000
     retries            = 2
   }
 }
@@ -62,7 +63,7 @@ resource "oci_network_load_balancer_backend" "standby_vm" {
   port                      = 443
   weight                    = 1
   is_drain                  = false
-  is_backup                 = true
+  is_backup                 = false
   is_offline                = false
 }
 
@@ -84,8 +85,8 @@ resource "oci_network_load_balancer_backend_set" "http" {
   health_checker {
     protocol          = "TCP"
     port              = 80
-    interval_in_millis = 10000
-    timeout_in_millis  = 5000
+    interval_in_millis = 3000
+    timeout_in_millis  = 2000
     retries            = 2
   }
 }
