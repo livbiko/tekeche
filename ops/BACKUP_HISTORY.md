@@ -1709,3 +1709,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_10-38-38_before-rebuild-tekecheapifarm-arr-routin"`
 
+
+## 2026-07-31 11:34:39 — Before: full on-prem power-off drill (BikoDC+BikoDC1 together), validating tonight's Mongo quorum + ARR fixes
+
+- **ID**: 2026-07-31_11-34-37_before-full-on-prem-power-off-drill-biko
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_11-34-37_before-full-on-prem-power-off-drill-biko"`
+
+
+## 2026-07-31 12:33:30 — Before: sync ops/oci/loadbalancer.tf is_backup + health-checker intervals to match live OCI NLB state (known drift from active-active build)
+
+- **ID**: 2026-07-31_12-33-26_before-sync-ops-oci-loadbalancer-tf-is-b
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_12-33-26_before-sync-ops-oci-loadbalancer-tf-is-b"`
+
