@@ -497,6 +497,21 @@ resource "oci_core_security_list" "private" {
     }
   }
 
+  # Added 2026-07-31: MongoDB arbiter VMs live in this same subnet as the
+  # standby. The existing 27017 rule above only covers on-prem -> standby;
+  # replica-set heartbeats between the standby and the arbiters (and between
+  # the two arbiters) are same-subnet traffic, which OCI security lists
+  # don't implicitly allow -- same "intra-subnet" gap as the AD rules above.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "MongoDB RS replication - intra-subnet (standby <-> arbiters)"
+    tcp_options {
+      max = 27017
+      min = 27017
+    }
+  }
+
   egress_security_rules {
     protocol    = "all"
     destination = "0.0.0.0/0"
