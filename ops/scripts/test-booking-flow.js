@@ -7,6 +7,7 @@ const { MongoClient, ObjectId } = require('C:/inetpub/wwwroot/tekeche/tekeche-ap
 const BASE      = 'http://127.0.0.1:5000';   // production API
 const MONGO_URI = 'mongodb://tekeche:6eY7EvTt57HM2dgmPgrsr64u@127.0.0.1:27017/tekeche';
 const PASS_EMAIL   = 'assalehervekouame+passager1@gmail.com';
+const DRIVER_EMAIL = 'assalehervekouame+driver1@gmail.com';
 
 const pass = (msg) => console.log(`  ✅  ${msg}`);
 const fail = (msg) => { console.error(`  ❌  ${msg}`); process.exit(1); };
@@ -40,19 +41,19 @@ async function main() {
     if (stale.deletedCount) pass(`Cleaned up ${stale.deletedCount} stale trip(s) from previous run`);
   }
 
-  step(1, 'Finding an online+available standard driver...');
-  const driver = await db.collection('drivers').findOne({
-    isOnline: true, isAvailable: true, socketId: { $ne: null },
-    vehicleType: 'standard', kycStatus: { $in: ['verified', 'approved'] },
-    // Excludes ops/bot-fleet's synthetic QA drivers (isSynthetic:true) without
-    // requiring the field to be present — real drivers created before the bot
-    // fleet existed have no isSynthetic field at all, and {isSynthetic:false}
-    // wouldn't match those (Mongo doesn't match $exists:false docs on an exact
-    // false query).
-    isSynthetic: { $ne: true },
-  });
-  if (!driver) fail('No online+available standard driver found — open Tekeche Driver app and go online first');
-  pass(`${driver.name} (${driver.email}) | kyc=${driver.kycStatus} | socket=${driver.socketId.slice(0,8)}...`);
+  step(1, `Loading designated QA driver account: ${DRIVER_EMAIL}...`);
+  // Was: query for whichever real driver happened to already be online+connected
+  // in production. That made the test dependent on live driver-app activity —
+  // it failed whenever no real driver was online at the moment Test-Build.ps1
+  // ran (e.g. off-hours), even though nothing was actually broken. This fixed
+  // QA driver is brought online below (steps 3-4, same OTP+socket path a real
+  // driver app uses) instead of assumed to already be online.
+  const driver = await db.collection('drivers').findOne({ email: DRIVER_EMAIL });
+  if (!driver) fail(`QA driver ${DRIVER_EMAIL} not found in DB`);
+  if (driver.vehicleType !== 'standard') fail(`QA driver vehicleType=${driver.vehicleType}, expected standard`);
+  if (!['verified', 'approved'].includes(driver.kycStatus)) fail(`QA driver kycStatus=${driver.kycStatus}, not ride-eligible`);
+  if (driver.isSynthetic === true) fail('QA driver is marked isSynthetic:true — must be a real driver account');
+  pass(`${driver.name} (${driver.email}) | kyc=${driver.kycStatus}`);
 
   step(2, `Authenticating passenger via OTP: ${PASS_EMAIL}`);
   await db.collection('otps').deleteMany({ email: PASS_EMAIL, role: 'passenger' });

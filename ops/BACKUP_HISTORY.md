@@ -1733,3 +1733,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_12-33-26_before-sync-ops-oci-loadbalancer-tf-is-b"`
 
+
+## 2026-07-31 12:40:37 — Before: fix test-booking-flow.js to use a fixed designated QA driver instead of depending on an already-online real driver
+
+- **ID**: 2026-07-31_12-40-35_before-fix-test-booking-flow-js-to-use-a
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_12-40-35_before-fix-test-booking-flow-js-to-use-a"`
+

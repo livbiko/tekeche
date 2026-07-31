@@ -404,3 +404,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Active-active fault-tolerance build for api.tekeche.com: Redis cross-node fan-out to OCI standby, 50/50 active-active NLB split, empirically-verified MongoDB election resilience, plus a critical fix (isSynthetic exact-match bug that prevented real dispatch from ever matching a real driver) deployed fleet-wide to BikoDC/BikoDC1/OCI standby.
 
+
+## Build #42 — 2026-07-31 12:54
+
+- **API commit**: 57753aaf (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed test-booking-flow.js to use fixed QA driver (assalehervekouame+driver1) instead of depending on a real driver already online; loadbalancer.tf synced to live NLB state.
+
