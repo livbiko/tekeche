@@ -1697,3 +1697,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_00-17-41_before-real-power-off-drill-of-bikodc-ph"`
 
+
+## 2026-07-31 10:38:41 — Before: rebuild TekecheAPIFarm ARR routing + affinity for BikoDC/BikoDC1 socket.io failover
+
+- **ID**: 2026-07-31_10-38-38_before-rebuild-tekecheapifarm-arr-routin
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_10-38-38_before-rebuild-tekecheapifarm-arr-routin"`
+
