@@ -1661,3 +1661,39 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_18-46-36_before-un-drain-bikodc-port-80-backend-o"`
 
+
+## 2026-07-30 19:12:50 — Before: build on-prem BikoDC leg for 225woyo.com (Option A, Node+PM2+IIS)
+
+- **ID**: 2026-07-30_19-12-48_before-build-on-prem-bikodc-leg-for-225w
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1258.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_19-12-48_before-build-on-prem-bikodc-leg-for-225w"`
+
+
+## 2026-07-30 20:30:42 — Before: full on-prem BikoDC mirror for nouvellesdupays.com (Postgres replication + PM2 + NLB)
+
+- **ID**: 2026-07-30_20-30-40_before-full-on-prem-bikodc-mirror-for-no
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1258.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-30_20-30-40_before-full-on-prem-bikodc-mirror-for-no"`
+
+
+## 2026-07-31 00:17:43 — Before: real power-off drill of BikoDC (physical), active-active failover validation
+
+- **ID**: 2026-07-31_00-17-41_before-real-power-off-drill-of-bikodc-ph
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1258.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_00-17-41_before-real-power-off-drill-of-bikodc-ph"`
+

@@ -18,6 +18,28 @@ resource "oci_core_network_security_group_security_rule" "oke_nodes_ingress_from
   }
 }
 
+# ── On-prem BikoDC -> OKE Postgres NodePort, for the nouvellesdupays.com
+# on-prem replication build (2026-07-30). No existing rule permits on-prem
+# traffic to reach OKE nodes directly at all before this -- the LB and the
+# OCI standby both have their own scoped paths above/below, but BikoDC does
+# not, since every prior on-prem<->OKE integration (tekeche-web/livbiko-web/
+# woyo-web) only ever went through the public NLB, never node IPs directly.
+resource "oci_core_network_security_group_security_rule" "oke_nodes_ingress_from_onprem_postgres" {
+  network_security_group_id = oci_core_network_security_group.oke_nodes.id
+  direction                 = "INGRESS"
+  protocol                  = "6"
+  source_type                = "CIDR_BLOCK"
+  source                     = "192.168.1.0/24"
+  description                = "On-prem BikoDC to Postgres replication NodePort (nouvellesdupays.com on-prem mirror)"
+
+  tcp_options {
+    destination_port_range {
+      min = 30432
+      max = 30432
+    }
+  }
+}
+
 # ── OKE nodes as a second backup path in main-backends, alongside the
 # existing VM standby (oci_core_instance.standby). Both node IPs are added
 # individually (ROUND_ROBIN policy handles fan-out across backup members)
