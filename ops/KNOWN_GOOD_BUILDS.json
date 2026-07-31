@@ -544,5 +544,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  43,
+        "dateCreated":  "2026-07-31T18:05:06.4637171+01:00",
+        "apiCommit":  "57753aaf589e228913bd1f10b86930bbb393f34f",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Added real DNS-level failover for api.tekeche.com (NLB-primary/on-prem-backup), fixed a broken health monitor found along the way",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

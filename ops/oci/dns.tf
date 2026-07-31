@@ -2,11 +2,21 @@
 #
 # Architecture:
 #   api.tekeche.com → OCI DNS Traffic Management
-#     Primary:   OCI Network LB public IP  (health-checked)
-#     Fallback:  (not needed — LB already handles on-prem vs standby routing)
+#     Primary:   OCI Network LB public IP  (health-checked via api_nlb_health below)
+#     Fallback:  BikoDC on-prem public IP  (direct, bypasses the LB entirely)
 #
-# If OCI LB itself goes down (rare), DNS failover is a last-resort option.
-# For now, the steering policy points at the single LB IP with health monitoring.
+# 2026-07-31: added real DNS-level failover, closing a gap flagged in the
+# 2026-07-23 network topology audit (api.tekeche.com was the only public
+# hostname with no DNS-layer failover -- a full OCI LB/region outage would
+# have taken it down completely even with BikoDC healthy). Deliberately
+# NOT the same primary/backup order as tekeche.com/livbiko.com/etc. below,
+# where on-prem is primary: since 2026-07-30's active-active build, the LB
+# itself does a genuine continuous 50/50 traffic split between BikoDC and
+# the OCI standby, not just failover -- pointing DNS primary at on-prem
+# directly would silently bypass the LB (and the 50/50 split) in the
+# normal healthy case. LB stays primary here so the split keeps working;
+# on-prem direct is purely a last-resort path if the LB itself is
+# unreachable, mirroring how the *other* domains use the LB as fallback.
 
 # ── DNS Zone (import existing or create new) ───────────────────────────────────
 resource "oci_dns_zone" "tekeche" {
@@ -39,20 +49,98 @@ resource "oci_health_checks_http_monitor" "lb_health" {
   }
 }
 
-# ── DNS record: api.tekeche.com → OCI LB public IP ────────────────────────────
-# The LB backend set already handles on-prem vs OCI standby failover internally;
-# a DNS steering policy would add complexity without benefit for a single LB endpoint.
-resource "oci_dns_rrset" "api" {
-  zone_name_or_id = oci_dns_zone.tekeche.id
-  domain          = "${var.api_hostname}.${var.dns_zone_name}"
-  rtype           = "A"
-
-  items {
-    domain = "${var.api_hostname}.${var.dns_zone_name}"
-    rtype  = "A"
-    rdata  = oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address
-    ttl    = var.dns_ttl
+# ── DNS-layer FAILOVER for api.tekeche.com, LB-primary / on-prem-backup ────────
+# Deliberately does NOT reuse lb_health (above): that monitor checks the bare
+# LB IP over HTTPS with no Host header, hitting exactly the "SNI-on-bare-IP"
+# problem the comment at the top of this file already flagged as unconfirmed
+# and avoided for every other monitor here. Empirically confirmed real during
+# this build (on-demand probes via `oci health-checks http-probe
+# create-on-demand`): HTTPS+no-Host against the bare LB IP came back
+# `is-healthy: false` from all 3 external vantage points (connection-level
+# failure, not even an HTTP response) -- since this LB is L4 TCP-passthrough,
+# backend IIS has nothing to route/select a cert on without SNI. Plain HTTP
+# port 80 + an explicit Host header against the same IP came back
+# `is-healthy: true` from all 3 vantage points instead, so this new monitor
+# follows that same proven HTTP+Host-header pattern instead of lb_health's.
+resource "oci_health_checks_http_monitor" "api_nlb_health" {
+  compartment_id      = var.compartment_id
+  display_name        = "${var.project_name}-api-nlb-health"
+  interval_in_seconds = 30
+  protocol            = "HTTP"
+  targets             = [oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address]
+  port                = 80
+  path                = "/health"
+  is_enabled          = true
+  headers = {
+    Host = "${var.api_hostname}.${var.dns_zone_name}"
   }
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+# The on-prem answer has no monitor of its own, same as how the OCI-LB answer
+# is treated as the always-available fallback in the tekeche.com/livbiko.com/
+# kendebabi.com/security.tekeche.com/staging-api policies below -- only the
+# primary side (here, the LB) is actively health-checked.
+resource "oci_dns_steering_policy" "api_failover" {
+  compartment_id          = var.compartment_id
+  display_name            = "${var.project_name}-api-failover"
+  template                = "FAILOVER"
+  health_check_monitor_id = oci_health_checks_http_monitor.api_nlb_health.id
+  ttl                     = var.dns_ttl
+
+  answers {
+    name  = "oci-nlb"
+    rtype = "A"
+    rdata = oci_network_load_balancer_network_load_balancer.main.ip_addresses[0].ip_address
+    pool  = "oci-nlb"
+  }
+  answers {
+    name  = "onprem"
+    rtype = "A"
+    rdata = var.mx68_public_ip
+    pool  = "onprem"
+  }
+
+  rules {
+    rule_type = "FILTER"
+    default_answer_data {
+      answer_condition = "answer.isDisabled != true"
+      should_keep      = true
+    }
+  }
+
+  rules {
+    rule_type = "HEALTH"
+  }
+
+  rules {
+    rule_type = "PRIORITY"
+    default_answer_data {
+      answer_condition = "answer.pool == 'oci-nlb'"
+      value            = 1
+    }
+    default_answer_data {
+      answer_condition = "answer.pool == 'onprem'"
+      value            = 99
+    }
+  }
+
+  rules {
+    rule_type     = "LIMIT"
+    default_count = 1
+  }
+
+  freeform_tags = {
+    project = var.project_name
+  }
+}
+
+resource "oci_dns_steering_policy_attachment" "api_apex" {
+  steering_policy_id = oci_dns_steering_policy.api_failover.id
+  zone_id            = oci_dns_zone.tekeche.id
+  domain_name        = "${var.api_hostname}.${var.dns_zone_name}"
 }
 
 # ── NOTE, 2026-07-18: pay/security/staging-api A, _dmarc/SPF/brevo-code TXT,

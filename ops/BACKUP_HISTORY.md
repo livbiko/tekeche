@@ -1745,3 +1745,75 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_12-40-35_before-fix-test-booking-flow-js-to-use-a"`
 
+
+## 2026-07-31 13:13:45 — Before: full on-prem power-off drill (BikoDC+BikoDC1 together), validating Mongo quorum + ARR fixes under sustained dual outage
+
+- **ID**: 2026-07-31_13-13-43_before-full-on-prem-power-off-drill-biko
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_13-13-43_before-full-on-prem-power-off-drill-biko"`
+
+
+## 2026-07-31 13:32:05 — Before: repoint api.tekeche.com + staging-api.tekeche.com local AD DNS zone records from BikoDC-only (192.168.1.101) to OCI NLB IP (140.238.74.241), fixing the on-prem/office-network split-horizon single-point-of-failure found via user report
+
+- **ID**: 2026-07-31_13-32-03_before-repoint-api-tekeche-com-staging-a
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_13-32-03_before-repoint-api-tekeche-com-staging-a"`
+
+
+## 2026-07-31 13:47:36 — Before: repoint kendebabi.com + www.kendebabi.com local AD DNS zone records from BikoDC-only (192.168.1.101) to OCI NLB IP (140.238.74.241), closing the same on-prem split-horizon gap just fixed for api.tekeche.com
+
+- **ID**: 2026-07-31_13-47-34_before-repoint-kendebabi-com-www-kendeba
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_13-47-34_before-repoint-kendebabi-com-www-kendeba"`
+
+
+## 2026-07-31 16:33:09 — Before: repoint security.tekeche.com local AD DNS zone record from BikoDC-only (192.168.1.101) to OCI NLB IP (140.238.74.241), closing the same on-prem split-horizon gap just fixed for api.tekeche.com and kendebabi.com
+
+- **ID**: 2026-07-31_16-33-07_before-repoint-security-tekeche-com-loca
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_16-33-07_before-repoint-security-tekeche-com-loca"`
+
+
+## 2026-07-31 16:55:24 — Before: full on-prem power-off drill #2 (BikoDC+BikoDC1 together), validating todays DNS split-horizon fixes (api/security/staging-api.tekeche.com, kendebabi.com) under the exact real dual-outage scenario
+
+- **ID**: 2026-07-31_16-55-21_before-full-on-prem-power-off-drill-2-bi
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_16-55-21_before-full-on-prem-power-off-drill-2-bi"`
+
+
+## 2026-07-31 17:36:33 — Before: Add OCI DNS steering policy (NLB-primary/on-prem-backup) for api.tekeche.com
+
+- **ID**: 2026-07-31_17-36-29_before-add-oci-dns-steering-policy-nlb-p
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_17-36-29_before-add-oci-dns-steering-policy-nlb-p"`
+
