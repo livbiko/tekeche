@@ -166,11 +166,19 @@ resource "oci_core_security_list" "private" {
     }
   }
 
-  # Allow on-prem (via VPN) to reach MongoDB and Redis on standby
+  # Allow on-prem to reach MongoDB and Redis on standby -- scoped to the two
+  # actual replica-set/replication members (BikoDC, BikoDC1) rather than the
+  # whole onprem_cidr /24. Narrowed 2026-07-31: 192.168.1.121 (an undocumented
+  # Docker box, see ops/MAINTENANCE_LOG.md) had been reaching production Mongo
+  # over this rule for over a month, discovered only by accident. The Windows
+  # Firewall rules blocking .121 on BikoDC/BikoDC1 themselves only ever covered
+  # the two on-prem nodes -- this OCI-side rule was still wide open to anything
+  # on the on-prem LAN. AD replication traffic (DNS/Kerberos/LDAP/etc. below)
+  # still needs the full onprem_cidr and is untouched.
   ingress_security_rules {
     protocol    = "6"
-    source      = var.onprem_cidr
-    description = "MongoDB RS replication from on-prem"
+    source      = "192.168.1.101/32"
+    description = "MongoDB RS replication from BikoDC"
     tcp_options {
       max = 27017
       min = 27017
@@ -179,8 +187,28 @@ resource "oci_core_security_list" "private" {
 
   ingress_security_rules {
     protocol    = "6"
-    source      = var.onprem_cidr
-    description = "Redis replication from on-prem"
+    source      = "192.168.1.102/32"
+    description = "MongoDB RS replication from BikoDC1"
+    tcp_options {
+      max = 27017
+      min = 27017
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "192.168.1.101/32"
+    description = "Redis replication from BikoDC"
+    tcp_options {
+      max = 6379
+      min = 6379
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "192.168.1.102/32"
+    description = "Redis replication from BikoDC1"
     tcp_options {
       max = 6379
       min = 6379
