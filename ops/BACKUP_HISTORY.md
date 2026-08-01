@@ -1865,3 +1865,51 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_12-53-51_before-restart-oci-standby-tekeche-api-t"`
 
+
+## 2026-08-01 13:51:02 — Before: repeat controlled BikoDC+BikoDC1 power-off drill to verify Build #46 Sentinel fix holds under real outage
+
+- **ID**: 2026-08-01_13-51-00_before-repeat-controlled-bikodc-bikodc1
+- **Reason**: 
+- **API commit**: b15b1c09  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_13-51-00_before-repeat-controlled-bikodc-bikodc1"`
+
+
+## 2026-08-01 15:38:22 — Before: deploy mongo-rs-watchdog to OCI standby + create mongoWatchdog Mongo user + live BikoDC+BikoDC1 power-off drill
+
+- **ID**: 2026-08-01_15-38-18_before-deploy-mongo-rs-watchdog-to-oci-s
+- **Reason**: 
+- **API commit**: b15b1c09  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_15-38-18_before-deploy-mongo-rs-watchdog-to-oci-s"`
+
+
+## 2026-08-01 16:37:08 — Before: live BikoDC/OCI failover drill (Test-Failover.ps1)
+
+- **ID**: 2026-08-01_16-37-00_before-live-bikodc-oci-failover-drill-te
+- **Reason**: Verify failover path still healthy per user request
+- **API commit**: b15b1c09  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: api.tekeche.com traffic briefly served by OCI standby (~20-30s) during drain, then restored
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_16-37-00_before-live-bikodc-oci-failover-drill-te"`
+
+
+## 2026-08-01 19:09:29 — Before: Deploy mongo-rs-watchdog to OCI standby (mongoWatchdog user + systemd service)
+
+- **ID**: 2026-08-01_19-09-24_before-deploy-mongo-rs-watchdog-to-oci-s
+- **Reason**: 
+- **API commit**: b15b1c09  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_19-09-24_before-deploy-mongo-rs-watchdog-to-oci-s"`
+

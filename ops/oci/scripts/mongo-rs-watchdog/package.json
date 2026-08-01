@@ -1,0 +1,13 @@
+{
+  "name": "mongo-rs-watchdog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Evicts unreachable on-prem rs0 members during a full outage, re-adds them once healthy again",
+  "main": "watchdog.js",
+  "scripts": {
+    "start": "node watchdog.js"
+  },
+  "dependencies": {
+    "mongodb": "^6.8.0"
+  }
+}

@@ -1,0 +1,16 @@
+[Unit]
+Description=mongo-rs-watchdog - evicts/re-adds unreachable on-prem rs0 members
+After=network-online.target mongod.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/mongo-rs-watchdog
+EnvironmentFile=/opt/mongo-rs-watchdog/.env
+ExecStart=/usr/bin/node /opt/mongo-rs-watchdog/watchdog.js
+Restart=always
+RestartSec=10
+User=root
+
+[Install]
+WantedBy=multi-user.target
