@@ -596,5 +596,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  47,
+        "dateCreated":  "2026-08-01T19:23:31.3860462+01:00",
+        "apiCommit":  "b15b1c09f1c092f2ec626784bef84d2a4c8e4fb2",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "mongo-rs-watchdog deployed to OCI standby (commit 45b77d2), Test-Build.ps1 clean 9/9",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

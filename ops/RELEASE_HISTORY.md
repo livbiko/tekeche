@@ -454,3 +454,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fixed OCI standby stuck in Redis direct-mode (stale code, missing Sentinel feature + ioredis dep) - root cause of production 'Erreur de connexion reseau' during BikoDC+BikoDC1 power-off drill. Standby now on origin/master b15b1c0, sentinel mode confirmed, pm2 save done.
 
+
+## Build #47 — 2026-08-01 19:23
+
+- **API commit**: b15b1c09 (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: mongo-rs-watchdog deployed to OCI standby (commit 45b77d2), Test-Build.ps1 clean 9/9
+
