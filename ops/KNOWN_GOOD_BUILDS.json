@@ -609,5 +609,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  48,
+        "dateCreated":  "2026-08-01T22:44:32.2460032+01:00",
+        "apiCommit":  "b7de68715e00d6216d6c342677201b857e712d31",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OCI mirror build-out: KYC uploads to shared OCI Object Storage; second OCI compute node (standby2) added as Mongo rs0 voter + NLB backend",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

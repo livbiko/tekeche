@@ -84,6 +84,14 @@ variable "standby_image_id" {
 variable "ssh_public_key" { description = "SSH public key to access the standby VM" }
 variable "standby_private_ip" { default = "10.0.2.10" }
 
+# ── Compute (second OCI node, Phase 2 mirror) ─────────────────────────────────
+# Sized identically to `standby` -- a genuine mirror, not a lesser peer, so
+# either OCI node alone can absorb full traffic if the other is lost.
+variable "standby2_shape" { default = "VM.Standard.E4.Flex" }
+variable "standby2_ocpus" { default = 8 }
+variable "standby2_memory_gb" { default = 32 }
+variable "standby2_private_ip" { default = "10.0.2.12" }
+
 variable "alert_email" {
   description = "Email address for HA/DR monitoring alarm notifications"
 }

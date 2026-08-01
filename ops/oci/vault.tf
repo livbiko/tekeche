@@ -64,7 +64,7 @@ resource "oci_identity_dynamic_group" "standby_vm" {
   name           = "${var.project_name}-standby-dg"
   description    = "OCI instances that run the tekeche-api standby"
 
-  matching_rule = "ANY { instance.id = '${oci_core_instance.standby.id}' }"
+  matching_rule = "ANY { instance.id = '${oci_core_instance.standby.id}', instance.id = '${oci_core_instance.standby2.id}' }"
 }
 
 # ── IAM Policy — standby VM can read secrets from the vault ───────────────────

@@ -464,3 +464,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: mongo-rs-watchdog deployed to OCI standby (commit 45b77d2), Test-Build.ps1 clean 9/9
 
+
+## Build #48 — 2026-08-01 22:44
+
+- **API commit**: b7de6871 (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OCI mirror build-out: KYC uploads to shared OCI Object Storage; second OCI compute node (standby2) added as Mongo rs0 voter + NLB backend
+

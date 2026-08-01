@@ -67,6 +67,17 @@ resource "oci_network_load_balancer_backend" "standby_vm" {
   is_offline                = false
 }
 
+resource "oci_network_load_balancer_backend" "standby2_vm" {
+  backend_set_name          = oci_network_load_balancer_backend_set.main.name
+  network_load_balancer_id  = oci_network_load_balancer_network_load_balancer.main.id
+  ip_address                = oci_core_instance.standby2.private_ip
+  port                      = 443
+  weight                    = 1
+  is_drain                  = false
+  is_backup                 = false
+  is_offline                = false
+}
+
 resource "oci_network_load_balancer_listener" "https" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.main.id
   name                     = "https-443"
@@ -106,6 +117,17 @@ resource "oci_network_load_balancer_backend" "standby_vm_http" {
   backend_set_name          = oci_network_load_balancer_backend_set.http.name
   network_load_balancer_id  = oci_network_load_balancer_network_load_balancer.main.id
   ip_address                = oci_core_instance.standby.private_ip
+  port                      = 80
+  weight                    = 1
+  is_drain                  = false
+  is_backup                 = true
+  is_offline                = false
+}
+
+resource "oci_network_load_balancer_backend" "standby2_vm_http" {
+  backend_set_name          = oci_network_load_balancer_backend_set.http.name
+  network_load_balancer_id  = oci_network_load_balancer_network_load_balancer.main.id
+  ip_address                = oci_core_instance.standby2.private_ip
   port                      = 80
   weight                    = 1
   is_drain                  = false

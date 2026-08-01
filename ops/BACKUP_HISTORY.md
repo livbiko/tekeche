@@ -1913,3 +1913,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_19-09-24_before-deploy-mongo-rs-watchdog-to-oci-s"`
 
+
+## 2026-08-01 20:08:25 — Before: OCI mirror build-out (Phase 1 shared storage + Phase 2 OCI compute redundancy), OCI-only
+
+- **ID**: 2026-08-01_20-08-21_before-oci-mirror-build-out-phase-1-shar
+- **Reason**: 
+- **API commit**: b15b1c09  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_20-08-21_before-oci-mirror-build-out-phase-1-shar"`
+
