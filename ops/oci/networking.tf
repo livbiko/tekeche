@@ -540,6 +540,36 @@ resource "oci_core_security_list" "private" {
     }
   }
 
+  # Added 2026-08-01: Redis Sentinel gossip between the standby and the two
+  # Mongo arbiter VMs (now dual-purposed as Sentinel nodes too), same
+  # intra-subnet gap as the MongoDB rule above -- the existing OKE-sourced
+  # 26379 rule further up only covers 10.0.4.0/24 -> this subnet, not
+  # same-subnet traffic between standby/arbiter-a/arbiter-b themselves.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "Redis Sentinel gossip - intra-subnet (standby <-> arbiters)"
+    tcp_options {
+      max = 26379
+      min = 26379
+    }
+  }
+
+  # Added 2026-08-01: Redis Sentinel gossip from on-prem (BikoDC + BikoDC1,
+  # both now running Sentinel) into the OCI private subnet, across the
+  # existing BikoFW-SRX <-> OCI VPN -- same "on-prem needs to reach into
+  # OCI" category as the RDP/WinRM on-prem rules below, not previously
+  # needed since Sentinel didn't exist here before tonight.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.onprem_cidr
+    description = "Redis Sentinel gossip from on-prem"
+    tcp_options {
+      max = 26379
+      min = 26379
+    }
+  }
+
   egress_security_rules {
     protocol    = "all"
     destination = "0.0.0.0/0"

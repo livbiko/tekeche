@@ -1817,3 +1817,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_17-36-29_before-add-oci-dns-steering-policy-nlb-p"`
 
+
+## 2026-07-31 22:24:09 — Before: Add OCI standby (10.0.2.10) as Mongo seed to OCI Vault .env secret, closing cold-start bootstrap gap for api.tekeche.com self-sufficiency
+
+- **ID**: 2026-07-31_22-24-05_before-add-oci-standby-10-0-2-10-as-mong
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_22-24-05_before-add-oci-standby-10-0-2-10-as-mong"`
+
+
+## 2026-07-31 23:35:01 — Before: Redis Sentinel maintenance window (5-node quorum, fixes Redis SPOF for api.tekeche.com self-sufficiency)
+
+- **ID**: 2026-07-31_23-34-58_before-redis-sentinel-maintenance-window
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1270.7 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_23-34-58_before-redis-sentinel-maintenance-window"`
+

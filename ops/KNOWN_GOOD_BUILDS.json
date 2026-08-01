@@ -557,5 +557,31 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  44,
+        "dateCreated":  "2026-07-31T22:58:24.6014797+01:00",
+        "apiCommit":  "57753aaf589e228913bd1f10b86930bbb393f34f",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OCI Vault .env secret: added OCI standby (10.0.2.10) to MONGODB_URI seed list, closing cold-start Mongo bootstrap gap for api.tekeche.com self-sufficiency. Redis on-prem-only dependency (BikoDC1) remains open, deferred as separate follow-up.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  45,
+        "dateCreated":  "2026-08-01T00:39:08.1780279+01:00",
+        "apiCommit":  "57753aaf589e228913bd1f10b86930bbb393f34f",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Redis Sentinel deployed across 7 nodes (BikoDC, BikoDC1, OCI standby, 2 Mongo arbiters, 2 pre-existing OKE nodes), quorum=4. tekeche-api now sentinel-mode for Socket.io cross-node fan-out, live failover drill passed (master moved .102-\u003e.101 automatically, app never restarted, Test-Build 9/9 post-failover). Closes the last open item from tonight\u0027s OCI self-sufficiency audit.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

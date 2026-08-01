@@ -424,3 +424,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Added real DNS-level failover for api.tekeche.com (NLB-primary/on-prem-backup), fixed a broken health monitor found along the way
 
+
+## Build #44 — 2026-07-31 22:58
+
+- **API commit**: 57753aaf (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OCI Vault .env secret: added OCI standby (10.0.2.10) to MONGODB_URI seed list, closing cold-start Mongo bootstrap gap for api.tekeche.com self-sufficiency. Redis on-prem-only dependency (BikoDC1) remains open, deferred as separate follow-up.
+
+
+## Build #45 — 2026-08-01 00:39
+
+- **API commit**: 57753aaf (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Redis Sentinel deployed across 7 nodes (BikoDC, BikoDC1, OCI standby, 2 Mongo arbiters, 2 pre-existing OKE nodes), quorum=4. tekeche-api now sentinel-mode for Socket.io cross-node fan-out, live failover drill passed (master moved .102->.101 automatically, app never restarted, Test-Build 9/9 post-failover). Closes the last open item from tonight's OCI self-sufficiency audit.
+

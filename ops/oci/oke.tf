@@ -108,6 +108,24 @@ resource "oci_core_network_security_group_security_rule" "nodes_ingress_from_cp"
   description                = "Control plane to worker nodes"
 }
 
+# Added 2026-08-01: Redis Sentinel (hostNetwork) gossip from on-prem into
+# the OKE node NSG -- existing rules here only cover control-plane and
+# node-to-node/pod-to-pod traffic, nothing from outside the VCN.
+resource "oci_core_network_security_group_security_rule" "nodes_ingress_sentinel_onprem" {
+  network_security_group_id = oci_core_network_security_group.oke_nodes.id
+  direction                 = "INGRESS"
+  protocol                  = "6"
+  source_type                = "CIDR_BLOCK"
+  source                     = var.onprem_cidr
+  description                = "Redis Sentinel gossip from on-prem (BikoDC + BikoDC1) - added 2026-08-01, existing rules only cover CP and node-to-node traffic"
+  tcp_options {
+    destination_port_range {
+      min = 26379
+      max = 26379
+    }
+  }
+}
+
 # Pod-to-pod (Flannel VXLAN) and node-to-node traffic within the node pool
 resource "oci_core_network_security_group_security_rule" "nodes_intra_ingress" {
   network_security_group_id = oci_core_network_security_group.oke_nodes.id
