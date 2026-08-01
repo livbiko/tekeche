@@ -444,3 +444,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Redis Sentinel deployed across 7 nodes (BikoDC, BikoDC1, OCI standby, 2 Mongo arbiters, 2 pre-existing OKE nodes), quorum=4. tekeche-api now sentinel-mode for Socket.io cross-node fan-out, live failover drill passed (master moved .102->.101 automatically, app never restarted, Test-Build 9/9 post-failover). Closes the last open item from tonight's OCI self-sufficiency audit.
 
+
+## Build #46 — 2026-08-01 13:14
+
+- **API commit**: b15b1c09 (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed OCI standby stuck in Redis direct-mode (stale code, missing Sentinel feature + ioredis dep) - root cause of production 'Erreur de connexion reseau' during BikoDC+BikoDC1 power-off drill. Standby now on origin/master b15b1c0, sentinel mode confirmed, pm2 save done.
+

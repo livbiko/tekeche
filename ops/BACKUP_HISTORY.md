@@ -1841,3 +1841,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-07-31_23-34-58_before-redis-sentinel-maintenance-window"`
 
+
+## 2026-08-01 12:03:50 — Before: Controlled BikoDC+BikoDC1 simultaneous power-off failover drill
+
+- **ID**: 2026-08-01_12-03-47_before-controlled-bikodc-bikodc1-simulta
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_12-03-47_before-controlled-bikodc-bikodc1-simulta"`
+
+
+## 2026-08-01 12:53:54 — Before: restart OCI standby tekeche-api to pick up Sentinel env (fixes stuck direct-mode Redis found during drill)
+
+- **ID**: 2026-08-01_12-53-51_before-restart-oci-standby-tekeche-api-t
+- **Reason**: 
+- **API commit**: 57753aaf  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_12-53-51_before-restart-oci-standby-tekeche-api-t"`
+

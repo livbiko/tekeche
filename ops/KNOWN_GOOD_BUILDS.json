@@ -583,5 +583,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  46,
+        "dateCreated":  "2026-08-01T13:14:15.0602969+01:00",
+        "apiCommit":  "b15b1c09f1c092f2ec626784bef84d2a4c8e4fb2",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fixed OCI standby stuck in Redis direct-mode (stale code, missing Sentinel feature + ioredis dep) - root cause of production \u0027Erreur de connexion reseau\u0027 during BikoDC+BikoDC1 power-off drill. Standby now on origin/master b15b1c0, sentinel mode confirmed, pm2 save done.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
