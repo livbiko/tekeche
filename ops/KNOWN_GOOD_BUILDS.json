@@ -622,5 +622,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  49,
+        "dateCreated":  "2026-08-02T03:00:14.5535583+01:00",
+        "apiCommit":  "b7de68715e00d6216d6c342677201b857e712d31",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OKE tekeche-api redeployed fresh: fixed stale SENTINEL_HOSTS ConfigMap (pre-07-13 IPs, missing 4 of 7 mesh members) + added OCI-side Mongo seeds for VCN-local resilience",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

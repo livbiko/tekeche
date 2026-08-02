@@ -474,3 +474,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: OCI mirror build-out: KYC uploads to shared OCI Object Storage; second OCI compute node (standby2) added as Mongo rs0 voter + NLB backend
 
+
+## Build #49 — 2026-08-02 03:00
+
+- **API commit**: b7de6871 (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OKE tekeche-api redeployed fresh: fixed stale SENTINEL_HOSTS ConfigMap (pre-07-13 IPs, missing 4 of 7 mesh members) + added OCI-side Mongo seeds for VCN-local resilience
+

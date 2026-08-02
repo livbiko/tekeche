@@ -1925,3 +1925,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-01_20-08-21_before-oci-mirror-build-out-phase-1-shar"`
 
+
+## 2026-08-02 02:22:32 — Before: Add on-prem Windows Firewall rules on BikoDC+BikoDC1 allowing MongoDB (27017) and Redis (6379) inbound from OKE node IPs 10.0.4.249/32 and 10.0.4.67/32, to fix the OKE tekeche-api backup deployment's crash-loop
+
+- **ID**: 2026-08-02_02-22-28_before-add-on-prem-windows-firewall-rule
+- **Reason**: 
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-02_02-22-28_before-add-on-prem-windows-firewall-rule"`
+
+
+## 2026-08-02 02:39:43 — Before: delete + redeploy tekeche-api in OKE with corrected SENTINEL_HOSTS (was stale, pre-2026-07-13 IPs) and Mongo seed list (add OCI-side hosts for VCN-local resilience)
+
+- **ID**: 2026-08-02_02-39-41_before-delete-redeploy-tekeche-api-in-ok
+- **Reason**: 
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1272.1 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-02_02-39-41_before-delete-redeploy-tekeche-api-in-ok"`
+

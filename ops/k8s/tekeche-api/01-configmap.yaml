@@ -29,7 +29,15 @@ data:
   # Sentinel+PubSub support (sub client, via pub.duplicate(), hit a persistent
   # 5s connect timeout). Fixed by switching handlers.js from the `redis`
   # package to `ioredis`, which has much more mature Sentinel+pubsub support.
-  # Sentinel infrastructure itself (3 instances, OCI standby + 2 OKE pods) has
-  # been live and validated since 2026-07-11 (real failover tested end-to-end).
-  SENTINEL_HOSTS: "10.0.2.10:26379,10.0.4.54:26379,10.0.4.95:26379"
+  #
+  # SENTINEL_HOSTS corrected 2026-08-02: this had drifted to a stale
+  # pre-2026-07-13 list (2 of 3 entries were OKE node IPs from before that
+  # day's node-pool resize, and it was missing BikoDC/BikoDC1/both Mongo
+  # arbiters entirely) -- Build #45 (2026-07-31/08-01) rolled the current
+  # 7-node Sentinel mesh out to on-prem .env and the OCI Vault secret, but
+  # this K8s-native ConfigMap was never updated to match, since it's applied
+  # directly via kubectl rather than through either of those channels. Found
+  # while diagnosing repeated "All sentinels are unreachable" crash-loop
+  # errors in the OKE tekeche-api pods.
+  SENTINEL_HOSTS: "192.168.1.101:26379,192.168.1.102:26379,10.0.2.10:26379,10.0.2.20:26379,10.0.2.21:26379,10.0.4.249:26379,10.0.4.67:26379"
   SENTINEL_NAME: "mymaster"
