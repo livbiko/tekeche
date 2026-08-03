@@ -1949,3 +1949,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-02_02-39-41_before-delete-redeploy-tekeche-api-in-ok"`
 
+
+## 2026-08-03 18:47:55 — Before: restart tekeche-bot-fleet scheduler (found dead since 2026-07-30 16:13, 4 days silent)
+
+- **ID**: 2026-08-03_18-47-50_before-restart-tekeche-bot-fleet-schedul
+- **Reason**: 20-day bot QA fleet found silent for 4 days; restarting under `pm2 start ecosystem.config.js`. Session was interrupted before `pm2 save`/verification/logging completed — see the 2026-08-04 00:17-01:10 MAINTENANCE_LOG.md entry for the real root cause found on follow-up (pm2-health-monitor.ps1 collateral kill, not a one-off).
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1307.2 KB
+- **Files affected**: none (process restart only)
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-03_18-47-50_before-restart-tekeche-bot-fleet-schedul"`
+
+
+## 2026-08-04 00:42:24 — Before: restart woyo-web + tekeche-bot-fleet, collaterally killed by pm2-health-monitor.ps1's over-broad process kill (fired 2026-08-04 00:17/00:20)
+
+- **ID**: 2026-08-04_00-42-20_before-restart-woyo-web-tekeche-bot-flee
+- **Reason**: 225woyo.com was returning live public 502s; pm2-health-monitor.ps1's remediation for a tekeche-api health blip kills every node.exe process matching "pm2"/"tekeche-api" in its command line, taking down the whole shared PM2 daemon (woyo-web, tekeche-bot-fleet included) rather than just tekeche-api, then only restarts+saves tekeche-api's own 3 processes.
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1333.7 KB
+- **Files affected**: none (process restart only)
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-04_00-42-20_before-restart-woyo-web-tekeche-bot-flee"`
+

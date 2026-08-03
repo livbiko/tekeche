@@ -484,3 +484,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: OKE tekeche-api redeployed fresh: fixed stale SENTINEL_HOSTS ConfigMap (pre-07-13 IPs, missing 4 of 7 mesh members) + added OCI-side Mongo seeds for VCN-local resilience
 
+
+## Build #50 — 2026-08-04 00:45
+
+- **API commit**: b7de6871 (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Build #50: restarted woyo-web + tekeche-bot-fleet after pm2-health-monitor.ps1 collaterally killed them (00:17/00:20); resolved a live 225woyo.com 502 outage
+
