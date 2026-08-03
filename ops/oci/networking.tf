@@ -228,6 +228,33 @@ resource "oci_core_security_list" "private" {
     }
   }
 
+  # Added 2026-08-03: the 26379 (gossip) rule above was never paired with a
+  # 6379 (data) rule, so OKE-hosted Sentinels could gossip fine but could
+  # never actually reach the standby's Redis data port to run INFO/health
+  # checks — they'd mark it s_down and force spurious re-elections back to
+  # on-prem seconds after a legitimate failover to OCI. This is what let
+  # OCI actually hold the master role. See also the matching intra-subnet
+  # rule below for the arbiter boxes (10.0.2.20/.21), which had the same gap.
+  ingress_security_rules {
+    protocol    = "6"
+    source      = "10.0.4.0/24"
+    description = "Redis data port from OKE nodes (Sentinel INFO/replication monitoring)"
+    tcp_options {
+      max = 6379
+      min = 6379
+    }
+  }
+
+  ingress_security_rules {
+    protocol    = "6"
+    source      = var.private_subnet_cidr
+    description = "Redis data port - intra-subnet (standby <-> arbiters)"
+    tcp_options {
+      max = 6379
+      min = 6379
+    }
+  }
+
   # SSH from VCN only (use Bastion for external access)
   ingress_security_rules {
     protocol    = "6"
