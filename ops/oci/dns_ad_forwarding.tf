@@ -28,9 +28,20 @@ data "oci_dns_resolver" "tekeche" {
 # Step 2: the forwarding rule itself, on the VCN's existing default resolver
 # (managed here via resolver_id matching the auto-created one -- no
 # terraform import needed). Forwards livbiko.local. queries to the two
-# working on-prem DCs (192.168.1.102, .103 — BIKODC itself is excluded for
-# now since its registered IP is a stale APIPA address, 169.254.0.36 — see
-# project_livbiko_ad_to_oci memory).
+# on-prem DCs (192.168.1.102 BikoDC1, .103 BikoDC2 — BikoDC itself is
+# excluded since its registered IP is a stale APIPA address, 169.254.0.36 —
+# see project_livbiko_ad_to_oci memory) PLUS the OCI-hosted DC
+# (10.0.2.11, BIKO-OCI-DC2 -- see ad_rodc.tf).
+#
+# Added 2026-08-04: the on-prem-only version of this rule meant every
+# livbiko.local query from the entire OCI VCN had zero working forwarder if
+# BikoDC1 AND BikoDC2 were both down -- even though a fully healthy,
+# fully-replicated OCI-local DC (BIKO-OCI-DC2) already existed and was never
+# wired in. Verified live via a Bastion session to the standby VM: querying
+# 10.0.2.11 directly for _ldap._tcp/_kerberos._tcp SRV records returns all 4
+# DCs correctly, including itself -- a genuinely healthy fallback, not just
+# a name that resolves. Applied directly to the live resolver first (same
+# pattern as elsewhere in this project), this brings the source back in sync.
 resource "oci_dns_resolver" "tekeche" {
   resolver_id = data.oci_core_vcn_dns_resolver_association.tekeche.dns_resolver_id
   scope       = "PRIVATE"
@@ -49,6 +60,13 @@ resource "oci_dns_resolver" "tekeche" {
   rules {
     action                 = "FORWARD"
     destination_addresses  = ["192.168.1.103"]
+    source_endpoint_name   = oci_dns_resolver_endpoint.onprem_ad_forward.name
+    qname_cover_conditions = ["livbiko.local."]
+  }
+
+  rules {
+    action                 = "FORWARD"
+    destination_addresses  = ["10.0.2.11"]
     source_endpoint_name   = oci_dns_resolver_endpoint.onprem_ad_forward.name
     qname_cover_conditions = ["livbiko.local."]
   }

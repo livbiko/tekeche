@@ -494,3 +494,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Build #50: restarted woyo-web + tekeche-bot-fleet after pm2-health-monitor.ps1 collaterally killed them (00:17/00:20); resolved a live 225woyo.com 502 outage
 
+
+## Build #51 — 2026-08-04 02:14
+
+- **API commit**: b7de6871 (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Build #51: added BIKO-OCI-DC2 (10.0.2.11) as a third livbiko.local DNS forwarder in the OCI VCN resolver -- closes a gap where OCI hosts had zero AD DNS if BikoDC1+BikoDC2 were both down
+

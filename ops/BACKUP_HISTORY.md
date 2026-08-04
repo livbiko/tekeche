@@ -1973,3 +1973,27 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: none (process restart only)
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-04_00-42-20_before-restart-woyo-web-tekeche-bot-flee"`
 
+
+## 2026-08-04 00:55:28 — Before: deploy pm2-health-monitor.ps1 fix (scope kill to tekeche-api's own PIDs by name/port, stop killing the whole shared PM2 daemon)
+
+- **ID**: 2026-08-04_00-55-24_before-deploy-pm2-health-monitor-ps1-fix
+- **Reason**: 
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1347.4 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-04_00-55-24_before-deploy-pm2-health-monitor-ps1-fix"`
+
+
+## 2026-08-04 02:00:34 — Before: Add BIKO-OCI-DC2 (10.0.2.11) as a forwarder for livbiko.local DNS in the OCI VCN resolver, alongside existing on-prem forwarders
+
+- **ID**: 2026-08-04_02-00-31_before-add-biko-oci-dc2-10-0-2-11-as-a-f
+- **Reason**: 
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1409.6 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-04_02-00-31_before-add-biko-oci-dc2-10-0-2-11-as-a-f"`
+

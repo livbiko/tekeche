@@ -648,5 +648,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  51,
+        "dateCreated":  "2026-08-04T02:14:48.6731100+01:00",
+        "apiCommit":  "b7de68715e00d6216d6c342677201b857e712d31",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Build #51: added BIKO-OCI-DC2 (10.0.2.11) as a third livbiko.local DNS forwarder in the OCI VCN resolver -- closes a gap where OCI hosts had zero AD DNS if BikoDC1+BikoDC2 were both down",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
