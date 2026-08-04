@@ -1997,3 +1997,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-04_02-00-31_before-add-biko-oci-dc2-10-0-2-11-as-a-f"`
 
+
+## 2026-08-04 02:30:27 — Before: pm2 save on OCI standby + standby2 to fix missing tekeche-api in dump.pm2 (reboot-survivability gap)
+
+- **ID**: 2026-08-04_02-30-25_before-pm2-save-on-oci-standby-standby2
+- **Reason**: 
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: 1443.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-04_02-30-25_before-pm2-save-on-oci-standby-standby2"`
+

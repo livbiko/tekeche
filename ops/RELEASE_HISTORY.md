@@ -504,3 +504,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Build #51: added BIKO-OCI-DC2 (10.0.2.11) as a third livbiko.local DNS forwarder in the OCI VCN resolver -- closes a gap where OCI hosts had zero AD DNS if BikoDC1+BikoDC2 were both down
 
+
+## Build #52 — 2026-08-04 02:38
+
+- **API commit**: b7de6871 (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Build #52: pm2 save on OCI standby + standby2 -- fixes missing tekeche-api in dump.pm2 (reboot-survivability gap found while auditing for the collateral-kill bug on the Linux side)
+

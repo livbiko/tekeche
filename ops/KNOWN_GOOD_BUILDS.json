@@ -661,5 +661,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  52,
+        "dateCreated":  "2026-08-04T02:38:06.5299661+01:00",
+        "apiCommit":  "b7de68715e00d6216d6c342677201b857e712d31",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Build #52: pm2 save on OCI standby + standby2 -- fixes missing tekeche-api in dump.pm2 (reboot-survivability gap found while auditing for the collateral-kill bug on the Linux side)",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
