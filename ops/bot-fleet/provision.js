@@ -10,7 +10,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const API_DIR = 'C:/inetpub/wwwroot/tekeche/tekeche-api';
+// mongoose + models are intentionally still loaded from tekeche-api itself
+// (not bot-fleet's own package.json) -- they must share the same mongoose
+// module instance/connection as the app's own model files, which require
+// their own 'mongoose' relative to tekeche-api/node_modules regardless of
+// what bot-fleet declares. Override via BOT_FLEET_API_DIR when tekeche-api
+// isn't at the default on-prem path (e.g. the OCI standby mirror).
+const API_DIR = process.env.BOT_FLEET_API_DIR || 'C:/inetpub/wwwroot/tekeche/tekeche-api';
 const MANIFEST_PATH = path.join(__dirname, 'manifest.json');
 const mongoose = require(path.join(API_DIR, 'node_modules/mongoose'));
 

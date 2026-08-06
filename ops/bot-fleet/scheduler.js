@@ -244,7 +244,7 @@ function stopAll() {
 let mongoosePromise = null;
 function getMongoose() {
   if (!mongoosePromise) {
-    const API_DIR = 'C:/inetpub/wwwroot/tekeche/tekeche-api';
+    const API_DIR = process.env.BOT_FLEET_API_DIR || 'C:/inetpub/wwwroot/tekeche/tekeche-api';
     const mongoose = require(path.join(API_DIR, 'node_modules/mongoose'));
     const envLine = fs.readFileSync(path.join(API_DIR, '.env'), 'utf8').split(/\r?\n/).find(l => l.startsWith('MONGODB_URI='));
     mongoosePromise = mongoose.connect(envLine.slice('MONGODB_URI='.length)).then(() => ({

@@ -22,11 +22,17 @@ resource "oci_identity_dynamic_group" "oke_nodes" {
 
   # instance.pool.id turned out not to match anything real (confirmed via a
   # 403 "not authorized" on OCIR from an actual node instance during Phase 2
-  # push testing — see project_ocir_auth_token_blocked memory). OKE-created
-  # instances carry a defined tag Oracle-Tags.CreatedBy=oke automatically
-  # (confirmed via `oci compute instance get` on a real node pool instance),
-  # which is the reliable match.
-  matching_rule = "ALL {instance.compartment.id = '${var.compartment_id}', tag.Oracle-Tags.CreatedBy.value = 'oke'}"
+  # push testing — see project_ocir_auth_token_blocked memory). Originally
+  # matched on Oracle-Tags.CreatedBy=oke (confirmed correct 2026-07-09), but
+  # 2026-08-06: a replaced node pool tagged its nodes CreatedBy=<node-pool-OCID>
+  # instead of the literal string "oke" -- Oracle's own default tag value is
+  # not stable across node pool recreations, so tying the rule to it silently
+  # breaks OCIR pulls (and the ocir-secret-refresh CronJob's own token mint)
+  # every time the node pool is replaced. Compartment-only match is used
+  # instead -- this compartment holds only this project's own OKE
+  # infrastructure, so it's still tightly scoped without the fragile
+  # tag-value dependency.
+  matching_rule = "ALL {instance.compartment.id = '${var.compartment_id}'}"
 }
 
 resource "oci_identity_policy" "oke_nodes_ocir_pull" {

@@ -1,0 +1,12 @@
+{
+  "name": "tekeche-bot-fleet",
+  "private": true,
+  "version": "1.0.0",
+  "description": "20-day synthetic QA driver/passenger fleet -- see manifest.json and provision.js's header comment.",
+  "main": "scheduler.js",
+  "dependencies": {
+    "axios": "^1.16.1",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io-client": "^4.7.5"
+  }
+}

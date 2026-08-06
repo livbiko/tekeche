@@ -5,12 +5,16 @@
 const fs = require('fs');
 const path = require('path');
 
-const API_DIR   = 'C:/inetpub/wwwroot/tekeche/tekeche-api';
-const MOBILE_DIR = 'C:/inetpub/wwwroot/tekeche/tekeche-mobile';
+// Only for reading tekeche-api's own .env (JWT_SECRET) below -- jwt/axios/io
+// are bot-fleet's own dependencies (package.json), not reached from sibling
+// repos, so this box's tekeche-api/tekeche-mobile checkouts don't need to
+// exist for those. Override via BOT_FLEET_API_DIR when tekeche-api isn't at
+// the default on-prem path (e.g. the OCI standby mirror).
+const API_DIR = process.env.BOT_FLEET_API_DIR || 'C:/inetpub/wwwroot/tekeche/tekeche-api';
 
-const jwt   = require(path.join(API_DIR, 'node_modules/jsonwebtoken'));
-const axios = require(path.join(API_DIR, 'node_modules/axios'));
-const { io } = require(path.join(MOBILE_DIR, 'node_modules/socket.io-client'));
+const jwt   = require('jsonwebtoken');
+const axios = require('axios');
+const { io } = require('socket.io-client');
 
 function getEnv(key) {
   const line = fs.readFileSync(path.join(API_DIR, '.env'), 'utf8').split(/\r?\n/).find(l => l.startsWith(key + '='));
