@@ -5,7 +5,7 @@ const { io }  = require('C:/inetpub/wwwroot/tekeche/tekeche-mobile/node_modules/
 const { MongoClient, ObjectId } = require('C:/inetpub/wwwroot/tekeche/tekeche-api/node_modules/mongodb');
 
 const BASE      = 'http://127.0.0.1:5000';   // production API
-const MONGO_URI = 'mongodb://tekeche:6eY7EvTt57HM2dgmPgrsr64u@127.0.0.1:27017/tekeche';
+const MONGO_URI = 'mongodb://tekeche:6eY7EvTt57HM2dgmPgrsr64u@192.168.1.53:27017/tekeche'; // must match tekeche-api's real MONGODB_URI (dr-mongo), not the rs0 cluster
 const PASS_EMAIL   = 'assalehervekouame+passager1@gmail.com';
 const DRIVER_EMAIL = 'assalehervekouame+driver1@gmail.com';
 
