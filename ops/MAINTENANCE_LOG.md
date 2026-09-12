@@ -2011,3 +2011,49 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 - **Root lesson**: NLB/backend-set health checks only prove the *port* answers, not that the specific *hostname/app* behind it is actually deployed there — a backend-IP fix for one project (`nouvellesdupays.com`, which *was* fully redeployed) does not generalize to another project (`225woyo.com`) sharing the same NLB and node infrastructure unless that project's own workload was also redeployed. Should have checked whether Woyo's own K8s app existed on the new nodes *before* repointing its primary, the same way nouvellesdupays' was checked/rebuilt first.
 - **Current correct state**: `woyo-nlb` primary backends reverted back to the stale/dead node IPs (same as before this attempt) — `225woyo.com` continues serving 100% via its on-prem backup leg (BikoDC IIS → `woyo-web`), which was never touched and never broke. No net change from before this entry; this section exists to record the attempt and the reason it was reverted.
 - **Real fix, not done**: would require finding and redeploying Woyo's own OKE manifests (Deployment/Ingress/Certificate for `225woyo.com`) onto the new node pool first — same scope of work as the nouvellesdupays rebuild, not yet started. Until then, `woyo-nlb`'s primary should **not** be repointed at the new nodes again.
+
+## 2026-09-04 to 2026-09-05 — OCI mass instance outage: recovery + rs0 quorum restoration
+
+- **Type**: Unplanned incident + planned maintenance (phased recovery)
+- **Duration**: ~2 days end-to-end (intermittent), final rs0 fix ~1 hour
+- **Risk level**: High (infrastructure, MongoDB, authentication)
+- **Changes made**:
+  1. Found 7 OCI compute instances silently STOPPED (both `tekeche-oke` worker nodes,
+     `tekeche-standby`, `tekeche-standby2`, all 3 Mongo arbiter instances, `woyo-standby`).
+     Cause never determined — no OCI audit-log stop events, no maintenance log entry, user
+     had no knowledge of it either.
+  2. Phase A: restarted both OKE nodes via `oci compute instance action --action START`.
+     nouvellesdupays.com fully recovered, data confirmed intact (869,649 articles, PVC
+     untouched) — not a repeat of the 2026-08-06 PVC-wipe incident.
+  3. Phase B: restarted remaining 6 instances. `rs0` re-elected a primary automatically
+     (`tekeche-standby`, 10.0.2.10) but BikoDC/BikoDC1 did not auto-rejoin.
+  4. Root cause found: `mongo-rs-watchdog` on `tekeche-standby` was crash-looping on
+     `MongoServerError: Authentication failed` — the dedicated `mongoWatchdog` DB user
+     didn't exist at all on rs0's admin db. Created it fresh (`clusterManager` role on
+     admin db) and updated `/opt/mongo-rs-watchdog/.env` with the new password, restarted
+     the service.
+  5. Watchdog's automatic re-add still failed (`cannot re-add, no saved member config on
+     file` — its removal-time config snapshot for BikoDC/BikoDC1 was lost/never captured).
+     Manually ran `rs.add({host:"192.168.1.101:27017", priority:1, votes:1})` and the same
+     for `.102`, one at a time, confirming each reached SECONDARY before adding the next.
+  6. Separately found and fixed `ops/scripts/test-booking-flow.js` pointing at the wrong
+     Mongo instance (local rs0 member instead of production's real `dr-mongo`,
+     192.168.1.53) for its synthetic OTP insert — unrelated bug, coincidentally always
+     failing alongside the rs0 issue, masked as one problem.
+  7. Re-applied the previously-reverted Woyo OTA manifest whitelist fix
+     (`tekeche-api/src/routes/updates.routes.js`) once the above unblocked a clean
+     `Test-Build.ps1` run.
+- **Recovery point**: `2026-09-05_19-29-29_before-re-apply-woyo-ota-manifest-varian`
+  (DB dump skipped — local mongod was an orphaned rs0 member at the time,
+  `NotPrimaryOrSecondary`, unrelated to the change being made)
+- **Outcome**: Success. `rs0` now shows all 7 members healthy (1 PRIMARY, 1 ARBITER, 5
+  SECONDARY including BikoDC/BikoDC1). `Test-Build.ps1` 9/9 passing. Build #53 marked
+  known good.
+- **Downtime**: nouvellesdupays.com ~unknown duration until discovered (external check
+  confirmed down), full recovery within ~30 min of starting Phase A. rs0/on-prem Mongo
+  had no production impact (production uses standalone dr-mongo, not rs0).
+- **Affected**: Infrastructure (OCI compute), Database (rs0 replica set), Mobile (Woyo OTA)
+- **Notes**: BikoDC/BikoDC1 were re-added with priority 1 (not their unknown original
+  value) to avoid triggering a disruptive election on rejoin while still catching up on
+  oplog — can be raised later if they should be preferred primaries again. Full detail in
+  memory: `project_oci_mass_instance_outage_2026_09`, `project_woyo_app`.

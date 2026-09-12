@@ -5,6 +5,19 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 
 ---
 
+## 2026-09-03 23:23:28 — Before: Add woyo to allowed variants in updates.routes.js manifest endpoint whitelist
+
+- **ID**: 2026-09-03_23-23-28_before-add-woyo-to-allowed-variants-in-u
+- **Reason**: Woyo internal testers hit Unmatched Route on app launch; OTA manifest endpoint whitelists only ['passenger','driver'], so Woyo can never receive OTA JS updates
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: SKIPPED — local Mongo node has no valid replica set config (mongodump: NotPrimaryOrSecondary); /health confirms live app uses a different healthy member; user approved skipping
+- **Files affected**: tekeche-api/src/routes/updates.routes.js
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-03_23-23-28_before-add-woyo-to-allowed-variants-in-u"`
+
+---
+
 ## 2026-06-28 13:45:21 â€” Initial known-good state — booking flow working, OTP rate limit raised
 
 - **ID**: 2026-06-28_13-45-17_initial-known-good-state-booking-flow-wo
@@ -2008,4 +2021,52 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **DB dump**: 1443.5 KB
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-08-04_02-30-25_before-pm2-save-on-oci-standby-standby2"`
+
+
+## 2026-09-05 19:29:29 — Before: re-apply woyo OTA manifest variant whitelist fix (updates.routes.js)
+
+- **ID**: 2026-09-05_19-29-29_before-re-apply-woyo-ota-manifest-varian
+- **Reason**: Woyo (chauffeur) app OTA manifest returns 404; fix previously implemented+rolled back per protocol, re-applying now per explicit user approval.
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low
+- **DB dump**: SKIPPED - local mongod stuck NotPrimaryOrSecondary (orphaned rs0 member, unrelated pre-existing issue, see Phase B work)
+- **Files affected**: tekeche-api/src/routes/updates.routes.js
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-05_19-29-29_before-re-apply-woyo-ota-manifest-varian"`
+
+
+## 2026-09-05 23:00:16 — Before: publish first-ever woyo OTA update via deploy-update.ps1
+
+- **ID**: 2026-09-05_23-00-13_before-publish-first-ever-woyo-ota-updat
+- **Reason**: Testing that the Woyo test driver app actually receives and applies an OTA update, now that the manifest whitelist and publish-script variant bugs are both fixed
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 81528d6e (main)
+- **Impact**: Low - first publish for a variant with zero existing users on this update channel; trivial to reverse by deleting the woyo/ folder
+- **DB dump**: 10125 KB
+- **Files affected**: tekeche-api/updates/woyo/*, tekeche-api/updates/bundles/*, tekeche-api/updates/assets/*
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-05_23-00-13_before-publish-first-ever-woyo-ota-updat"`
+
+
+## 2026-09-09 11:56:33 — Before: OTA push of autoFocus/keyboard-avoidance fixes plus ~14 accumulated commits (Woyo feature work) to passenger and driver production channels
+
+- **ID**: 2026-09-09_11-56-28_before-ota-push-of-autofocus-keyboard-av
+- **Reason**: 
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: 0c00390f (main)
+- **Impact**: Low
+- **DB dump**: 10127.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-09_11-56-28_before-ota-push-of-autofocus-keyboard-av"`
+
+
+## 2026-09-09 12:56:47 — Before: OTA push of Woyo branding fix (logo letter + app name text on login/OTP screens)
+
+- **ID**: 2026-09-09_12-56-46_before-ota-push-of-woyo-branding-fix-log
+- **Reason**: 
+- **API commit**: b7de6871  (master)
+- **Mobile commit**: abdbb7cf (main)
+- **Impact**: Low
+- **DB dump**: 10127.5 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-09_12-56-46_before-ota-push-of-woyo-branding-fix-log"`
 

@@ -674,5 +674,44 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  53,
+        "dateCreated":  "2026-09-05T20:59:12.3516085+01:00",
+        "apiCommit":  "b7de68715e00d6216d6c342677201b857e712d31",
+        "apiBranch":  "master",
+        "mobileCommit":  "81528d6ec4fa67c06e15b1d668094b4f946398fc",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Build after: re-applied woyo OTA manifest whitelist fix + fixed test-booking-flow.js wrong Mongo target + rs0 quorum restored (BikoDC/BikoDC1 rejoined, mongoWatchdog user recreated)",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  54,
+        "dateCreated":  "2026-09-09T12:16:44.1071432+01:00",
+        "apiCommit":  "b7de68715e00d6216d6c342677201b857e712d31",
+        "apiBranch":  "master",
+        "mobileCommit":  "0c00390fbf2976c3fb536712ea9e8f41010e3e86",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OTA push: passenger+driver JS bundles updated (login autoFocus fix, OTP keyboard-avoidance fix, plus ~14 accumulated commits incl. Woyo feature work). Synced to BikoDC + BikoDC1; OCI standby not in api.tekeche.com serving rotation, confirmed via 10/10 consistent responses post-sync.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  55,
+        "dateCreated":  "2026-09-09T13:41:12.0365533+01:00",
+        "apiCommit":  "a053f7d5ef25fea28dd527dc33ad749ae0dd10da",
+        "apiBranch":  "master",
+        "mobileCommit":  "abdbb7cf48564f800e2501ae96ea4606ad421ac0",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fixed Woyo branding on login/OTP screens (was showing Tekeche); pushed OTA to all 3 variants. Also fixed a long-standing bug: BikoDC1\u0027s tekeche-api was running a stale updates.routes.js missing \u0027woyo\u0027 from the manifest whitelist (the earlier fix only ever existed uncommitted on BikoDC) -- now committed (a053f7d) and synced to BikoDC1, PM2 reloaded there. woyo/passenger/driver OTA manifests all confirmed 6/6 consistent across the farm.",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

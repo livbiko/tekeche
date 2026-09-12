@@ -514,3 +514,33 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Build #52: pm2 save on OCI standby + standby2 -- fixes missing tekeche-api in dump.pm2 (reboot-survivability gap found while auditing for the collateral-kill bug on the Linux side)
 
+
+## Build #53 — 2026-09-05 20:59
+
+- **API commit**: b7de6871 (master)
+- **Mobile commit**: 81528d6e
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Build after: re-applied woyo OTA manifest whitelist fix + fixed test-booking-flow.js wrong Mongo target + rs0 quorum restored (BikoDC/BikoDC1 rejoined, mongoWatchdog user recreated)
+
+
+## Build #54 — 2026-09-09 12:16
+
+- **API commit**: b7de6871 (master)
+- **Mobile commit**: 0c00390f
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OTA push: passenger+driver JS bundles updated (login autoFocus fix, OTP keyboard-avoidance fix, plus ~14 accumulated commits incl. Woyo feature work). Synced to BikoDC + BikoDC1; OCI standby not in api.tekeche.com serving rotation, confirmed via 10/10 consistent responses post-sync.
+
+
+## Build #55 — 2026-09-09 13:41
+
+- **API commit**: a053f7d5 (master)
+- **Mobile commit**: abdbb7cf
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fixed Woyo branding on login/OTP screens (was showing Tekeche); pushed OTA to all 3 variants. Also fixed a long-standing bug: BikoDC1's tekeche-api was running a stale updates.routes.js missing 'woyo' from the manifest whitelist (the earlier fix only ever existed uncommitted on BikoDC) -- now committed (a053f7d) and synced to BikoDC1, PM2 reloaded there. woyo/passenger/driver OTA manifests all confirmed 6/6 consistent across the farm.
+
