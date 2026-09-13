@@ -544,3 +544,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fixed Woyo branding on login/OTP screens (was showing Tekeche); pushed OTA to all 3 variants. Also fixed a long-standing bug: BikoDC1's tekeche-api was running a stale updates.routes.js missing 'woyo' from the manifest whitelist (the earlier fix only ever existed uncommitted on BikoDC) -- now committed (a053f7d) and synced to BikoDC1, PM2 reloaded there. woyo/passenger/driver OTA manifests all confirmed 6/6 consistent across the farm.
 
+
+## Build #56 — 2026-09-13 10:40
+
+- **API commit**: a053f7d5 (master)
+- **Mobile commit**: abdbb7cf
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Added MTN MoMo sandbox credentials (subscription key + provisioned API user/key) to tekeche-api/.env; sandbox-only, MTN_ENVIRONMENT left unset (not production) pending resolution of the MTN CI business relationship
+

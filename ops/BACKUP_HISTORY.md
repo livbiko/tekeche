@@ -2070,3 +2070,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-09_12-56-46_before-ota-push-of-woyo-branding-fix-log"`
 
+
+## 2026-09-13 10:37:12 — Before: Add MTN MoMo sandbox credentials (subscription key, API user, API key) to tekeche-api/.env
+
+- **ID**: 2026-09-13_10-37-07_before-add-mtn-momo-sandbox-credentials
+- **Reason**: 
+- **API commit**: a053f7d5  (master)
+- **Mobile commit**: abdbb7cf (main)
+- **Impact**: Low
+- **DB dump**: 10181.9 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-13_10-37-07_before-add-mtn-momo-sandbox-credentials"`
+

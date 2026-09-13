@@ -2057,3 +2057,23 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
   value) to avoid triggering a disruptive election on rejoin while still catching up on
   oplog — can be raised later if they should be preferred primaries again. Full detail in
   memory: `project_oci_mass_instance_outage_2026_09`, `project_woyo_app`.
+
+## 2026-09-13 10:37-10:39 — Provisioned MTN MoMo sandbox credentials for tekeche-api
+
+- **Type**: Planned maintenance (payment processing config)
+- **Duration**: ~2 minutes
+- **Risk level**: High (payment processing) per `Get-ChangeRisk.ps1`; maintenance window proposed and approved first
+- **Trigger**: Following up on the paused MTN MoMo integration ([[project_mtn_momo_blocked]]) — user confirmed an existing momodeveloper.mtn.com account (honvo.lionel@livbiko.com) already had an **active "Collections" API subscription** since 07/06/2026, contradicting the prior "not started" memory. Only the sandbox API user/key had never been provisioned and nothing had been added to `.env`.
+- **Changes made**:
+  1. Retrieved the Collections subscription's primary key from the account's Profile page.
+  2. Provisioned a sandbox API user via `POST /v1_0/apiuser` (sandbox.momodeveloper.mtn.com) — HTTP 201.
+  3. Generated the API key via `POST /v1_0/apiuser/{referenceId}/apikey` — HTTP 201.
+  4. Verified end-to-end by requesting an OAuth token via `POST /collection/token/` — HTTP 200, valid JWT returned.
+  5. Added `MTN_SUBSCRIPTION_KEY`, `MTN_API_USER`, `MTN_API_KEY` to `tekeche-api/.env`. `MTN_ENVIRONMENT` deliberately left commented out (stays sandbox) — production access still requires a real MTN CI business/API relationship, which remains unresolved.
+  6. `pm2 reload tekeche-api --update-env` (plain `reload` warned it wouldn't pick up new env vars without this flag).
+- **Recovery point**: `2026-09-13_10-37-07_before-add-mtn-momo-sandbox-credentials`
+- **Test-Build.ps1 after**: 9/9 passed. Build #56 marked known good.
+- **Outcome**: Success. `mtn.service.js`'s `enabled()` check now returns true — MTN MoMo is selectable in the mobile app (`wallet.tsx`, booking flow, etc.) and will attempt a real sandbox charge instead of immediately erroring "non configuré". Since sandbox doesn't accept real CI phone numbers, no real charge can succeed yet — this only moves the failure point later in the flow, no financial risk.
+- **Downtime**: None — PM2 reload was zero-downtime.
+- **Affected**: `tekeche-api` (`.env`, MTN payment path).
+- **Follow-up open**: MTN CI business relationship for production access still unresolved (open question, not re-raised this session). Wave and Orange Money credentials also still empty — same "code-complete, credentials missing" state.

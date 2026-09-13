@@ -713,5 +713,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  56,
+        "dateCreated":  "2026-09-13T10:40:02.5903799+01:00",
+        "apiCommit":  "a053f7d5ef25fea28dd527dc33ad749ae0dd10da",
+        "apiBranch":  "master",
+        "mobileCommit":  "abdbb7cf48564f800e2501ae96ea4606ad421ac0",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Added MTN MoMo sandbox credentials (subscription key + provisioned API user/key) to tekeche-api/.env; sandbox-only, MTN_ENVIRONMENT left unset (not production) pending resolution of the MTN CI business relationship",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
