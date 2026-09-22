@@ -2082,3 +2082,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-13_10-37-07_before-add-mtn-momo-sandbox-credentials"`
 
+
+## 2026-09-13 13:52:53 — Before: Fix OTP auto-submit in tekeche-mobile otp.tsx and add missing EXPO_PUBLIC_CONVEX_URL to woyo-* build profiles in eas.json
+
+- **ID**: 2026-09-13_13-52-50_before-fix-otp-auto-submit-in-tekeche-mo
+- **Reason**: 
+- **API commit**: a053f7d5  (master)
+- **Mobile commit**: abdbb7cf (main)
+- **Impact**: Low
+- **DB dump**: 10184.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-13_13-52-50_before-fix-otp-auto-submit-in-tekeche-mo"`
+

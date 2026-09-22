@@ -554,3 +554,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Added MTN MoMo sandbox credentials (subscription key + provisioned API user/key) to tekeche-api/.env; sandbox-only, MTN_ENVIRONMENT left unset (not production) pending resolution of the MTN CI business relationship
 
+
+## Build #57 — 2026-09-13 14:17
+
+- **API commit**: a053f7d5 (master)
+- **Mobile commit**: abdbb7cf
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OTA push (passenger+driver+woyo, android+ios): OTP auto-submit fix in otp.tsx (fixes stuck keypad after entering full code). Also added missing EXPO_PUBLIC_CONVEX_URL to woyo-* profiles in eas.json (fixes Woyo crash-on-launch for future native builds; existing TestFlight build 7 still needs a rebuild)
+
+
+## Build #58 — 2026-09-13 17:07
+
+- **API commit**: a053f7d5 (master)
+- **Mobile commit**: 67543ef9
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OTA push (passenger+driver+woyo, android+ios): reduced OTP verification digit-box size by 25% (38->29px, font 18->14) in otp.tsx
+

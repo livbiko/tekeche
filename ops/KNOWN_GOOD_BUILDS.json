@@ -726,5 +726,31 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  57,
+        "dateCreated":  "2026-09-13T14:17:55.0026662+01:00",
+        "apiCommit":  "a053f7d5ef25fea28dd527dc33ad749ae0dd10da",
+        "apiBranch":  "master",
+        "mobileCommit":  "abdbb7cf48564f800e2501ae96ea4606ad421ac0",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OTA push (passenger+driver+woyo, android+ios): OTP auto-submit fix in otp.tsx (fixes stuck keypad after entering full code). Also added missing EXPO_PUBLIC_CONVEX_URL to woyo-* profiles in eas.json (fixes Woyo crash-on-launch for future native builds; existing TestFlight build 7 still needs a rebuild)",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  58,
+        "dateCreated":  "2026-09-13T17:07:21.2217060+01:00",
+        "apiCommit":  "a053f7d5ef25fea28dd527dc33ad749ae0dd10da",
+        "apiBranch":  "master",
+        "mobileCommit":  "67543ef9979614ade70ad38765da9da1e9e4aade",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OTA push (passenger+driver+woyo, android+ios): reduced OTP verification digit-box size by 25% (38-\u003e29px, font 18-\u003e14) in otp.tsx",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
