@@ -574,3 +574,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: OTA push (passenger+driver+woyo, android+ios): reduced OTP verification digit-box size by 25% (38->29px, font 18->14) in otp.tsx
 
+
+## Build #59 — 2026-09-22 17:43
+
+- **API commit**: a053f7d5 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Fix EXPO_PUBLIC_CONVEX_URL: eas.json now points at real determined-coyote-520 deployment (was dead happy-lion-123/elated-guanaco-699); deploy-update.ps1 sets it explicitly for OTA
+

@@ -2094,3 +2094,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-13_13-52-50_before-fix-otp-auto-submit-in-tekeche-mo"`
 
+
+## 2026-09-22 17:38:53 — Before: Fix EXPO_PUBLIC_CONVEX_URL in eas.json (dev+prod) and deploy-update.ps1 to point at the real determined-coyote-520 Convex deployment
+
+- **ID**: 2026-09-22_17-38-49_before-fix-expo-public-convex-url-in-eas
+- **Reason**: 
+- **API commit**: a053f7d5  (master)
+- **Mobile commit**: 67543ef9 (main)
+- **Impact**: Low
+- **DB dump**: 10317.8 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-22_17-38-49_before-fix-expo-public-convex-url-in-eas"`
+

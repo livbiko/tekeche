@@ -752,5 +752,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  59,
+        "dateCreated":  "2026-09-22T17:43:54.8210314+01:00",
+        "apiCommit":  "a053f7d5ef25fea28dd527dc33ad749ae0dd10da",
+        "apiBranch":  "master",
+        "mobileCommit":  "f73c1ebb411ebe8dba61e4f980220d1222d108e3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Fix EXPO_PUBLIC_CONVEX_URL: eas.json now points at real determined-coyote-520 deployment (was dead happy-lion-123/elated-guanaco-699); deploy-update.ps1 sets it explicitly for OTA",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
