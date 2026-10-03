@@ -2106,3 +2106,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-09-22_17-38-49_before-fix-expo-public-convex-url-in-eas"`
 
+
+## 2026-10-03 10:35:40 — Before: dr-rke2 (.51) netplan default gw .1 -> .254, add 10.0.0.0/16 via .1
+
+- **ID**: 2026-10-03_10-35-34_before-dr-rke2-51-netplan-default-gw-1-2
+- **Reason**: 
+- **API commit**: a053f7d5  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10376.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-10-03_10-35-34_before-dr-rke2-51-netplan-default-gw-1-2"`
+

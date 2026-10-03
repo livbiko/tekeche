@@ -584,3 +584,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: Fix EXPO_PUBLIC_CONVEX_URL: eas.json now points at real determined-coyote-520 deployment (was dead happy-lion-123/elated-guanaco-699); deploy-update.ps1 sets it explicitly for OTA
 
+
+## Build #60 — 2026-10-03 10:39
+
+- **API commit**: a053f7d5 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: dr-rke2 (.51): internet egress via BT .254, private ranges via SRX .1 - fixes tekeche-staging Atlas DNS; SRX WAN DHCP dead (root cause)
+
