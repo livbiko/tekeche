@@ -2127,3 +2127,11 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 - **Verified**: Atlas SRV resolves from `.51`; TCP to Atlas:27017 and OCI rs0 `10.0.2.10/12:27017` (via SRX/VPN) both OK; HTTPS 200. `tekeche-staging` restarted → 1/1 Running, 0 restarts, "MongoDB connected" to Atlas. `tekeche-payment-gateway-mirror` unaffected (1/1, /health 200). `Test-Build.ps1` 9/9. **Build #60 marked Known Good**.
 - **Trade-off**: `.51`'s internet traffic now bypasses the SRX (same as BikoDC already did).
 - **Still open**: (1) SRX WAN uplink dead — needs physical check of what's cabled to `ge-0/0/0`/`ge-0/0/7` (HIGH risk, maintenance window); until fixed, nothing on the dmz gets internet via the firewall. (2) NouvellesDuPays DR sync CronJobs (`dr-postgres-sync`, `dr-image-sync-web`) on `.51` were in Error/OOMKilled before this change — check whether the next run succeeds now.
+
+## 2026-10-03 09:45-10:12 UTC — NouvellesDuPays DR mirror (.51) resynced; dr-image-rollout CronJob fixed (dead Bitnami image)
+
+- **Type**: Corrective action on the on-prem DR RKE2 cluster (`nouvellesdupays` namespace), user-approved. DR-only, no production impact.
+- **Finding**: the nightly DR CronJobs had failed every night 09-21→10-03 on DNS (same SRX WAN outage as the entry above), so the DR mirror was 13 days stale. Separately, `dr-image-rollout` had **never succeeded since creation (09-18)**: its image `bitnami/kubectl:1.31` no longer exists on Docker Hub (ErrImagePull NotFound → 300s deadline). The DR app pods were last refreshed 09-20.
+- **Actions**: manually ran `dr-postgres-sync` (restored prod backup `nouvellesdupays-2026-10-03T03-00-01Z.sql.gz`), `dr-image-sync-api`, `dr-image-sync-web` (all ✅). Rolled api/web onto the new images (api `040d9ec7…`, web `c52bbe02…`). Patched the `dr-image-rollout` CronJob image to `registry.k8s.io/kubectl:v1.35.7` (matches the v1.35.7 server; pre-pulled to confirm it exists). Backup of the old CronJob: `/tmp/dr-image-rollout.cronjob.bak-20261003.yaml` on `.51`. A test job from the patched CronJob completed in 11s.
+- **Verified**: api `/health` 200, web `/` 200, ingress `https://nouvellesdupays.com` (local resolve on .51) 200; new pods 1/1, 0 restarts.
+- **Watch**: tomorrow's 04:00-04:40 UTC scheduled run is the first fully unattended run of all four jobs.
