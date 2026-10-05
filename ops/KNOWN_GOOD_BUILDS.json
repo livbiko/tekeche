@@ -778,5 +778,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  61,
+        "dateCreated":  "2026-10-05T12:44:09.6698976+01:00",
+        "apiCommit":  "a053f7d5ef25fea28dd527dc33ad749ae0dd10da",
+        "apiBranch":  "master",
+        "mobileCommit":  "f73c1ebb411ebe8dba61e4f980220d1222d108e3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "OCI standby TLS cert push (approved window 2026-10-05): security/staging-api/tekeche/kendebabi renewed on 10.0.2.10, tekeche/kendebabi on 10.0.2.12",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]
