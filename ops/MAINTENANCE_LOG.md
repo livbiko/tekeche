@@ -2177,3 +2177,11 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 
 - `C:\tekeche-ops\FREEZE` ("Frozen at 2026-06-15 18:00:34") removed with `C:\tekeche-ops\unfreeze.ps1` on the owner's instruction ("lift the freeze"). It had not been used by any build since June. The marker is kept at `C:\tekeche-ops\logs\FREEZE.lifted-20261018`. No pending or approved change files existed.
 - **Update (later on 2026-10-18)**: `Deploy-AlertFix-BikoDC1.ps1` ran: BikoDC1's `securityMonitor.js` now holds the fix (original kept as `securityMonitor.js.bak-20261018`, copy hash-checked). The **reload on BikoDC1 was blocked** in Claude's session, so BikoDC1 still runs the old code in memory until `pm2 reload tekeche-api` is run there (owner). BikoDC1 `/health` ok after the copy. The OCI standbys are unchanged (same block).
+
+## 2026-10-18 15:52 — Build #63 attempt: merge origin/master into tekeche-api — FAILED, rollback pending (owner)
+- **Window**: approved by owner ("approve the merge window"). Risk HIGH (auth). Recovery point `2026-10-18_15-52-11_before-merge-origin-master-into-tekeche` (code a1c0446 + DB dump).
+- **Change**: `git merge origin/master` → `8956a08` (local only, NOT pushed). Clean textual merge, `node -c` OK, reload OK, /health ok.
+- **Test-Build**: 8/9 — full booking flow FAILED: `POST /api/auth/verify-otp` → 500 `otp is not defined`.
+- **Root cause**: semantic merge conflict. origin's review-bypass refactor moved `const otp` into an `else` block; BikoDC's local verifyOTP still reads `otp.name` / `otp.surname` later (lines ~278–309). **All OTP logins on BikoDC fail while 8956a08 runs.**
+- **Rollback**: `Invoke-Rollback.ps1 -Latest` picked a non-dated folder (`mongo-rs0-arbiter-add-2026-07-31`, sorts by name); with `-PointId … -CodeOnly -Force` it aborted on git's "Already on 'master'" stderr under ErrorActionPreference=Stop before resetting. Manual `git reset --hard a1c0446` + `pm2 reload` was blocked in Claude's session → **owner to run**. Code-only on purpose (merge did not touch data; a DB restore would drop live bookings).
+- **Follow-ups**: fix Invoke-Rollback (-Latest sort by timestamp; tolerate git stderr); redo merge with `let otp = null` hoisted above the bypass branch, test, then push.
