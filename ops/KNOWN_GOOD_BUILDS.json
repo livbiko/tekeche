@@ -804,5 +804,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  63,
+        "dateCreated":  "2026-10-18T16:49:48.8731857+01:00",
+        "apiCommit":  "0974b39827e931f89df08dd5053e449f0217538a",
+        "apiBranch":  "master",
+        "mobileCommit":  "f73c1ebb411ebe8dba61e4f980220d1222d108e3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "Build #63: merge origin/master (review bypass off unless env set, socket Redis adapter guard, k8s manifests) + verify-otp otp-scope fix; 9/9",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

@@ -2188,3 +2188,10 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 - **16:35 — Rolled back (owner)**: `Invoke-Rollback.ps1 -Latest -CodeOnly -Force` → code `a1c0446`. Script's 4 s health probe reported a false failure; PM2-HealthMonitor (16:35:40) then restarted the PM2 daemon (known imprecise fallback) — all 3 apps back online within ~40 s. /health ok; **Test-Build 9/9** incl. booking flow at 16:36. `a1c0446` is already Build #62 known-good. Only Claude's two test logins hit the 500 (15:53, 15:55); no user logins in that window.
 - **Prepared, not deployed**: branch `fix/merge-otp-scope` (`0974b39` on top of `8956a08`) hoists `otp` (null on review bypass, `otp?.name`); no-undef lint clean. Needs its own window + Test-Build before merging/pushing.
 - **Invoke-Rollback.ps1**: also now polls /health up to 120 s instead of 4 s.
+
+## 2026-10-18 16:47 — Build #63: fixed merge of origin/master into tekeche-api — ✅ SUCCESS
+- **Window**: approved by owner ("approve the fixed merge window"). Risk HIGH (auth). Recovery point `2026-10-18_16-47-21_before-fixed-merge-origin-master-into-te` (code a1c0446 + DB dump).
+- **Change**: fast-forward to `0974b39` = merge `8956a08` + verify-otp fix (`otp` hoisted, null on review bypass). Brings in: review-bypass login (inactive — REVIEW_PHONE / REVIEW_OTP_CODE not set in .env), socket Redis adapter construction guard, k8s/ manifests + build_spec.yml.
+- **Verification**: reload → /health ok; Test-Build 9/9 (16:48) incl. full booking flow (OTP verify); no errors in out log since reload; Set-KnownGood re-ran 9/9 → **Build #63 known-good** (API 0974b398).
+- **Pushed** tekeche-api master to GitHub (`fc7466e..0974b39`) — local/origin in sync; next OKE image build from master includes the alert-flood fix.
+- **Still pending (owner, remote commands blocked for Claude)**: BikoDC1 `pm2 reload tekeche-api` (has only the alert fix file, not Build #63); OCI standbys 10.0.2.10/.12 alert fix; OKE image rebuild/rollout if tekeche-api runs there.
