@@ -2176,3 +2176,4 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 ## 2026-10-18 13:05 BST — Configuration freeze lifted (owner request)
 
 - `C:\tekeche-ops\FREEZE` ("Frozen at 2026-06-15 18:00:34") removed with `C:\tekeche-ops\unfreeze.ps1` on the owner's instruction ("lift the freeze"). It had not been used by any build since June. The marker is kept at `C:\tekeche-ops\logs\FREEZE.lifted-20261018`. No pending or approved change files existed.
+- **Update (later on 2026-10-18)**: `Deploy-AlertFix-BikoDC1.ps1` ran: BikoDC1's `securityMonitor.js` now holds the fix (original kept as `securityMonitor.js.bak-20261018`, copy hash-checked). The **reload on BikoDC1 was blocked** in Claude's session, so BikoDC1 still runs the old code in memory until `pm2 reload tekeche-api` is run there (owner). BikoDC1 `/health` ok after the copy. The OCI standbys are unchanged (same block).
