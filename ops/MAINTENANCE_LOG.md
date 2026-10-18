@@ -2172,3 +2172,7 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 - **BikoDC1**: its file was confirmed identical to BikoDC's pre-fix version (line endings aside), so a straight copy is safe. Claude's session may not write to or run commands on remote hosts, so the copy was not made; the attempt was rejected before running. Prepared `ops/scripts/Deploy-AlertFix-BikoDC1.ps1` for the owner (backup + copy + hash check), then `pm2 reload tekeche-api` on BikoDC1.
 - **OCI standbys**: same file via the standard Bastion-tunnel scp pattern (see `C:\tekeche-ops\sync-cert-to-standby.ps1` for the hop and key), `.bak` first, `node -c` check, then `sudo PM2_HOME=/root/.pm2 pm2 reload tekeche-api` (16 workers each).
 - **Noted**: `C:\tekeche-ops\FREEZE` still says "Frozen at 2026-06-15 18:00:34" although every build since (#41–#62) went ahead without its token flow; confirm whether the freeze is still meant to apply.
+
+## 2026-10-18 13:05 BST — Configuration freeze lifted (owner request)
+
+- `C:\tekeche-ops\FREEZE` ("Frozen at 2026-06-15 18:00:34") removed with `C:\tekeche-ops\unfreeze.ps1` on the owner's instruction ("lift the freeze"). It had not been used by any build since June. The marker is kept at `C:\tekeche-ops\logs\FREEZE.lifted-20261018`. No pending or approved change files existed.
