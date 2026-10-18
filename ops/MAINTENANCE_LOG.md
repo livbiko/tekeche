@@ -2195,3 +2195,4 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 - **Verification**: reload → /health ok; Test-Build 9/9 (16:48) incl. full booking flow (OTP verify); no errors in out log since reload; Set-KnownGood re-ran 9/9 → **Build #63 known-good** (API 0974b398).
 - **Pushed** tekeche-api master to GitHub (`fc7466e..0974b39`) — local/origin in sync; next OKE image build from master includes the alert-flood fix.
 - **Still pending (owner, remote commands blocked for Claude)**: BikoDC1 `pm2 reload tekeche-api` (has only the alert fix file, not Build #63); OCI standbys 10.0.2.10/.12 alert fix; OKE image rebuild/rollout if tekeche-api runs there.
+- **16:58 — OKE checked (read-only, via Bastion tunnel, closed after)**: no tekeche deployments or pods in any namespace → nothing to roll out there. Open items are only BikoDC1 reload and the two OCI standbys (owner; remote commands blocked for Claude).
