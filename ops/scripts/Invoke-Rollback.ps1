@@ -25,7 +25,10 @@ $OPS_DIR      = "C:\inetpub\wwwroot\tekeche\ops"
 $PTS_DIR      = "$OPS_DIR\recovery-points"
 
 # ── List available points ────────────────────────────────────────────────────
-$points = Get-ChildItem $PTS_DIR -Directory | Sort-Object Name -Descending
+# Only real recovery points (they have metadata.json), newest first by creation time -- sorting by
+# name put hand-named folders (e.g. mongo-rs0-arbiter-add-2026-07-31) above dated ones.
+$points = @(Get-ChildItem $PTS_DIR -Directory | Where-Object { Test-Path "$($_.FullName)\metadata.json" } |
+    Sort-Object CreationTime -Descending)
 if ($points.Count -eq 0) { Write-Error "No recovery points found in $PTS_DIR"; exit 1 }
 
 if ($Latest) { $PointId = $points[0].Name }
@@ -73,9 +76,16 @@ Write-Host "`n=== Executing Rollback ===" -ForegroundColor Cyan
 # ── Restore code ─────────────────────────────────────────────────────────────
 if (-not $DbOnly) {
     Write-Host "  [1/3] Restoring code to $($meta.apiCommit.Substring(0,8))..."
+    # git writes normal progress ("Already on 'master'") to stderr, which ErrorActionPreference=Stop
+    # turned into a fatal error before the reset ran. Judge git by its exit code instead.
+    $ErrorActionPreference = "Continue"
     git -C $API_DIR fetch --quiet 2>&1 | Out-Null
     git -C $API_DIR checkout $meta.apiBranch 2>&1 | Out-Null
     git -C $API_DIR reset --hard $meta.apiCommit 2>&1 | Out-Null
+    $resetExit = $LASTEXITCODE
+    $ErrorActionPreference = "Stop"
+    $head = (git -C $API_DIR rev-parse HEAD).Trim()
+    if ($resetExit -ne 0 -or $head -ne $meta.apiCommit) { Write-Error "Code restore failed: HEAD is $head, expected $($meta.apiCommit)"; exit 1 }
     Write-Host "        Code restored."
 }
 
