@@ -103,15 +103,21 @@ if (-not $CodeOnly) {
 
 # ── Reload API ────────────────────────────────────────────────────────────────
 Write-Host "  [3/3] Reloading tekeche-api..."
+$ErrorActionPreference = "Continue"
 pm2 reload tekeche-api --update-env 2>&1 | Out-Null
-Start-Sleep -Seconds 4
+$ErrorActionPreference = "Stop"
 
-# ── Quick health check ────────────────────────────────────────────────────────
-try {
-    $health = Invoke-RestMethod "http://127.0.0.1:5000/health" -TimeoutSec 10
+# ── Health check (a reload can take ~90 s to answer; 4 s gave false alarms) ──
+$health = $null
+$deadline = (Get-Date).AddSeconds(120)
+do {
+    Start-Sleep -Seconds 5
+    try { $health = Invoke-RestMethod "http://127.0.0.1:5000/health" -TimeoutSec 10 } catch { $health = $null }
+} while (-not ($health -and $health.status -eq 'ok') -and (Get-Date) -lt $deadline)
+if ($health -and $health.status -eq 'ok') {
     Write-Host "`n✅ Rollback complete — API healthy (status=$($health.status))" -ForegroundColor Green
-} catch {
-    Write-Host "`n⚠️  API health check failed after rollback — check pm2 logs" -ForegroundColor Red
+} else {
+    Write-Host "`n⚠️  API not healthy 120 s after rollback — check pm2 logs" -ForegroundColor Red
 }
 
 Write-Host "   Restored from: $($meta.id)"
