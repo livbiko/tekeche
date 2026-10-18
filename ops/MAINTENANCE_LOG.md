@@ -2165,3 +2165,10 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 - **Rollback**: `git revert a1c0446` in `tekeche-api`, then `pm2 reload tekeche-api`; or `.\Invoke-Rollback.ps1 -PointId "2026-10-18_12-26-40_before-tekeche-api-securitymonitor-alert"`.
 - **Not yet deployed**: BikoDC1, the OCI standby (`/opt/tekeche-api`, 16 workers) and the OKE pods run their own copies and keep sending alerts until updated. 10.0.1.165 is an OCI-side address, so the bulk of the flood likely comes from there.
 - **Repo drift (found, not changed)**: BikoDC's `tekeche-api` `master` is 1 commit ahead (`a053f7d`, Woyo OTA fix, unpushed since 2026-09-09; now also `a1c0446`) and 7 behind `origin/master` (2026-08 k8s/build-spec/socket commits). The fix was pushed to a separate branch `fix/alert-email-flood` only; `origin/master` is untouched. The root `tekeche` repo is also 3 log commits ahead of GitHub.
+
+## 2026-10-18 13:00 BST — Build #62 rollout to the other hosts: not done (blocked), left to the owner
+
+- **State**: the alert fix (`a1c0446`) runs on **BikoDC only**. BikoDC1, `tekeche-standby` (10.0.2.10), `tekeche-standby2` (10.0.2.12) and any OKE `tekeche-api` pods still run the old `securityMonitor.js` and keep e-mailing alerts.
+- **BikoDC1**: its file was confirmed identical to BikoDC's pre-fix version (line endings aside), so a straight copy is safe. Claude's session may not write to or run commands on remote hosts, so the copy was not made; the attempt was rejected before running. Prepared `ops/scripts/Deploy-AlertFix-BikoDC1.ps1` for the owner (backup + copy + hash check), then `pm2 reload tekeche-api` on BikoDC1.
+- **OCI standbys**: same file via the standard Bastion-tunnel scp pattern (see `C:\tekeche-ops\sync-cert-to-standby.ps1` for the hop and key), `.bak` first, `node -c` check, then `sudo PM2_HOME=/root/.pm2 pm2 reload tekeche-api` (16 workers each).
+- **Noted**: `C:\tekeche-ops\FREEZE` still says "Frozen at 2026-06-15 18:00:34" although every build since (#41–#62) went ahead without its token flow; confirm whether the freeze is still meant to apply.
