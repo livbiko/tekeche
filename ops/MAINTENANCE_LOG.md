@@ -2146,3 +2146,22 @@ Known follow-up, not yet done: `test-booking-flow.js` needs an `isSynthetic:fals
 - **Verified**: on each standby via `openssl s_client -connect 127.0.0.1:443 -servername <h>`; via the NLB with explicit SNI, 8/8 connections each for tekeche.com, www, kendebabi.com, www — CN match, Verify 0, expiry Dec 3 (security/staging-api) / Dec 11 (tekeche, kendebabi). `Test-Build.ps1` 9/9. **Build #61 Known Good**.
 - **PRE-EXISTING GAP FOUND (not fixed, out of window scope)**: tekeche-standby2 (10.0.2.12) has **no nginx vhosts for security.tekeche.com, staging-api.tekeche.com or livbiko.com/www** — it falls through to the `dr.tekeche.com` default cert, so ~50% of failover connections for those hosts get a hostname-mismatch TLS error. Was there before today (the 10-03 single-sample check missed it). Needs its own approved change: replicate the 3 vhosts + certs from standby (and confirm their upstreams exist on standby2).
 - **Still open**: durable fix — win-acme post-renewal script to push PEMs to both standbys + reload, so this doesn't rot again (next on-prem renewals ~early Nov). api.tekeche.com on both standbys uses `tekeche-selfsigned.crt` in nginx — not checked in this window.
+
+## 2026-10-18 12:26–12:40 BST (APPROVED) — Security monitor alert e-mail flood fix, BikoDC only (MEDIUM) — Build #62
+
+- **Why**: the Gmail account in `MAIL_USER` (also used for OTP mail) hit Gmail's daily sending limit: 11 of 12 NDP outreach e-mails bounced at 11:36–11:41 with "You have reached a limit for sending mail". Its Sent folder showed "Tekeche Security — suspicious ua" alerts every 1–2 minutes, mostly `Go-http-client/1.1` (OCI LB and uptime probes) from 10.0.1.165 and cloud IPs. The hourly alert throttle was in-process only, so each PM2 worker on each host sent its own copy. **OTP e-mail goes through the same account, so OTP codes were likely failing until the limit resets.**
+- **Type**: MEDIUM per `Get-ChangeRisk.ps1`; owner approved ("approve option 1").
+- **Change** (`tekeche-api/src/middleware/securityMonitor.js`, commit `a1c0446`):
+  - `suspicious_ua` is still logged but no longer e-mailed.
+  - Private and loopback IPs (already never banned) no longer trigger e-mail.
+  - The hourly throttle is shared by a host's workers through marker files in `logs/alert-throttle/`.
+  - Detection, logging and auto-ban/block rules are unchanged; path scanning, credential stuffing, bans and blocks still alert.
+- **Tests**: an isolated copy of the module with a fake mailer passed 8/8 (UA/private-IP alerts suppressed but logged; path scanning still e-mails and bans; a second worker does not resend within the hour).
+- **Release (BikoDC only)**:
+  - Recovery point `2026-10-18_12-26-40_before-tekeche-api-securitymonitor-alert`. Test-Build baseline 9/9.
+  - `pm2 reload tekeche-api-staging` → staging `/health` 200 (about 40 s to start).
+  - `pm2 reload tekeche-api` → `/health` 200 after about 90 s; 0 unstable restarts; `api.tekeche.com/health` stayed ok throughout (other nodes).
+  - Test-Build 9/9 after the deploy (incl. the full booking flow). **Build #62** registered known-good.
+- **Rollback**: `git revert a1c0446` in `tekeche-api`, then `pm2 reload tekeche-api`; or `.\Invoke-Rollback.ps1 -PointId "2026-10-18_12-26-40_before-tekeche-api-securitymonitor-alert"`.
+- **Not yet deployed**: BikoDC1, the OCI standby (`/opt/tekeche-api`, 16 workers) and the OKE pods run their own copies and keep sending alerts until updated. 10.0.1.165 is an OCI-side address, so the bulk of the flood likely comes from there.
+- **Repo drift (found, not changed)**: BikoDC's `tekeche-api` `master` is 1 commit ahead (`a053f7d`, Woyo OTA fix, unpushed since 2026-09-09; now also `a1c0446`) and 7 behind `origin/master` (2026-08 k8s/build-spec/socket commits). The fix was pushed to a separate branch `fix/alert-email-flood` only; `origin/master` is untouched. The root `tekeche` repo is also 3 log commits ahead of GitHub.

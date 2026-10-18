@@ -791,5 +791,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  62,
+        "dateCreated":  "2026-10-18T12:36:19.4776520+01:00",
+        "apiCommit":  "a1c04465753f312f97775211420d5c038c1e85ef",
+        "apiBranch":  "master",
+        "mobileCommit":  "f73c1ebb411ebe8dba61e4f980220d1222d108e3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "tekeche-api a1c0446 on BikoDC only: security monitor alert e-mail flood fix (suspicious_ua not e-mailed, private IPs never e-mailed, per-host throttle)",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

@@ -594,3 +594,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: dr-rke2 (.51): internet egress via BT .254, private ranges via SRX .1 - fixes tekeche-staging Atlas DNS; SRX WAN DHCP dead (root cause)
 
+
+## Build #61 — 2026-10-05 12:44
+
+- **API commit**: a053f7d5 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: OCI standby TLS cert push (approved window 2026-10-05): security/staging-api/tekeche/kendebabi renewed on 10.0.2.10, tekeche/kendebabi on 10.0.2.12
+
+
+## Build #62 — 2026-10-18 12:36
+
+- **API commit**: a1c04465 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: tekeche-api a1c0446 on BikoDC only: security monitor alert e-mail flood fix (suspicious_ua not e-mailed, private IPs never e-mailed, per-host throttle)
+
