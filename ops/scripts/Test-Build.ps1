@@ -140,6 +140,14 @@ Check "No crashes in last 10 min of logs" {
     $crashes.Count -eq 0
 }
 
+# ── 10. MongoDB backup fresh (CR-2026-11-16-08: hourly Tekeche-MongoDB-Backup) ──
+Check "Tekeche backup fresh (< 2 h, >= 20 collections)" {
+    $latest = Get-ChildItem "C:\backups\tekeche" -Directory -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    $latest -and $latest.LastWriteTime -gt (Get-Date).AddHours(-2) -and
+        @(Get-ChildItem $latest.FullName -Filter *.json.gz).Count -ge 20
+}
+
 # ── Summary ────────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "═══════════════════════════════════" -ForegroundColor Cyan
