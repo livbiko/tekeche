@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-16-06 | Tekeche New-RecoveryPoint: dump the production MongoDB (.53) and fail loudly | Claude | MEDIUM (to confirm with Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-05" ~15:30 | 15:32-16:03 | done (worker a1952d25) |
 | CR-2026-11-16-04 | Approve 3 Côte d'Ivoire creators (515-517) | owner decision ("Approve all 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-04" ~13:33 | 13:35-13:45 | done |
 | CR-2026-11-16-03 | Add 3 Côte d'Ivoire creator candidates (NDP admin API) | Claude (owner asked "go 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-03" ~13:00 | 13:04-13:2x | done (creators 515-517, candidates) |
@@ -28,6 +29,28 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-16-06  Tekeche New-RecoveryPoint: dump the production MongoDB and fail loudly
+- Requested by: Claude (found 11-16 while doing CR-05).
+- Finding (read-only checks 11-16 16:10-16:20): `ops/scripts/New-RecoveryPoint.ps1` dumps `127.0.0.1:27017` (BIKODC's
+  own mongod). That node answers hello with no set name, not primary, not secondary, so mongodump fails
+  ("NotPrimaryOrSecondary"). The script hides the error (`| Out-Null`) and then crashes on `.Sum`. Recovery points
+  2026-11-05_01-00-43 and 2026-11-16_15-32-42 have **empty** db-dump folders (up to 10-18 they were ~11 MB).
+  Production tekeche-api (.env, unchanged since 09-13) uses a **standalone** mongod on 192.168.1.53 (hello: no set
+  name, writable primary); /health ok on :5000 and api.tekeche.com. The nightly `Tekeche-MongoDB-Backup` task
+  (backup.js, uses the .env URI) is fine: 2026-11-16T01-00-03, 1.4 MB, all collections.
+- What changes: New-RecoveryPoint.ps1 and Invoke-Rollback.ps1 read MONGODB_URI from `tekeche-api\.env` instead of a
+  hard-coded 127.0.0.1 URI (no password in the script any more); mongodump errors are shown and stop the script
+  (no recovery point is reported as created without a database dump); the dump size is checked (> 0).
+  Test-Build.ps1's Mongo check reviewed for the same hard-coded URI.
+- Not in this CR: Tekeche MongoDB has no replica set / failover (standalone on .53 since 09-13), and BIKODC's mongod
+  is in a dead replica-set state - owner decision needed, separate HIGH CR if a fix is wanted.
+- Class: MEDIUM (ops scripts; touch the Mongo connection only for reading/dumping).
+- Impact: none on users. mongodump of .53 reads ~11 MB.
+- Rollback: `git revert` of the script commit.
+- Checks after: New-RecoveryPoint -Description "CR-06 test" produces a non-empty db-dump; a forced bad URI makes it
+  stop with an error; Test-Build (Tekeche) passes.
+- Approval: needs "approve CR-2026-11-16-06".
+
 ### CR-2026-11-16-05  NDP creator discovery: skip gambling/betting channels
 - Requested by: Claude (11-16, after reviewing discovery job results).
 - What changes: nouvellesdupays `apps/worker/src/creator-agents.js` `runDiscoverJob`: a new rejection reason
@@ -50,8 +73,9 @@ done / rolled back / rejected / EMERGENCY.
   checked); worker tests 115/115; rollback tag rollback-f1869de6 (live worker was f1869de6, not f14f7de2 as noted
   earlier); job b263-worker -> a1952d25, new code checked in the image; worker run 29914080 Succeeded 16:00;
   Test-Build 8/8; Set-KnownGood (registry #262). Deviation: Claude first ran the Tekeche New-RecoveryPoint by mistake
-  - it created a partial folder (its MongoDB dump produced nothing and the script crashed); no change resulted. Done;
-  first discovery job on the new image still to be read.
+  - it created a partial folder (its MongoDB dump produced nothing and the script crashed); no change resulted (see
+  CR-06). Done. creator-agents 16:25 ran on a1952d25 (Succeeded) but YouTube quota was spent (75 units left, 10 jobs
+  waiting), so the filter has not met a real job yet.
 
 ### CR-2026-11-16-03  Add 3 Côte d'Ivoire creator candidates
 - Requested by: Claude, after owner "approve 2a" (11-16) and "go 3".
