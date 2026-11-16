@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-16-07 | NDP: reject gambling candidates 144 and 524 (admin UI/API) | Claude | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-16-06 | Tekeche New-RecoveryPoint: dump the production MongoDB (.53) and fail loudly | Claude | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-06" + "approve CR-2026-11-16-06 window now" ~16:28 | 16:28-16:33 | done (Build #64) |
 | CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-05" ~15:30 | 15:32-16:03 | done (worker a1952d25) |
 | CR-2026-11-16-04 | Approve 3 Côte d'Ivoire creators (515-517) | owner decision ("Approve all 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-04" ~13:33 | 13:35-13:45 | done |
@@ -28,6 +29,26 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-16-07  NDP: reject gambling candidates 144 and 524
+- Requested by: Claude (follow-up of CR-05).
+- What changes: 2 rows in NDP `creators`, through `PATCH /api/admin/creators/:id` in the owner's logged-in /admin
+  session (no direct SQL): review_status candidate -> **rejected**, reviewer_note (was empty) -> "Rejeté : chaîne de
+  jeux d'argent / paris (CR-2026-11-16-07)". Nothing else on the rows changes.
+  - 144 tunisien-casino-streamer-letsgivetaspin "TUNISIEN-CASINO STREAMER - LETSGIVETASPIN" (country 47 = TN,
+    @tunisien-casinostreamer, from job 79)
+  - 524 1xbet-philippines "1XBET Philippines" (no country, Southeast Asia, @1xbetph, bio "Official YouTube channel of
+    1XBET Philippines. High Stakes High Reward!", from job 198)
+- Why: gambling channels are not creators for the directory; CR-05 stops new ones, these two came in before it.
+- Class: MEDIUM (Get-ChangeRisk 11-16 ~16:40, wording: "mark 2 creator candidates (gambling channels) as rejected with a
+  reviewer note via the admin UI"). No window needed.
+- Impact: none public (candidates are never shown); the review queue drops by 2. A rejected channel is "known", so
+  discovery will not add it again.
+- Rollback: PATCH both back to review_status candidate, reviewer_note "" (values recorded above).
+- Checks after: GET /api/admin/creators/144 and /524 show rejected + note; public /api/creators unchanged (25).
+- When: any time after approval, ~10 minutes, owner logged in to /admin in the automated Chrome tab.
+- Recovery point: NDP New-RecoveryPoint before.
+- Approval: needs "approve CR-2026-11-16-07".
 
 ### CR-2026-11-16-06  Tekeche New-RecoveryPoint: dump the production MongoDB and fail loudly
 - Requested by: Claude (found 11-16 while doing CR-05).
