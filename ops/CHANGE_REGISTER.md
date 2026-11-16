@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-16-09 | Tekeche MongoDB backups copied off-site to OCI Object Storage (replaces CR-08 step 2) | owner ("c, write the CR") | HIGH (Get-ChangeRisk) | — | proposed: now, 45 min | requested |
 | CR-2026-11-16-08 | Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B) | owner ("B now, write the CR") | HIGH (Get-ChangeRisk) | — | proposed: now, 45 min | requested |
 | CR-2026-11-16-07 | NDP: reject gambling candidates 144 and 524 (admin UI/API) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-07" ~16:34 | 16:35-16:41 | done |
 | CR-2026-11-16-06 | Tekeche New-RecoveryPoint: dump the production MongoDB (.53) and fail loudly | Claude | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-06" + "approve CR-2026-11-16-06 window now" ~16:28 | 16:28-16:33 | done (Build #64) |
@@ -30,6 +31,43 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-16-09  Tekeche MongoDB backups copied off-site to OCI Object Storage
+- Requested by: owner, 11-16 ("c, write the CR"). Replaces CR-08 step 2 (copy to BIKODC1: SYSTEM got Access denied on
+  `\\192.168.1.102\c$`; nothing was created there).
+- Today (after CR-08): `Tekeche-MongoDB-Backup` runs hourly at :10 on BIKODC -> `C:\backups\tekeche\<timestamp>`
+  (26 `.json.gz`, ~1.3 MB), 14 days kept. Only copy is on BIKODC (same ESXi host as .53 unless the owner says otherwise).
+- What changes:
+  1. OCI (tenancy lr14abpkfrxj, region uk-london-1, the CLI profile already on BIKODC): a new **private** bucket
+     `tekeche-mongo-backups` (no public access, Oracle-managed encryption, Standard tier), with a lifecycle rule that
+     deletes objects older than **30 days**. Compartment: the Tekeche compartment if one exists, else the tenancy root
+     (where the only bucket today, bucket-20260523-2129, is) - recorded at apply.
+  2. New script `ops\scripts\Copy-TekecheBackupOci.ps1` + task `Tekeche-Backup-Offsite` (hourly at :25, SYSTEM, same as the
+     backup task): uploads each backup folder not yet uploaded to `tekeche/<timestamp>/<collection>.json.gz` with
+     `oci os object bulk-upload --no-overwrite` and the existing CLI config passed explicitly (`--config-file`); checks the
+     object count matches the folder; appends one line per run to `C:\backups\tekeche\offsite.log`; exits non-zero on any
+     failure. No keys or passwords in the script.
+  3. Test-Build: the CR-08 backup check also requires the newest folder to be listed in the bucket.
+- Why: a copy that survives losing BIKODC or the whole ESXi host; worst-case loss stays ~1 h.
+- Class: HIGH (Get-ChangeRisk 11-16 ~17:00).
+- Impact / downtime: none for users. ~1.3 MB upload per hour; ~1 GB kept in the bucket after 30 days (cost: within the
+  free Object Storage allowance or a few pence a month).
+- Risks / owner points:
+  - The backups hold personal data (users, phone numbers, bookings). They leave the building, stored in OCI London,
+    private, encrypted at rest by Oracle. If you want them also encrypted before upload (key kept on-prem), say so -
+    that is a bigger change.
+  - SYSTEM must be able to read the CLI config and API key (`C:\tekeche-ops\oci\...`); if it cannot, the script stops
+    and that access change comes back for approval.
+  - The API key used is the existing one (its user's rights decide whether it can create the bucket); if refused,
+    the owner creates the bucket in the OCI console.
+- Rollback: unregister `Tekeche-Backup-Offsite`; `git revert` of the script/Test-Build commit. The bucket and objects
+  are left (deleting them only on owner request).
+- Recovery point: Tekeche New-RecoveryPoint + export of the task list.
+- Checks after: run the upload by hand -> objects for the newest backup in the bucket, count 26, sizes match; second run
+  uploads nothing new (no duplicates); download one object and gunzip it to prove it reads; bucket is not public
+  (`public-access-type NoPublicAccess`); lifecycle rule shown; Test-Build passes; the next :25 run succeeds.
+- Window (proposed): now, 45 minutes.
+- Approval: needs "approve CR-2026-11-16-09 window now" (or another time).
 
 ### CR-2026-11-16-08  Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B)
 - Requested by: owner, 11-16 ("B now, write the CR"), after the finding that Tekeche production runs on one standalone
