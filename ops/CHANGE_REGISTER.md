@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-16-10 | OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups | Claude (CR-09 follow-up) | HIGH (Get-ChangeRisk MEDIUM, raised: IAM = security) | — | proposed: now, 15 min | requested |
 | CR-2026-11-16-09 | Tekeche MongoDB backups copied off-site to OCI Object Storage (replaces CR-08 step 2) | owner ("c, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-09 window now" ~16:57 | 16:58-17:26 | done (Build #66; lifecycle rule not set) |
 | CR-2026-11-16-08 | Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B) | owner ("B now, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-08 window now" ~16:45 | 16:46-17:11 | done (Build #65; step 2 -> CR-09) |
 | CR-2026-11-16-07 | NDP: reject gambling candidates 144 and 524 (admin UI/API) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-07" ~16:34 | 16:35-16:41 | done |
@@ -31,6 +32,29 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-16-10  OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups
+- Requested by: Claude (CR-09 left the lifecycle rule undone: InsufficientServicePermissions).
+- What changes (OCI tenancy lr14abpkfrxj, uk-london-1):
+  1. New IAM policy `tekeche-backup-bucket-policy` in the **root** compartment (where the same NDP policy
+     `nouvellesdupays-backup-bucket-policy` lives, created 07-26), one statement, mirroring NDP's second statement:
+     `Allow service objectstorage-uk-london-1 to manage object-family in compartment id <tekeche-pub ocid> where
+     target.bucket.name = 'tekeche-mongo-backups'`
+     It lets only Oracle's Object Storage service (not a user or machine) manage objects, only in that one bucket - the
+     permission lifecycle rules need to delete. No user, group or dynamic-group gets anything.
+  2. Lifecycle rule on the bucket: `delete-after-30-days`, DELETE, 30 DAYS, prefix `tekeche/`, enabled.
+- Why: without it the bucket keeps every hourly backup forever (~30 MB/day); 30 days matches "a month of hourly restore
+  points" and caps it at ~1 GB.
+- Class: Get-ChangeRisk said MEDIUM; raised to HIGH by Claude (IAM = security; CHANGE_APPROVAL "when in doubt, higher").
+- Impact / downtime: none. Effect: backups older than 30 days disappear from the bucket (the first ones, 11-03, on ~12-03).
+  Local copies on BIKODC are unaffected (still 14 days).
+- Rollback: `oci os object-lifecycle-policy delete` on the bucket; `oci iam policy delete` of the new policy. Neither
+  touches stored objects.
+- Recovery point: Tekeche New-RecoveryPoint; current policy list (names + statements) saved into it.
+- Checks after: policy shows the 1 statement; lifecycle policy shows the rule enabled; NDP policy unchanged; an upload
+  run still works (Test-Build 11/11).
+- Window (proposed): now, 15 minutes.
+- Approval: needs "approve CR-2026-11-16-10 window now".
 
 ### CR-2026-11-16-09  Tekeche MongoDB backups copied off-site to OCI Object Storage
 - Requested by: owner, 11-16 ("c, write the CR"). Replaces CR-08 step 2 (copy to BIKODC1: SYSTEM got Access denied on
