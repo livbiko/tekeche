@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (to confirm with Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-16-04 | Approve 3 Côte d'Ivoire creators (515-517) | owner decision ("Approve all 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-04" ~13:33 | 13:35-13:45 | done |
 | CR-2026-11-16-03 | Add 3 Côte d'Ivoire creator candidates (NDP admin API) | Claude (owner asked "go 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-03" ~13:00 | 13:04-13:2x | done (creators 515-517, candidates) |
 | CR-2026-11-16-02 | dr-haproxy: check for and delete leftover snapshot | Claude (owner asked) | HIGH | — | proposed: quiet hour, 20 min | requested |
@@ -26,6 +27,25 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-16-05  NDP creator discovery: skip gambling/betting channels
+- Requested by: Claude (11-16, after reviewing discovery job results).
+- What changes: nouvellesdupays `apps/worker/src/creator-agents.js` `runDiscoverJob`: a new rejection reason
+  `gambling` (added to REJECTIONS and the job log line), checked on channel title + handle + description with
+  `/(1xbet|casino|betting|bookmaker|paris sportifs?|jackpot|\bslots\b|sportsbook)/i`. Plain "bet" is NOT matched
+  (read-only check 11-16: it would wrongly catch candidate 113 "Beto Dias Official"). A unit test for both cases.
+  Worker image rebuild (Kaniko, from GitHub main) + rollout, as earlier worker builds.
+  Not in this CR: corporate brands (KFC, Pantene, Riyadh Air...) - no reliable rule; existing junk candidates stay
+  as they are (rejecting them would be a separate CR, done in /admin/creators).
+- Why: candidates 144 "TUNISIEN-CASINO STREAMER" and 524 "1XBET Philippines" were added by discovery; gambling
+  channels must never reach the review queue. Queue on 11-16: 549 candidates, 136 without a country.
+- Class: MEDIUM (feature change in a worker; Get-ChangeRisk to be run alone before apply).
+- Impact / downtime: worker restart only (no reader-facing downtime); discovery adds slightly fewer candidates.
+- Rollback: `rollout undo`/set image to the rollback tag of the current worker (f14f7de2) recorded before the build.
+- Checks after: worker tests pass (CI pod); worker pod Running on the new digest; next discovery job's result shows a
+  `gambling` count; Test-Build.
+- Recovery point: New-RecoveryPoint before.
+- Approval: needs "approve CR-2026-11-16-05".
 
 ### CR-2026-11-16-03  Add 3 Côte d'Ivoire creator candidates
 - Requested by: Claude, after owner "approve 2a" (11-16) and "go 3".
