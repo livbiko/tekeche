@@ -107,7 +107,7 @@ done / rolled back / rejected / EMERGENCY.
 - Window (proposed): now, 45 minutes.
 - Approval: "approve CR-2026-11-16-08 window now" (owner, 11-16 ~16:45 UTC).
 - Result: step 1 done (hourly from 17:10; runs 16:47 manual and 17:10 scheduled OK, 26 files); step 3 done (Test-Build
-  check, Build #65); step 2 STOPPED - SYSTEM "Access is denied" on \192.168.1.102\c$, nothing created; replaced by
+  check, Build #65); step 2 STOPPED - SYSTEM "Access is denied" on \\192.168.1.102\c$, nothing created; replaced by
   CR-09 (owner chose OCI). Done.
 
 ### CR-2026-11-16-07  NDP: reject gambling candidates 144 and 524
