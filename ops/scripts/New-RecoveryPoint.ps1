@@ -21,7 +21,11 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $MONGODUMP  = "C:\Program Files\MongoDB\Tools\100\bin\mongodump.exe"
-$MONGO_URI  = "mongodb://tekeche:6eY7EvTt57HM2dgmPgrsr64u@127.0.0.1:27017/tekeche"
+# Production MongoDB = MONGODB_URI in tekeche-api\.env (CR-2026-11-16-06: the hard-coded 127.0.0.1 URI pointed at
+# BIKODC's own mongod, which is not the production database since 09-13 - recovery points had empty dumps).
+$envLine = Get-Content "C:\inetpub\wwwroot\tekeche\tekeche-api\.env" | Where-Object { $_ -match '^MONGODB_URI=' } | Select-Object -First 1
+if (-not $envLine) { throw "MONGODB_URI not found in C:\inetpub\wwwroot\tekeche\tekeche-api\.env" }
+$MONGO_URI = ($envLine -replace '^MONGODB_URI=', '').Trim().Trim('"')
 $API_DIR    = "C:\inetpub\wwwroot\tekeche\tekeche-api"
 $MOB_DIR    = "C:\inetpub\wwwroot\tekeche\tekeche-mobile"
 $OPS_DIR    = "C:\inetpub\wwwroot\tekeche\ops"
@@ -84,8 +88,11 @@ if (Test-Path $envFile) {
 Write-Host "  [4/5] Dumping MongoDB..."
 $dbDumpDir = "$ptDir\db-dump"
 New-Item -ItemType Directory -Force $dbDumpDir | Out-Null
-& $MONGODUMP --uri $MONGO_URI --out $dbDumpDir --quiet 2>&1 | Out-Null
-$dumpSize = (Get-ChildItem $dbDumpDir -Recurse | Measure-Object Length -Sum).Sum
+$dumpErr = & $MONGODUMP --uri $MONGO_URI --out $dbDumpDir --quiet 2>&1
+if ($LASTEXITCODE -ne 0) { throw "mongodump failed (exit $LASTEXITCODE): $("$dumpErr" -replace '(mongodb://[^:]+:)[^@]+@', '$1***@')" }
+$dumpFiles = @(Get-ChildItem $dbDumpDir -Recurse -File)
+$dumpSize = ($dumpFiles | Measure-Object Length -Sum).Sum
+if ($dumpFiles.Count -eq 0 -or -not $dumpSize) { throw "mongodump wrote nothing to $dbDumpDir - recovery point NOT valid" }
 Write-Host "        DB dump: $([Math]::Round($dumpSize/1KB, 1)) KB"
 
 # ── Metadata ─────────────────────────────────────────────────────────────────

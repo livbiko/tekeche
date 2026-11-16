@@ -19,7 +19,11 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $MONGORESTORE = "C:\Program Files\MongoDB\Tools\100\bin\mongorestore.exe"
-$MONGO_URI    = "mongodb://tekeche:6eY7EvTt57HM2dgmPgrsr64u@127.0.0.1:27017/tekeche"
+# Production MongoDB = MONGODB_URI in tekeche-api\.env (CR-2026-11-16-06: the hard-coded 127.0.0.1 URI pointed at
+# BIKODC's own mongod, which is not the production database since 09-13 - recovery points had empty dumps).
+$envLine = Get-Content "C:\inetpub\wwwroot\tekeche\tekeche-api\.env" | Where-Object { $_ -match '^MONGODB_URI=' } | Select-Object -First 1
+if (-not $envLine) { throw "MONGODB_URI not found in C:\inetpub\wwwroot\tekeche\tekeche-api\.env" }
+$MONGO_URI = ($envLine -replace '^MONGODB_URI=', '').Trim().Trim('"')
 $API_DIR      = "C:\inetpub\wwwroot\tekeche\tekeche-api"
 $OPS_DIR      = "C:\inetpub\wwwroot\tekeche\ops"
 $PTS_DIR      = "$OPS_DIR\recovery-points"
@@ -94,7 +98,8 @@ if (-not $CodeOnly) {
     $dbDumpDir = "$ptDir\db-dump\tekeche"
     if (Test-Path $dbDumpDir) {
         Write-Host "  [2/3] Restoring MongoDB from dump..."
-        & $MONGORESTORE --uri $MONGO_URI --db tekeche $dbDumpDir --drop --quiet 2>&1 | Out-Null
+        $restoreErr = & $MONGORESTORE --uri $MONGO_URI --db tekeche $dbDumpDir --drop --quiet 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "mongorestore failed (exit $LASTEXITCODE): $("$restoreErr" -replace '(mongodb://[^:]+:)[^@]+@', '$1***@')" }
         Write-Host "        Database restored."
     } else {
         Write-Host "  [2/3] No DB dump found — skipping database restore."

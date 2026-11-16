@@ -10,7 +10,11 @@
 param([switch]$Verbose)
 
 $API_BASE  = "http://127.0.0.1:5000"
-$MONGO_URI = "mongodb://tekeche:6eY7EvTt57HM2dgmPgrsr64u@127.0.0.1:27017/tekeche"
+# Production MongoDB = MONGODB_URI in tekeche-api\.env (CR-2026-11-16-06: the hard-coded 127.0.0.1 URI pointed at
+# BIKODC's own mongod, which is not the production database since 09-13 - recovery points had empty dumps).
+$envLine = Get-Content "C:\inetpub\wwwroot\tekeche\tekeche-api\.env" | Where-Object { $_ -match '^MONGODB_URI=' } | Select-Object -First 1
+if (-not $envLine) { throw "MONGODB_URI not found in C:\inetpub\wwwroot\tekeche\tekeche-api\.env" }
+$MONGO_URI = ($envLine -replace '^MONGODB_URI=', '').Trim().Trim('"')
 $TEST_SCRIPT = "C:\inetpub\wwwroot\tekeche\ops\scripts\test-booking-flow.js"
 
 $results = [ordered]@{}
