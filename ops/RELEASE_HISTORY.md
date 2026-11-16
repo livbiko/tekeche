@@ -614,3 +614,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: tekeche-api a1c0446 on BikoDC only: security monitor alert e-mail flood fix (suspicious_ua not e-mailed, private IPs never e-mailed, per-host throttle)
 
+
+## Build #63 — 2026-10-18 16:49
+
+- **API commit**: 0974b398 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: Build #63: merge origin/master (review bypass off unless env set, socket Redis adapter guard, k8s manifests) + verify-otp otp-scope fix; 9/9
+
+
+## Build #64 — 2026-11-16 16:31
+
+- **API commit**: 0974b398 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: CR-2026-11-16-06: ops scripts dump/restore/check the production MongoDB (.env URI), fail loudly
+

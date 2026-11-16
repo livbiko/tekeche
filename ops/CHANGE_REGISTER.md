@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-16-06 | Tekeche New-RecoveryPoint: dump the production MongoDB (.53) and fail loudly | Claude | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-06" ~16:35 (CR); window not yet approved | proposed: now, 30 min | requested |
+| CR-2026-11-16-06 | Tekeche New-RecoveryPoint: dump the production MongoDB (.53) and fail loudly | Claude | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-06" + "approve CR-2026-11-16-06 window now" ~16:28 | 16:28-16:33 | done (Build #64) |
 | CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-05" ~15:30 | 15:32-16:03 | done (worker a1952d25) |
 | CR-2026-11-16-04 | Approve 3 Côte d'Ivoire creators (515-517) | owner decision ("Approve all 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-04" ~13:33 | 13:35-13:45 | done |
 | CR-2026-11-16-03 | Add 3 Côte d'Ivoire creator candidates (NDP admin API) | Claude (owner asked "go 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-03" ~13:00 | 13:04-13:2x | done (creators 515-517, candidates) |
@@ -52,8 +52,12 @@ done / rolled back / rejected / EMERGENCY.
 - Recovery point: the script being fixed cannot dump the DB, so: git state of ops/scripts (commit before the change)
   + the nightly Tekeche-MongoDB-Backup of 2026-11-16 01:00 (1.4 MB). The change does not write to MongoDB.
 - Window (proposed): now, 30 minutes, after "approve CR-2026-11-16-06 window now".
-- Approval: CR approved "approve CR-2026-11-16-06" (owner ~16:35 UTC); Get-ChangeRisk then said HIGH -> window approval
-  still needed.
+- Approval: "approve CR-2026-11-16-06", then (after Get-ChangeRisk said HIGH) "approve CR-2026-11-16-06 window now"
+  (owner, 11-16 ~16:28 UTC).
+- Result: d59c11d. Test 1: recovery point 2026-11-16_16-29-56 = 26 collections / 10 MB from .53. Test 2: script copy
+  with a 127.0.0.1 URI stops at the dump, exit 1, nothing reported created. Test 3: Test-Build 9/9. Set-KnownGood
+  Build #64. Invoke-Rollback's restore now also fails loudly (not exercised - it would overwrite production).
+  Note: the old password stays in git history of these scripts (rotation = owner decision). Done.
 
 ### CR-2026-11-16-05  NDP creator discovery: skip gambling/betting channels
 - Requested by: Claude (11-16, after reviewing discovery job results).

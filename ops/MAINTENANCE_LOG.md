@@ -5,6 +5,22 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-16 16:28–16:33 UTC | MAINTENANCE (HIGH) | CR-2026-11-16-06: Tekeche ops scripts use the production MongoDB — ✅ Build #64 known-good
+- **Approval**: "approve CR-2026-11-16-06" then "approve CR-2026-11-16-06 window now" (Get-ChangeRisk said HIGH).
+- **Problem**: New-RecoveryPoint / Invoke-Rollback / Test-Build hard-coded `127.0.0.1:27017` = BIKODC's own mongod, which
+  is not production since 09-13 (tekeche-api .env -> standalone mongod on 192.168.1.53) and answers "NotPrimaryOrSecondary".
+  mongodump errors went to Out-Null: recovery points 2026-11-05_01-00-43 and 2026-11-16_15-32-42 have EMPTY db dumps.
+  Invoke-Rollback would have "restored" into the wrong server and said "Database restored".
+- **Change** (d59c11d): the three scripts read MONGODB_URI from `tekeche-api\.env` (the password is no longer in the
+  scripts); mongodump/mongorestore non-zero exit stops the script; an empty dump is an error.
+- **Recovery point**: git state (ad82e54) + nightly backup C:\backups\tekeche\2026-11-16T01-00-03. No MongoDB write.
+- **Verified**: real point 2026-11-16_16-29-56 = 26 collections / 10 MB (nightly backup also 26); copy of the script
+  with a 127.0.0.1 URI stops at step 4, exit 1, no "created"; Test-Build 9/9 (driver check now reads .53); Set-KnownGood #64.
+- **Rollback**: `git revert d59c11d`.
+- **Open**: (1) the old hard-coded password is in git history of these scripts (GitHub livbiko/tekeche) - rotation of the
+  `tekeche` MongoDB user is an owner decision (HIGH: .env + restart). (2) Tekeche MongoDB has no replica set/failover;
+  BIKODC mongod in a dead rs state. (3) mongodump `--quiet` leaves the error text empty (stop works).
+
 ## 2026-11-16 ~12:40–12:55 UTC | INCIDENT | dr-haproxy (192.168.1.50) froze again — all public sites down ~15 min — ✅ recovered
 - **Symptom**: owner "why all my websites are down?" 12:49. From outside 81.130.238.41:443 ECONNREFUSED (NDP, livbiko, kendebabi, 225woyo, Tekeche from outside). Uptime monitor: down since 12:40:05, alert at 12:50 (count 2). Hub, internet, dr-rke2 fine; .50 no ping.
 - **ESXi (read-only)**: dr-haproxy powered on but VMware Tools not reporting (host name Unknown), CPU 2.9 GHz (normally ~30 MHz), used space 5.96 -> 7.37 GB since 11-15 — same frozen state as the 11-14 incident. ESXi session then timed out; owner asked me to reset after logging in, but my tab stayed on the login page; by 12:55 .50 answered again and every site was back (owner presumably reset it - to confirm).
