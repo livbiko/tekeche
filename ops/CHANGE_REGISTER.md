@@ -49,7 +49,10 @@ done / rolled back / rejected / EMERGENCY.
   1. `/youtube` rebuilt as sections with a sticky tab bar (anchors, horizontally scrollable on mobile): Découvrir,
      Chaînes d'info, Créateurs indépendants, Pays, Catégories, Classements. (Live, Tendances, Sélection de la rédaction
      come in phase 3 when data exists - not shown empty.)
-  2. Hero: heading "NouvellesDuPays — Vidéos & Médias" (or the brief's English wording, owner to choose), subtitle,
+  0. Language (owner 11-16: "when the page is french everything should be in french"): every label, tab, filter,
+     button, empty state, methodology text, metadata and alt text in French; the brief's English wording is translated
+     (e.g. "EN DIRECT", "Sélection de la rédaction", "Tendances en Afrique"). Channel names/video titles stay as published.
+  2. Hero: heading "NouvellesDuPays — Vidéos & Médias", subtitle in French,
      one featured channel (top-ranked approved creator), search + country / category / type / language filters,
      reset. Filters are URL query params (shareable, kept when switching tabs), applied server-side.
   3. Channel directory: one card component for video_channels and approved creators (avatar or initial, name, flag +
