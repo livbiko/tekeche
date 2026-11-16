@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-16-11 | NDP /youtube redesign phase 1: new layout from existing data (web + read-only API) | owner (redesign brief 11-16) | MEDIUM (to confirm with Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-16-10 | OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups | Claude (CR-09 follow-up) | HIGH (Get-ChangeRisk MEDIUM, raised: IAM = security) | — | proposed: now, 15 min | requested |
 | CR-2026-11-16-09 | Tekeche MongoDB backups copied off-site to OCI Object Storage (replaces CR-08 step 2) | owner ("c, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-09 window now" ~16:57 | 16:58-17:26 | done (Build #66; lifecycle rule not set) |
 | CR-2026-11-16-08 | Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B) | owner ("B now, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-08 window now" ~16:45 | 16:46-17:11 | done (Build #65; step 2 -> CR-09) |
@@ -32,6 +33,56 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-16-11  NDP /youtube redesign — phase 1 (layout from existing data)
+- Requested by: owner, 11-16 ("MASTER DEVELOPMENT PROMPT — REDESIGN NOUVELLESDUPAYS YOUTUBE PAGE").
+- Audit (read-only, 11-16 ~17:40): `/youtube` = `apps/web/src/app/youtube/page.tsx` (238 lines): heading, "par pays"
+  cards (country pages with >= 5 approved creators), creator ranking (>= 5 ranked), video_channels grid, landing videos.
+  Data: `video_channels` 537 rows / 188 countries (category live_now 209, national_tv 193, local_voices 128,
+  africa_voices 7; 475 with a YouTube channel id; **0 logos stored**); `creators` 25 approved (21 media_brand,
+  4 individual; 49 creator categories, 1159 links; rankings 1666 rows); `youtube_videos` 42 (submitted landing videos).
+  **No stored per-channel recent videos, view counts per video or live status.** Tracking events exist
+  (`lib/trackingEvents.ts`: YouTubeLandingPageView, YouTubeClick, YouTubePlay, WatchOnYouTube, Search); the channel
+  cards on /youtube fire none today. youtube.com/robots.txt disallows `/feeds/videos.xml` -> recent videos/live only via
+  the Data API (quota 8000/day, fully used by discovery today).
+- What changes (phase 1 = no DB change, no new YouTube calls):
+  1. `/youtube` rebuilt as sections with a sticky tab bar (anchors, horizontally scrollable on mobile): Découvrir,
+     Chaînes d'info, Créateurs indépendants, Pays, Catégories, Classements. (Live, Tendances, Sélection de la rédaction
+     come in phase 3 when data exists - not shown empty.)
+  2. Hero: heading "NouvellesDuPays — Vidéos & Médias" (or the brief's English wording, owner to choose), subtitle,
+     one featured channel (top-ranked approved creator), search + country / category / type / language filters,
+     reset. Filters are URL query params (shareable, kept when switching tabs), applied server-side.
+  3. Channel directory: one card component for video_channels and approved creators (avatar or initial, name, flag +
+     country, type, primary category, subscribers only when known, YouTube link). Sorting: subscribers, total views
+     (creators only), alphabetical; "recently active"/"growth"/"engagement" only where creator snapshots exist, else
+     hidden. Paginated (24 per page). Nothing invented: missing numbers are left out.
+  4. Independent creators section: approved creators with creator_kind individual, with their public profile
+     description; separate from institutional channels. Rankings section: existing ranking + top by country/category +
+     fastest growing (from existing creator_rankings/snapshots) + a methodology block ("performance, not accuracy").
+  5. Country explorer: Africa first (every African country with >= 1 channel or creator: flag, channel count,
+     categories), then the other continents; links to /youtube/<country> where a country page exists (existing route).
+  6. New read-only API `GET /api/youtube/directory` (filters + sort + pagination over video_channels + approved
+     creators, cached 5 min) - existing endpoints unchanged.
+  7. Tracking: channel/creator card clicks fire the existing YouTubeClick / WatchOnYouTube events; search/filter use
+     the existing Search event (no new event names, no duplicates).
+  8. SEO: title, description, canonical /youtube, Open Graph, JSON-LD ItemList of channels, alt text, links to
+     country pages.
+- Not in phase 1 (each its own CR): **phase 2** taxonomy migration (channel_type with the brief's 12 types + mapping of
+  the brief's 14 categories onto the existing 49 + per-channel classification list for owner review - HIGH, DB
+  schema); **phase 3** recent-videos worker (playlistItems 1 unit/channel every 3 h ~3,800 units/day + videos.list for
+  stats/live on known live-stream ids every 15 min ~500/day) -> latest video on cards, Tendances Afrique / Monde,
+  EN DIRECT (only when confirmed live by videos.list < 20 min ago), Sélection de la rédaction (admin picks) - HIGH,
+  needs a quota decision (YouTube quota-increase request, or less discovery); **phase 4** channel logos via
+  channels.list (1 unit/50 channels).
+- Class: to be confirmed by Get-ChangeRisk alone before apply (web + new read-only endpoint, like #255/#261: MEDIUM).
+- Impact / downtime: web + api rollout (~10 s per pod, as earlier builds). Existing routes (/youtube/<slug>, /creators,
+  /creators/<slug>) unchanged.
+- Rollback: rollback tags for api and web taken before the build (manifest PUT), as #261.
+- Checks after: CI (api tests + web build); /youtube 200 desktop + mobile screenshots; every filter and sort returns
+  results and combines; all 537 channels + 25 creators reachable via the directory (count check against the DB);
+  no duplicate cards; country links 200; tracking events seen in the existing analytics (browser network + DB);
+  Lighthouse-style load check; Test-Build 8/8.
+- Approval: needs "approve CR-2026-11-16-11".
 
 ### CR-2026-11-16-10  OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups
 - Requested by: Claude (CR-09 left the lifecycle rule undone: InsufficientServicePermissions).
