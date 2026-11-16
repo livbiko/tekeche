@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-16-08 | Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B) | owner ("B now, write the CR") | HIGH (Get-ChangeRisk) | — | proposed: now, 45 min | requested |
 | CR-2026-11-16-07 | NDP: reject gambling candidates 144 and 524 (admin UI/API) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-07" ~16:34 | 16:35-16:41 | done |
 | CR-2026-11-16-06 | Tekeche New-RecoveryPoint: dump the production MongoDB (.53) and fail loudly | Claude | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-06" + "approve CR-2026-11-16-06 window now" ~16:28 | 16:28-16:33 | done (Build #64) |
 | CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-05" ~15:30 | 15:32-16:03 | done (worker a1952d25) |
@@ -29,6 +30,40 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-16-08  Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B)
+- Requested by: owner, 11-16 ("B now, write the CR"), after the finding that Tekeche production runs on one standalone
+  MongoDB 4.4.31 on dr-mongo 192.168.1.53 (no replica set since 09-13). Option A (new replica set) stays a later project.
+- Today: scheduled task `Tekeche-MongoDB-Backup` on BIKODC runs `tekeche-api\scripts\backup.js` once a day at 01:00
+  (JSON export of every collection from the .env URI, gzip, `C:\backups\tekeche\<timestamp>`, keeps 14 days; 26
+  collections, ~1.4 MB/run, 19 MB total). Only copy is on BIKODC. Restore: `scripts\restore.js`. Worst case today: up to
+  24 h of bookings/users lost, and losing BIKODC loses the backups too.
+- What changes (BIKODC + BIKODC1 only; nothing on .53, tekeche-api, PM2, IIS, .env):
+  1. Task `Tekeche-MongoDB-Backup`: trigger daily 01:00 -> **every hour** (at :10). Same script, same 14-day pruning
+     (~336 copies, ~470 MB on C:). backup.js unchanged.
+  2. New script `ops\scripts\Copy-TekecheBackup.ps1` + task `Tekeche-Backup-Copy` (hourly at :25): copies new backup
+     folders to `\\192.168.1.102\c$\backups\tekeche-copy` (BIKODC1), checks each copied folder has the same files and
+     sizes, keeps 14 days there, logs one line per run to `copy.log`. Runs as the same account as the existing tasks.
+  3. Test-Build.ps1: new check "Tekeche backup fresh": newest `C:\backups\tekeche` folder < 2 h old with >= 20
+     `.json.gz` files, and the same folder present on BIKODC1.
+- Why: cuts the worst-case data loss from ~24 h to ~1 h and keeps a copy off BIKODC until a replica set exists.
+- Class: HIGH (Get-ChangeRisk 11-16 ~16:50).
+- Impact / downtime: none for users. An hourly read of ~1.4 MB from .53 (seconds). ~470 MB disk on each of BIKODC and
+  BIKODC1.
+- Risks: the hourly export runs while bookings are written (each collection is read separately, so a backup is not
+  a single point-in-time snapshot - same as today's nightly one); BIKODC1 share/permissions may need fixing (if the
+  copy cannot write there, step 2 stops and comes back as its own decision).
+- To confirm by owner: is BIKODC1 on a different physical host than BIKODC and .53? If it is the same ESXi host, the
+  copy protects against losing the BIKODC VM, not the host.
+- Rollback: task trigger back to daily 01:00 (exported to `ops\recovery-points\...\Tekeche-MongoDB-Backup.xml` before
+  the change); unregister `Tekeche-Backup-Copy`; `git revert` of the script/Test-Build commit. Copies on BIKODC1 kept
+  (deleting them only on an owner-approved list).
+- Recovery point: Tekeche New-RecoveryPoint (fixed by CR-06) + export of the existing task XML.
+- Checks after: run the backup task once by hand -> new folder, 26 files; run the copy task -> same folder on BIKODC1,
+  identical file sizes, copy.log line; Test-Build passes with the new check; next two scheduled runs (:10 and :25)
+  succeed (LastTaskResult 0).
+- Window (proposed): now, 45 minutes.
+- Approval: needs "approve CR-2026-11-16-08 window now" (or another time).
 
 ### CR-2026-11-16-07  NDP: reject gambling candidates 144 and 524
 - Requested by: Claude (follow-up of CR-05).
