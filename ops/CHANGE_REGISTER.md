@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-16-11 | NDP /youtube redesign phase 1: new layout from existing data (web + read-only API) | owner (redesign brief 11-16) | MEDIUM (to confirm with Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-16-11 | NDP /youtube redesign phase 1: new layout from existing data (web + read-only API) | owner (redesign brief 11-16) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-11" ~17:50 | 17:55-20:53 | done (NDP #264, api 0b737600, web 296e4f87) |
 | CR-2026-11-16-10 | OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups | Claude (CR-09 follow-up) | HIGH (Get-ChangeRisk MEDIUM, raised: IAM = security) | — | proposed: now, 15 min | requested |
 | CR-2026-11-16-09 | Tekeche MongoDB backups copied off-site to OCI Object Storage (replaces CR-08 step 2) | owner ("c, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-09 window now" ~16:57 | 16:58-17:26 | done (Build #66; lifecycle rule not set) |
 | CR-2026-11-16-08 | Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B) | owner ("B now, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-08 window now" ~16:45 | 16:46-17:11 | done (Build #65; step 2 -> CR-09) |
@@ -85,7 +85,11 @@ done / rolled back / rejected / EMERGENCY.
   results and combines; all 537 channels + 25 creators reachable via the directory (count check against the DB);
   no duplicate cards; country links 200; tracking events seen in the existing analytics (browser network + DB);
   Lighthouse-style load check; Test-Build 8/8.
-- Approval: needs "approve CR-2026-11-16-11".
+- Approval: "approve CR-2026-11-16-11".
+- Result: done 20:53, NDP known-good #264 (0ac786b). api 0b737600 / web 296e4f87; rollback-e59ae63f / rollback-7d7e3ac3;
+  recovery point 2026-11-16_17-55-15_before-cr-2026-11-16-11-youtube-redesign. 334 directory entries (558 rows grouped:
+  one card per channel), Africa first, French country names, 390 px fits, tracking stored once, API 162/162, Test-Build 8/8.
+  Open: payload 540 KB; 27 logos / 32 subscriber counts; growth after 30 days; /feeds/videos.xml fetch -> own CR.
 
 ### CR-2026-11-16-10  OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups
 - Requested by: Claude (CR-09 left the lifecycle rule undone: InsufficientServicePermissions).
