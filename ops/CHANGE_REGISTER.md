@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-16-04 | Approve 3 Côte d'Ivoire creators (515-517) | owner decision ("Approve all 3") | MEDIUM | — | now, 10 min | requested |
 | CR-2026-11-16-03 | Add 3 Côte d'Ivoire creator candidates (NDP admin API) | Claude (owner asked "go 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-03" ~13:00 | 13:04-13:2x | done (creators 515-517, candidates) |
 | CR-2026-11-16-02 | dr-haproxy: check for and delete leftover snapshot | Claude (owner asked) | HIGH | — | proposed: quiet hour, 20 min | requested |
 | CR-2026-11-16-01 | Reset frozen dr-haproxy (all public sites down ~12:40-12:55) | owner / Claude | EMERGENCY (MEDIUM) | "logged in, reset it" 12:5x | — | done (service back 12:55; who reset it to be confirmed) |
@@ -63,3 +64,19 @@ done / rolled back / rejected / EMERGENCY.
   nouvellesdupays.com, tekeche.com, livbiko.com, 225woyo.com, kendebabi.com; NDP Test-Build; uptime-state "up".
 - Window: a quiet hour (proposal: 03:00 UTC, 20 minutes), owner logged in to ESXi in the automated Chrome tab.
 - Approval: needs "approve CR-2026-11-16-02 window <time>". Step 1 (read-only look) may happen any time.
+
+### CR-2026-11-16-04  Approve 3 Côte d'Ivoire creators
+- Requested by: owner decision 11-16 ("Approve all 3"), written up by Claude.
+- What changes: creators 515 Le Samouraï Théa, 516 Franklin Nyamsi, 517 Bantu Media Authentique (CI): confidence
+  REQUIRES_REVIEW -> PROVISIONAL, a reviewer-decision evidence row each (note "Décision du propriétaire 2026-11-16
+  (CR-2026-11-16-04) - chaîne YouTube enregistrée hors CI"), review_status candidate -> approved. Through the admin
+  API in the owner's session, as Builds #254/#257.
+- Why: brief section 3 names them for Côte d'Ivoire; owner decided they count for CI although their channels are
+  registered in MA / US / SN.
+- Class: MEDIUM (Get-ChangeRisk).
+- Impact: they become public at /creators/<slug> as "sélectionné par la rédaction (identité non vérifiée)"; CI goes
+  to 3 approved (5 needed for /youtube/cote-divoire). Ranked at the next daily ranking run.
+- Rollback: reverse.sql (back to candidate / REQUIRES_REVIEW, delete the 3 evidence rows), rehearsed before.
+- Checks after: admin API shows approved/PROVISIONAL; public /api/creators 25 incl. 3 CI; profile pages 200; Test-Build.
+- Window: now, 10 minutes (owner logged in to /admin).
+- Approval: needs "approve CR-2026-11-16-04".
