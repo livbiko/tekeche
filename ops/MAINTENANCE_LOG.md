@@ -5,6 +5,31 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-16 16:58–17:26 UTC | MAINTENANCE (HIGH) | CR-2026-11-16-09: Tekeche backups copied off-site to OCI — ✅ Build #66 known-good
+- **Approval**: "approve CR-2026-11-16-09 window now". Recovery point 2026-11-16_16-58-02 (10 MB dump) + all Tekeche* task XMLs.
+- **Bucket**: `tekeche-mongo-backups`, compartment tekeche-pub, uk-london-1, NoPublicAccess, Standard, versioning off, created
+  16:59:38; 0 pre-authenticated links.
+- **Not done — lifecycle rule** (delete after 30 days): refused `InsufficientServicePermissions` (Object Storage service needs an
+  IAM policy). IAM change = owner decision; until then the bucket grows ~30 MB/day.
+- **Script/task** (d25d642): `ops\scripts\Copy-TekecheBackupOci.ps1`, task `Tekeche-Backup-Offsite` (SYSTEM, hourly :25, 30-min
+  limit): bulk-upload --no-overwrite to `tekeche/<timestamp>/`, listing must match names+sizes, then `offsite-done.txt`.
+- **Bug found and fixed in the window**: `$done` and `$DONE` are the same variable in PowerShell, so the done-list was never
+  written and the 2nd run re-checked all folders (no duplicates thanks to --no-overwrite: 390 objects). A shell edit then
+  corrupted 3 paths (`\b`); file rewritten whole, checked (no backspace bytes) before the next run.
+- **Verified**: SYSTEM can use the OCI CLI; 16 backups uploaded (11-03 .. 17:10, 26 files each); download + gunzip of
+  drivers.json.gz = 64 documents; idle run "nothing new"; Test-Build 11/11 (new off-site check); scheduled 17:25 run result 0.
+- **Rollback**: `Unregister-ScheduledTask Tekeche-Backup-Offsite`; `git revert d25d642`. Bucket left (delete only on owner request).
+- **Observation**: Tekeche data is nearly static — newest user/driver 07-28, newest trip 08-22, newest apierror 10-18.
+
+## 2026-11-16 16:46–17:11 UTC | MAINTENANCE (HIGH) | CR-2026-11-16-08: Tekeche MongoDB backup hourly + freshness check — ✅ Build #65 known-good
+- **Approval**: "approve CR-2026-11-16-08 window now". Recovery point 2026-11-16_16-46-16 (10 MB dump) + task XML.
+- **Done**: `Tekeche-MongoDB-Backup` trigger daily 01:00 -> hourly from 17:10 (SYSTEM, backup.js unchanged, 14 days kept).
+  Manual run 16:47 = 26 files / 1.3 MB, result 0; scheduled 17:10 run = 26 files, result 0. Test-Build check 10 "backup
+  fresh" (e2a9c9f).
+- **Stopped as the CR said — copy to BIKODC1**: SYSTEM got "Access is denied" on `\\192.168.1.102\c$` (probe task, removed;
+  nothing created on BIKODC1). Owner chose off-site OCI instead -> CR-09.
+- **Rollback**: import the saved XML (daily 01:00); `git revert e2a9c9f`.
+
 ## 2026-11-16 16:28–16:33 UTC | MAINTENANCE (HIGH) | CR-2026-11-16-06: Tekeche ops scripts use the production MongoDB — ✅ Build #64 known-good
 - **Approval**: "approve CR-2026-11-16-06" then "approve CR-2026-11-16-06 window now" (Get-ChangeRisk said HIGH).
 - **Problem**: New-RecoveryPoint / Invoke-Rollback / Test-Build hard-coded `127.0.0.1:27017` = BIKODC's own mongod, which

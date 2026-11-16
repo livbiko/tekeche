@@ -5,8 +5,8 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-16-09 | Tekeche MongoDB backups copied off-site to OCI Object Storage (replaces CR-08 step 2) | owner ("c, write the CR") | HIGH (Get-ChangeRisk) | — | proposed: now, 45 min | requested |
-| CR-2026-11-16-08 | Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B) | owner ("B now, write the CR") | HIGH (Get-ChangeRisk) | — | proposed: now, 45 min | requested |
+| CR-2026-11-16-09 | Tekeche MongoDB backups copied off-site to OCI Object Storage (replaces CR-08 step 2) | owner ("c, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-09 window now" ~16:57 | 16:58-17:26 | done (Build #66; lifecycle rule not set) |
+| CR-2026-11-16-08 | Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B) | owner ("B now, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-08 window now" ~16:45 | 16:46-17:11 | done (Build #65; step 2 -> CR-09) |
 | CR-2026-11-16-07 | NDP: reject gambling candidates 144 and 524 (admin UI/API) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-07" ~16:34 | 16:35-16:41 | done |
 | CR-2026-11-16-06 | Tekeche New-RecoveryPoint: dump the production MongoDB (.53) and fail loudly | Claude | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-06" + "approve CR-2026-11-16-06 window now" ~16:28 | 16:28-16:33 | done (Build #64) |
 | CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-05" ~15:30 | 15:32-16:03 | done (worker a1952d25) |
@@ -67,7 +67,11 @@ done / rolled back / rejected / EMERGENCY.
   uploads nothing new (no duplicates); download one object and gunzip it to prove it reads; bucket is not public
   (`public-access-type NoPublicAccess`); lifecycle rule shown; Test-Build passes; the next :25 run succeeds.
 - Window (proposed): now, 45 minutes.
-- Approval: needs "approve CR-2026-11-16-09 window now" (or another time).
+- Approval: "approve CR-2026-11-16-09 window now" (owner, 11-16 ~16:57 UTC).
+- Result: bucket tekeche-mongo-backups in tekeche-pub (NoPublicAccess, 0 PARs); task Tekeche-Backup-Offsite (SYSTEM, :25);
+  16 backups uploaded and verified; download/gunzip OK; idle run "nothing new"; Test-Build 11/11; Build #66; scheduled
+  17:25 run OK. NOT done: 30-day lifecycle rule - InsufficientServicePermissions (needs an IAM policy for the Object
+  Storage service = new owner decision). Script bug ($done/$DONE same variable) found and fixed inside the window.
 
 ### CR-2026-11-16-08  Tekeche MongoDB backups: hourly, copied to BIKODC1, freshness check (option B)
 - Requested by: owner, 11-16 ("B now, write the CR"), after the finding that Tekeche production runs on one standalone
@@ -101,7 +105,10 @@ done / rolled back / rejected / EMERGENCY.
   identical file sizes, copy.log line; Test-Build passes with the new check; next two scheduled runs (:10 and :25)
   succeed (LastTaskResult 0).
 - Window (proposed): now, 45 minutes.
-- Approval: needs "approve CR-2026-11-16-08 window now" (or another time).
+- Approval: "approve CR-2026-11-16-08 window now" (owner, 11-16 ~16:45 UTC).
+- Result: step 1 done (hourly from 17:10; runs 16:47 manual and 17:10 scheduled OK, 26 files); step 3 done (Test-Build
+  check, Build #65); step 2 STOPPED - SYSTEM "Access is denied" on \192.168.1.102\c$, nothing created; replaced by
+  CR-09 (owner chose OCI). Done.
 
 ### CR-2026-11-16-07  NDP: reject gambling candidates 144 and 524
 - Requested by: Claude (follow-up of CR-05).

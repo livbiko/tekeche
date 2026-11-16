@@ -830,5 +830,31 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  65,
+        "dateCreated":  "2026-11-16T16:48:58.7206039+00:00",
+        "apiCommit":  "0974b39827e931f89df08dd5053e449f0217538a",
+        "apiBranch":  "master",
+        "mobileCommit":  "f73c1ebb411ebe8dba61e4f980220d1222d108e3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "CR-2026-11-16-08: Tekeche MongoDB backup hourly + Test-Build freshness check (BIKODC1 copy on hold)",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  66,
+        "dateCreated":  "2026-11-16T17:19:18.3288340+00:00",
+        "apiCommit":  "0974b39827e931f89df08dd5053e449f0217538a",
+        "apiBranch":  "master",
+        "mobileCommit":  "f73c1ebb411ebe8dba61e4f980220d1222d108e3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "CR-2026-11-16-09: Tekeche backups copied hourly to OCI bucket tekeche-mongo-backups",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

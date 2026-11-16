@@ -634,3 +634,23 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: CR-2026-11-16-06: ops scripts dump/restore/check the production MongoDB (.env URI), fail loudly
 
+
+## Build #65 — 2026-11-16 16:48
+
+- **API commit**: 0974b398 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: CR-2026-11-16-08: Tekeche MongoDB backup hourly + Test-Build freshness check (BIKODC1 copy on hold)
+
+
+## Build #66 — 2026-11-16 17:19
+
+- **API commit**: 0974b398 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: CR-2026-11-16-09: Tekeche backups copied hourly to OCI bucket tekeche-mongo-backups
+
