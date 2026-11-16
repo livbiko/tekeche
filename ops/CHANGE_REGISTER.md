@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-16-03 | Add 3 Côte d'Ivoire creator candidates (NDP admin API) | Claude (owner asked "go 3") | HIGH (Get-ChangeRisk) | — | proposed: now, 15 min | requested |
+| CR-2026-11-16-03 | Add 3 Côte d'Ivoire creator candidates (NDP admin API) | Claude (owner asked "go 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-03" ~13:00 | 13:04-13:2x | done (creators 515-517, candidates) |
 | CR-2026-11-16-02 | dr-haproxy: check for and delete leftover snapshot | Claude (owner asked) | HIGH | — | proposed: quiet hour, 20 min | requested |
 | CR-2026-11-16-01 | Reset frozen dr-haproxy (all public sites down ~12:40-12:55) | owner / Claude | EMERGENCY (MEDIUM) | "logged in, reset it" 12:5x | — | done (service back 12:55; who reset it to be confirmed) |
 | CR-2026-11-16-00 | Fraternité Matin feed time zone (label_time_zone Africa/Abidjan, 71 articles +2 h) | Claude | LOW | "approve 1" 12:1x | — | done 12:18 |
@@ -42,7 +42,10 @@ done / rolled back / rejected / EMERGENCY.
 - Checks after: GET /api/admin/creators shows them as candidates with the note; public /api/creators unchanged (22).
 - Window: now, about 15 minutes, once the owner is logged in to /admin.
 - Recovery point: New-RecoveryPoint before.
-- Approval: needs "approve CR-2026-11-16-03".
+- Approval: "approve CR-2026-11-16-03" (owner, 11-16 ~13:00 UTC).
+- Result: recovery point 2026-11-16_13-04-24; added through the admin API in the owner's session: 515
+  le-samourai-thea (account 1696), 516 franklin-nyamsi (1697), 517 bantu-media-authentique (1698), all
+  candidate / REQUIRES_REVIEW / CI / fr with the reviewer note; public /api/creators still 22, no CI creator. Done.
 
 ### CR-2026-11-16-02  dr-haproxy: check for and delete a leftover snapshot
 - Requested by: Claude (owner asked to raise it, 11-16).
