@@ -148,6 +148,16 @@ Check "Tekeche backup fresh (< 2 h, >= 20 collections)" {
         @(Get-ChildItem $latest.FullName -Filter *.json.gz).Count -ge 20
 }
 
+# ── 11. Backup copied off-site (CR-2026-11-16-09: Tekeche-Backup-Offsite, OCI bucket tekeche-mongo-backups) ──
+# offsite-done.txt only gets a folder once the bucket listing matched its files and sizes. The upload runs at :25,
+# the backup at :10, so between :10 and :25 the newest uploaded folder is the previous one.
+Check "Tekeche backup copied off-site (< 2 h)" {
+    $uploaded = @(Get-Content "C:\backups\tekeche\offsite-done.txt" -ErrorAction SilentlyContinue)
+    $recent = @(Get-ChildItem "C:\backups\tekeche" -Directory -ErrorAction SilentlyContinue |
+        Where-Object { $_.LastWriteTime -gt (Get-Date).AddHours(-2) -and $_.Name -in $uploaded })
+    $recent.Count -gt 0
+}
+
 # ── Summary ────────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "═══════════════════════════════════" -ForegroundColor Cyan
