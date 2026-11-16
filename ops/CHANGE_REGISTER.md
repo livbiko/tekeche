@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (to confirm with Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-05" ~15:30 | 15:32-16:03 | done (worker a1952d25) |
 | CR-2026-11-16-04 | Approve 3 Côte d'Ivoire creators (515-517) | owner decision ("Approve all 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-04" ~13:33 | 13:35-13:45 | done |
 | CR-2026-11-16-03 | Add 3 Côte d'Ivoire creator candidates (NDP admin API) | Claude (owner asked "go 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-03" ~13:00 | 13:04-13:2x | done (creators 515-517, candidates) |
 | CR-2026-11-16-02 | dr-haproxy: check for and delete leftover snapshot | Claude (owner asked) | HIGH | — | proposed: quiet hour, 20 min | requested |
@@ -45,7 +45,13 @@ done / rolled back / rejected / EMERGENCY.
 - Checks after: worker tests pass (CI pod); worker pod Running on the new digest; next discovery job's result shows a
   `gambling` count; Test-Build.
 - Recovery point: New-RecoveryPoint before.
-- Approval: needs "approve CR-2026-11-16-05".
+- Approval: "approve CR-2026-11-16-05" (owner, 11-16 ~15:30 UTC).
+- Result: Get-ChangeRisk MEDIUM; NDP recovery point 2026-11-16_15-33-18 (full); commit f75946e pushed (ls-remote
+  checked); worker tests 115/115; rollback tag rollback-f1869de6 (live worker was f1869de6, not f14f7de2 as noted
+  earlier); job b263-worker -> a1952d25, new code checked in the image; worker run 29914080 Succeeded 16:00;
+  Test-Build 8/8; Set-KnownGood (registry #262). Deviation: Claude first ran the Tekeche New-RecoveryPoint by mistake
+  - it created a partial folder (its MongoDB dump produced nothing and the script crashed); no change resulted. Done;
+  first discovery job on the new image still to be read.
 
 ### CR-2026-11-16-03  Add 3 Côte d'Ivoire creator candidates
 - Requested by: Claude, after owner "approve 2a" (11-16) and "go 3".
