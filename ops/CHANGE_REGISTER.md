@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-16-07 | NDP: reject gambling candidates 144 and 524 (admin UI/API) | Claude | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-16-07 | NDP: reject gambling candidates 144 and 524 (admin UI/API) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-07" ~16:34 | 16:35-16:41 | done |
 | CR-2026-11-16-06 | Tekeche New-RecoveryPoint: dump the production MongoDB (.53) and fail loudly | Claude | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-06" + "approve CR-2026-11-16-06 window now" ~16:28 | 16:28-16:33 | done (Build #64) |
 | CR-2026-11-16-05 | NDP creator discovery: skip gambling/betting channels (worker build) | Claude | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-05" ~15:30 | 15:32-16:03 | done (worker a1952d25) |
 | CR-2026-11-16-04 | Approve 3 Côte d'Ivoire creators (515-517) | owner decision ("Approve all 3") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-04" ~13:33 | 13:35-13:45 | done |
@@ -48,7 +48,10 @@ done / rolled back / rejected / EMERGENCY.
 - Checks after: GET /api/admin/creators/144 and /524 show rejected + note; public /api/creators unchanged (25).
 - When: any time after approval, ~10 minutes, owner logged in to /admin in the automated Chrome tab.
 - Recovery point: NDP New-RecoveryPoint before.
-- Approval: needs "approve CR-2026-11-16-07".
+- Approval: "approve CR-2026-11-16-07" (owner, 11-16 ~16:34 UTC).
+- Result: NDP recovery point dump 2026-11-16T16-35-45Z; PATCH 16:39:44 both 200, read back rejected + note; public
+  /api/creators 25; Test-Build 8/8; Set-KnownGood (NDP registry #263). Correction: 524 already had a note
+  ("Suggestion : rejeter (paris sportifs) - détecté sur le nom, à confirmer"), not empty - that is its rollback value. Done.
 
 ### CR-2026-11-16-06  Tekeche New-RecoveryPoint: dump the production MongoDB and fail loudly
 - Requested by: Claude (found 11-16 while doing CR-05).
