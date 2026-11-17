@@ -8,7 +8,7 @@ done / rolled back / rejected / EMERGENCY.
 | CR-2026-11-17-04 | NDP worker: YouTube statistics for every directory channel (channels.list: logo, subscribers, views) | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested (after -02) |
 | CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | — | proposed: 40 min, any hour | requested |
-| CR-2026-11-17-01 | NDP API: stop fetching youtube.com/feeds/videos.xml (disallowed by YouTube robots.txt) | Claude (CR-11 finding) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-17-01 | NDP API: stop fetching youtube.com/feeds/videos.xml (disallowed by YouTube robots.txt) | Claude (CR-11 finding) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-17-01" ~00:55 | 01:03-01:40 | done (NDP #265, api 2f90a226) |
 | CR-2026-11-16-11 | NDP /youtube redesign phase 1: new layout from existing data (web + read-only API) | owner (redesign brief 11-16) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-11" ~17:50 | 17:55-20:53 | done (NDP #264, api 0b737600, web 296e4f87) |
 | CR-2026-11-16-10 | OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups | Claude (CR-09 follow-up) | HIGH (Get-ChangeRisk MEDIUM, raised: IAM = security) | — | proposed: now, 15 min | requested |
 | CR-2026-11-16-09 | Tekeche MongoDB backups copied off-site to OCI Object Storage (replaces CR-08 step 2) | owner ("c, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-09 window now" ~16:57 | 16:58-17:26 | done (Build #66; lifecycle rule not set) |
@@ -130,7 +130,10 @@ done / rolled back / rejected / EMERGENCY.
 - Checks after: CI api tests; grep confirms no `feeds/videos.xml` left in apps/api/src; `/api/youtube/channels` and
   `/api/countries/CI/video-channels` 200 with `latest_video` null and faster; /africa/cote-divoire video rail plays
   (uploads playlist); /youtube 200; Test-Build 8/8.
-- Approval: needs "approve CR-2026-11-17-01".
+- Approval: "approve CR-2026-11-17-01".
+- Result: done 01:40, NDP known-good #265 (ac873ff), api 2f90a226, rollback-0b737600; recovery point
+  2026-11-17_01-03-27_before-cr-2026-11-17-01-stop-feeds-video. Endpoints 0.1-0.4 s (were 1-3 s), latest_video null,
+  tests 163/163, Test-Build 8/8.
 
 ### CR-2026-11-16-11  NDP /youtube redesign — phase 1 (layout from existing data)
 - Requested by: owner, 11-16 ("MASTER DEVELOPMENT PROMPT — REDESIGN NOUVELLESDUPAYS YOUTUBE PAGE").
