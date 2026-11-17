@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-17-01 | NDP API: stop fetching youtube.com/feeds/videos.xml (disallowed by YouTube robots.txt) | Claude (CR-11 finding) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-16-11 | NDP /youtube redesign phase 1: new layout from existing data (web + read-only API) | owner (redesign brief 11-16) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-11" ~17:50 | 17:55-20:53 | done (NDP #264, api 0b737600, web 296e4f87) |
 | CR-2026-11-16-10 | OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups | Claude (CR-09 follow-up) | HIGH (Get-ChangeRisk MEDIUM, raised: IAM = security) | — | proposed: now, 15 min | requested |
 | CR-2026-11-16-09 | Tekeche MongoDB backups copied off-site to OCI Object Storage (replaces CR-08 step 2) | owner ("c, write the CR") | HIGH (Get-ChangeRisk) | "approve CR-2026-11-16-09 window now" ~16:57 | 16:58-17:26 | done (Build #66; lifecycle rule not set) |
@@ -33,6 +34,33 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-17-01  NDP API: stop fetching youtube.com/feeds/videos.xml
+- Requested by: Claude (finding during CR-2026-11-16-11; rule: bot UA only, respect robots.txt).
+- Finding: https://www.youtube.com/robots.txt (re-read 11-17) has `User-agent: *` / `Disallow: /feeds/videos.xml`. The API
+  fetches it in two places:
+  1. `apps/api/src/videoChannels.js` `latestVideo()` - for every YouTube row on each `/api/countries/:iso/video-channels`
+     panel and `/api/youtube/channels` (one request per channel per uncached page view; up to 8 s each).
+  2. `apps/api/src/youtube.js` `verifyChannel()` - keyless fallback when a channel is submitted by id (`/channel/UC...`)
+     and the Data API key is missing or fails (quota is fully used by discovery, so this path is live).
+- What changes (old -> new):
+  1. `latestVideo()` removed; `withLatestVideos()` returns the rows with `latest_video: null` (field kept, so the web
+     and its types do not change). The web already handles null (`VideoSequence.tsx` plays the channel's uploads
+     playlist through the IFrame player - the path most channels have used since 2026-10, when the feed began answering
+     404 for most of them). The "latest video" title line disappears where a feed still answered.
+  2. `verifyChannel()` id path: the channel page `https://www.youtube.com/channel/<id>` (allowed by robots.txt) instead of
+     the feed - the existing page branch already reads og:title and the channel id; 404 still = invalid.
+  3. Test `apps/api/test/youtube.test.js`: fake YouTube serves `/channel/<id>` instead of `/feeds/videos.xml`; new test that
+     `withLatestVideos` makes no request.
+- Why: robots.txt compliance; also removes up to one 8-s external request per channel from page loads
+  (`/api/youtube/channels` took 1.8-3.6 s).
+- Class: MEDIUM (Get-ChangeRisk 11-17, run alone).
+- Impact / downtime: api rollout only (~10 s per pod). No DB change, no web change.
+- Rollback: rollback tag of the current api image (`rollback-<digest8>`, taken before the build) -> set image + rollout.
+- Checks after: CI api tests; grep confirms no `feeds/videos.xml` left in apps/api/src; `/api/youtube/channels` and
+  `/api/countries/CI/video-channels` 200 with `latest_video` null and faster; /africa/cote-divoire video rail plays
+  (uploads playlist); /youtube 200; Test-Build 8/8.
+- Approval: needs "approve CR-2026-11-17-01".
 
 ### CR-2026-11-16-11  NDP /youtube redesign — phase 1 (layout from existing data)
 - Requested by: owner, 11-16 ("MASTER DEVELOPMENT PROMPT — REDESIGN NOUVELLESDUPAYS YOUTUBE PAGE").
