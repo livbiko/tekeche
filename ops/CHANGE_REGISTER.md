@@ -7,7 +7,7 @@ done / rolled back / rejected / EMERGENCY.
 |---|---|---|---|---|---|---|
 | CR-2026-11-17-04 | NDP worker: YouTube statistics for every directory channel (channels.list: logo, subscribers, views) | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested (after -02) |
-| CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 69 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | — | proposed: 40 min, any hour | requested |
+| CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | — | proposed: 40 min, any hour | requested |
 | CR-2026-11-17-01 | NDP API: stop fetching youtube.com/feeds/videos.xml (disallowed by YouTube robots.txt) | Claude (CR-11 finding) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-16-11 | NDP /youtube redesign phase 1: new layout from existing data (web + read-only API) | owner (redesign brief 11-16) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-11" ~17:50 | 17:55-20:53 | done (NDP #264, api 0b737600, web 296e4f87) |
 | CR-2026-11-16-10 | OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups | Claude (CR-09 follow-up) | HIGH (Get-ChangeRisk MEDIUM, raised: IAM = security) | — | proposed: now, 15 min | requested |
@@ -49,7 +49,7 @@ done / rolled back / rejected / EMERGENCY.
 - What changes:
   1. `db/migrations/020_category_hierarchy.sql` (additive, idempotent):
      - creator_categories + `active` (default true), `description_fr`, `updated_at`; index (parent_slug, sort_order).
-     - The brief's 8 main categories and 69 subcategories, French names on the site (owner rule: French page = all
+     - The brief's 8 main categories and 70 subcategories, French names on the site (owner rule: French page = all
        French). Existing slugs kept and mapped (news-media = Actualités et médias; politics -> under the new
        politique-societe; digital-gaming -> Technologie et jeux vidéo, ...); new slugs added; existing slugs with no
        place in the brief are re-parented where the brief has them (dance -> culture) or set `active = false`.
