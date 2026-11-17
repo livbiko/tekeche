@@ -5,6 +5,9 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-17-04 | NDP worker: YouTube statistics for every directory channel (channels.list: logo, subscribers, views) | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested (after -02) |
+| CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 69 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | — | proposed: 40 min, any hour | requested |
 | CR-2026-11-17-01 | NDP API: stop fetching youtube.com/feeds/videos.xml (disallowed by YouTube robots.txt) | Claude (CR-11 finding) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-16-11 | NDP /youtube redesign phase 1: new layout from existing data (web + read-only API) | owner (redesign brief 11-16) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-11" ~17:50 | 17:55-20:53 | done (NDP #264, api 0b737600, web 296e4f87) |
 | CR-2026-11-16-10 | OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups | Claude (CR-09 follow-up) | HIGH (Get-ChangeRisk MEDIUM, raised: IAM = security) | — | proposed: now, 15 min | requested |
@@ -34,6 +37,73 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-17-02  NDP migration 020: nested category hierarchy + admin category management
+- Requested by: owner, 11-17 ("MASTER PROMPT - REDESIGN NOUVELLESDUPAYS YOUTUBE PAGE WITH NESTED CATEGORIES").
+- Audit (read-only, 11-17): the hierarchy already exists and is platform-neutral - `creator_categories` (49: 7 top +
+  42 sub, slug/parent_slug/name_en/name_fr/sort_order) linked to `creators` (25 approved, 547 candidates, 44 rejected),
+  and creators own `social_accounts` (youtube 775, facebook 335, x 315, instagram 251, tiktok 96), so /facebook and
+  /tiktok can reuse it unchanged. Gaps: no active flag or descriptions; categories are seeded by migration only (admin
+  API is read-only: `GET /api/admin/creator-categories`); the 312 directory channels from `video_channels` (no creator
+  record) have no subcategory, only a topic. Admin merge of creators already exists (`POST /api/admin/creators/:id/merge`).
+- What changes:
+  1. `db/migrations/020_category_hierarchy.sql` (additive, idempotent):
+     - creator_categories + `active` (default true), `description_fr`, `updated_at`; index (parent_slug, sort_order).
+     - The brief's 8 main categories and 69 subcategories, French names on the site (owner rule: French page = all
+       French). Existing slugs kept and mapped (news-media = Actualités et médias; politics -> under the new
+       politique-societe; digital-gaming -> Technologie et jeux vidéo, ...); new slugs added; existing slugs with no
+       place in the brief are re-parented where the brief has them (dance -> culture) or set `active = false`.
+       **No category or link deleted.** Full old -> new table in `ops/release-category-hierarchy/mapping.md` for the
+       owner before the window.
+     - New `video_channel_category_links (channel_key, category_id, is_primary)`; channel_key = YouTube channel id or
+       lowercased URL (the CR-11 grouping), so one canonical channel however many rows/countries it has; indexes on
+       category_id and channel_key.
+  2. Classification of the 312 channels + 25 approved creators into subcategories: proposed by rules (current topic,
+     rail, name/description keywords) into a CSV for **owner review**, applied only after review (brief: do not
+     publish wrongly classified channels). Until then a channel shows under its main category only.
+  3. Admin API: `POST/PATCH /api/admin/creator-categories` (create, rename, describe, move, reorder, deactivate; no
+     delete), `PUT /api/admin/channel-categories/:key` (several subcategories, one primary). Admin page
+     `/admin/categories` (tree, up/down reorder, active toggle) + category picker on /admin/creators and a channel
+     classification view; CSV export/import of classifications.
+  4. Directory API: filter by any level (a parent matches its subcategories); inactive categories hidden publicly.
+- Not here: nested pages (-03), statistics (-04), recent-video performance / engagement / growth (needs the quota
+  decision), Facebook/TikTok pages (later; no Facebook/Instagram fetching).
+- Class: HIGH (Get-ChangeRisk 11-17: database migration).
+- Window: ~40 min, any hour (additive; readers unaffected). Steps: recovery point -> rehearsal in one transaction on
+  production, rolled back -> api build -> migrate job -> rollout -> checks.
+- Rollback: `reverse.sql` (drop the new table/columns, delete only rows the migration inserted, restore names/parents
+  from the saved copy) or the recovery point's DB dump; api rollback tag.
+- Checks after: API tests (hierarchy, deactivate hides, several subcategories, parent filter); all 49 old slugs
+  present; every existing link resolves; /youtube and /creators 200; Test-Build 8/8.
+- Approval: "approve CR-2026-11-17-02" + "approve CR-2026-11-17-02 window now"; the classification CSV is approved
+  separately by the owner.
+
+### CR-2026-11-17-03  NDP /youtube nested pages (region, country, category, subcategory)
+- What changes (web + read-only API, after -02):
+  - Routes generated from the database: `/youtube/<region>` (afrique, afrique-de-l-ouest, afrique-centrale,
+    afrique-de-l-est, afrique-du-nord, afrique-australe, europe, asie, moyen-orient, amerique-du-nord,
+    amerique-du-sud, oceanie), `/youtube/<country>` (existing, kept), `/youtube/<country>/<category>`,
+    `/youtube/<country>/<category>/<subcategory>`, `/youtube/categorie/<category>[/<subcategory>]`. Existing
+    `/youtube/<slug>` video landing pages keep working (country/region slugs checked first, as today).
+  - Each page: breadcrumb, French description, nested menu (region -> country -> category -> subcategory, with
+    counts), channel count, search + filters, cards, popular channels; empty subcategories hidden; 404 for unknown
+    slugs; canonical, Open Graph, JSON-LD BreadcrumbList + ItemList; sitemap lists non-empty pages only.
+  - Filters update the list without a full page reload (client navigation; the URL still holds the filters).
+  - Cards add the subcategory, and "Chaîne officielle vérifiée" only where account verification says so.
+- Class: MEDIUM (Get-ChangeRisk 11-17). Rollback: api/web rollback tags. Checks: route tests per level incl. 404s;
+  crawl of every generated URL (200, none empty); 390 px; tracking unchanged; Test-Build 8/8.
+- Approval: "approve CR-2026-11-17-03".
+
+### CR-2026-11-17-04  NDP worker: YouTube statistics for every directory channel
+- What changes: a daily worker step calls `channels.list` (part=snippet,statistics; 50 ids per call) for every
+  directory channel with a YouTube id (~312 -> ~7 units/day of 10,000; official API) and stores logo, subscribers
+  (unless hidden), total views, video count in `audience_metrics` with measured_at ("Statistiques au <date>" on
+  cards). Fills the CR-11 gaps (27 logos, 32 subscriber counts).
+- Not here: recent-video performance, engagement, activity and growth rankings - they need playlistItems/videos.list
+  (~4,300 units/day) -> owner decision on quota (Google increase request vs less discovery) first.
+- Class: MEDIUM (Get-ChangeRisk 11-17). Rollback: worker rollback tag; metrics rows additive (removable by source +
+  date). Checks: units used, rows written, cards show logos/numbers, hidden counts stay hidden, Test-Build 8/8.
+- Approval: "approve CR-2026-11-17-04".
 
 ### CR-2026-11-17-01  NDP API: stop fetching youtube.com/feeds/videos.xml
 - Requested by: Claude (finding during CR-2026-11-16-11; rule: bot UA only, respect robots.txt).
