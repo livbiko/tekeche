@@ -57,8 +57,10 @@ done / rolled back / rejected / EMERGENCY.
 - Impact / downtime: none (worker CronJob pulls :local on the next run after the build).
 - Rollback: worker rollback tag from the live imageID.
 - Checks after: worker tests; next 3 runs succeed; feeds ok count normal; Test-Build 8/8.
-- Approval: needs "approve CR-2026-11-18-06".
-- Result:
+- Approval: "approve CR-2026-11-18-06" (owner, 11-18 ~22:37 UTC).
+- Result: deployed 22:46 (worker 00116118), NDP known-good #274 (b437e9e), rollback-25d4ed8b; recovery point
+  2026-11-18_22-38-49_before-cr-2026-11-18-06-ndp-worker-nul-b. Worker tests 122/122 (3 new). Runs 22:50, 22:55,
+  23:00 all succeeded (ok 468-498, errors 13-15, 0 record failures); Test-Build 8/8.
 
 ### CR-2026-11-18-05  NDP: page rendering no longer shares one API rate limit (web -> API inside the cluster)
 - Requested by: Claude, from the read-only investigation of the 20:56 burst (owner "keep going", 11-18).
