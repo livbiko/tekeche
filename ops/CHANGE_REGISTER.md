@@ -7,7 +7,7 @@ done / rolled back / rejected / EMERGENCY.
 |---|---|---|---|---|---|---|
 | CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | 11:07-11:28 ("approve CR-2026-11-17-04 window now" 11:0x) | done (NDP #266, worker b011f104) |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested (after -02) |
-| CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | "approve CR-2026-11-17-02" 11-18 (window not yet) | 40 min proposed; re-estimated ~2 h whole / ~1 h if split (asked owner 11-18) | approved, awaits window |
+| CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | "approve CR-2026-11-17-02", "B", "approve CR-2026-11-17-02 window now" 11-18 | 11:38-12:28 (option B, whole) | done (NDP #267, api 6c75d01c, web 59622da6); CSV import pending owner review |
 | CR-2026-11-17-01 | NDP API: stop fetching youtube.com/feeds/videos.xml (disallowed by YouTube robots.txt) | Claude (CR-11 finding) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-17-01" ~00:55 | 01:03-01:40 | done (NDP #265, api 2f90a226) |
 | CR-2026-11-16-11 | NDP /youtube redesign phase 1: new layout from existing data (web + read-only API) | owner (redesign brief 11-16) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-16-11" ~17:50 | 17:55-20:53 | done (NDP #264, api 0b737600, web 296e4f87) |
 | CR-2026-11-16-10 | OCI IAM policy + 30-day delete rule for bucket tekeche-mongo-backups | Claude (CR-09 follow-up) | HIGH (Get-ChangeRisk MEDIUM, raised: IAM = security) | — | proposed: now, 15 min | requested |
@@ -81,6 +81,11 @@ done / rolled back / rejected / EMERGENCY.
   present; every existing link resolves; /youtube and /creators 200; Test-Build 8/8.
 - Approval: "approve CR-2026-11-17-02" + "approve CR-2026-11-17-02 window now"; the classification CSV is approved
   separately by the owner.
+- Result: done 12:28 11-18 (option B), NDP known-good #267 (e0b7de5). Migration 020 applied ~11:45 after two rehearsals
+  (83 categories, 78 on = 8 + 70, 49 old slugs kept, 1,429 links 0 broken). api 6c75d01c / web 59622da6;
+  rollback-9cf6bfbd / rollback-d616781d; reverse.sql; recovery point before-cr-2026-11-17-02-migration-020-ca.
+  API 169/169, Test-Build 8/8. /admin/categories not browser-checked (no admin session in the automation tab).
+  Open: owner CSV import; worker topic map to switched-off slugs (harmless); channel_metrics writer; CR-03.
 
 ### CR-2026-11-17-03  NDP /youtube nested pages (region, country, category, subcategory)
 - What changes (web + read-only API, after -02):
