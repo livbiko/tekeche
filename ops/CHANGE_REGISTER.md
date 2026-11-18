@@ -39,6 +39,23 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-18-02  NDP web: measurement date on /youtube directory cards
+- Requested by: Claude (left open by CR-2026-11-18-01).
+- What changes: web only. `DirectoryCard.tsx` shows the date next to the numbers when the API gives
+  `stats_measured_at` (e.g. "12 k abonnés · 3,4 M vues · au 19 nov."), with a tooltip "Statistiques au 19 novembre
+  2026"; `types.ts` gains `stats_measured_at: string | null` on DirectoryEntry. No API, worker or DB change. Cards
+  without stats_measured_at (approved creators, channels without channel_metrics) look as today.
+- Why: the numbers come from a daily measurement; readers should see how fresh they are (brief: never present stale
+  numbers as live).
+- Class: MEDIUM (Get-ChangeRisk 11-18, run alone).
+- Impact / downtime: one web build + rollout (~10 s). Nothing visible until the first channel_metrics run (11-19
+  07:25 UTC).
+- Rollback: web rollback tag taken from the live imageID before the build.
+- Checks after: web build in CI pod; /youtube and a country page 200; after 11-19 07:25 a card with the date in
+  French; Test-Build 8/8.
+- Approval: needs "approve CR-2026-11-18-02".
+- Result:
+
 ### CR-2026-11-18-01  NDP: channel statistics for every directory channel; discovery on active categories
 - Requested by: Claude (follow-ups left open by CR-2026-11-17-04 and CR-2026-11-17-02).
 - What changes:
