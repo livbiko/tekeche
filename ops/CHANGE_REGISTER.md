@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | proposed: now, 30 min | awaits window approval |
+| CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | 11:07-11:28 ("approve CR-2026-11-17-04 window now" 11:0x) | done (NDP #266, worker b011f104) |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested (after -02) |
 | CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | — | proposed: 40 min, any hour | requested |
 | CR-2026-11-17-01 | NDP API: stop fetching youtube.com/feeds/videos.xml (disallowed by YouTube robots.txt) | Claude (CR-11 finding) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-17-01" ~00:55 | 01:03-01:40 | done (NDP #265, api 2f90a226) |
@@ -125,6 +125,10 @@ done / rolled back / rejected / EMERGENCY.
   logos; Test-Build 8/8.
 - Approval: "approve CR-2026-11-17-04" (11-18); narrowed scope "A, write the CR" (11-18); needs
   "approve CR-2026-11-17-04 window now".
+- Result: done 11:28 11-18, NDP known-good #266 (6f9781f), worker b011f104, rollback-d2a8c8ec; recovery point
+  before-cr-2026-11-17-04-window-channel-l. First run: 305/305 channels returned, 475 logo rows, 30 metrics, 7 units;
+  directory 327/334 with a logo (was 27); Test-Build 8/8. Finding: dr-image-sync-* rebuild from GitHub main daily
+  04:10-04:20 and dr-image-rollout restarts api/web 04:40 - push only approved changes.
 
 ### CR-2026-11-17-01  NDP API: stop fetching youtube.com/feeds/videos.xml
 - Requested by: Claude (finding during CR-2026-11-16-11; rule: bot UA only, respect robots.txt).
