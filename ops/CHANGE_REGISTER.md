@@ -69,6 +69,11 @@ done / rolled back / rejected / EMERGENCY.
   test loads from this host in the same minute), so rolled back per the HIGH rule at 21:16:44 (250m verified);
   Test-Build after rollback 8/8. Also found: ~2,000 API requests from this host's IP 20:56-21:04, source unknown.
   Recovery point 2026-11-18_21-14-42_before-cr-2026-11-18-04-ndp-web-cpu-limi. A retry goes back to the owner.
+- Retry: owner "approve CR-2026-11-18-04 window now" (~21:24). Applied 21:25:06, known-good NDP #272. Direct /youtube
+  ~0.8 s typical (was ~1.7 s); API p50 15-20 ms (was ~14 ms, worker run active); node idle 13-56% over 5 min
+  (load is iowait, not CPU); Test-Build 8/8. Public /youtube from this host still 1.7-3.6 s (hairpin/haproxy path,
+  not in scope). Recovery point 2026-11-18_21-25-02_before-cr-2026-11-18-04-retry-ndp-web-cp. To check 11-19:
+  limit still 500m after the 04:40 restart.
 
 ### CR-2026-11-18-03  NDP web: lighter /youtube main page
 - Requested by: owner ("1, write the CR", 11-18) after Claude's measurement.
