@@ -39,6 +39,34 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-18-07  NDP data: import the channel classification (237 rows)
+- Requested by: owner ("do it for me" -> Claude filled the decisions, "run Vérifier", "write the CR", 11-18 ~23:30).
+- What changes: one import on /admin/categories ("Appliquer") of
+  `ops/release-category-hierarchy/classification-claude-recommendations.csv` = the review file with owner_decision
+  filled BY CLAUDE: "ok" (accept the proposal) on the 237 high/medium-confidence rows, empty (skipped) on the 100
+  low-confidence rows. Through the admin API only (no SQL writes).
+  - 212 directory channels get their categories (video_channel_category_links is empty today): primaries
+    national-news 130, tv-radio 64, international-affairs 9, business-news 9, politics 8, others 1-5 each.
+  - 25 approved creators: their categories are REPLACED by the proposal (creator_category_links rows of those 25).
+- Dry run ("Vérifier", 23:20 UTC, owner's admin session): 337 rows, 237 to apply, 100 skipped, 0 errors.
+- Why: subcategory pages on /youtube stay empty until channels are classified (CR-2026-11-17-02/-03).
+- Class: HIGH (Get-ChangeRisk 11-18: production data, 237 rows). Window below.
+- Impact: /youtube category and subcategory pages and filters change at once (directory cache cleared by the import);
+  sitemap gains the newly non-empty pages. No downtime.
+- Rollback (the import cannot undo itself: the export has no creators and an empty row is skipped): before the import,
+  a data snapshot of video_channel_category_links (0 rows) and of creator_category_links for the 25 approved creators
+  into the recovery point, and `reverse.sql` = delete all video_channel_category_links + put back those 25 creators'
+  old links; rehearsed (BEGIN ... ROLLBACK) before the window. Recovery point + DB dump.
+- Checks after: admin "Classement des chaînes" shows 212 classified; /youtube/categorie/news-media/national-news and
+  a sample of subcategory pages 200 with channels; sitemap URL count before/after; 20 random channels' categories =
+  the file; the 25 creators' public pages 200 with the new categories; Test-Build 8/8.
+- Open questions for the owner before approving: (1) the 25 creator rows replace categories you may have set by hand
+  — keep them in, or set those rows to empty to leave creators as they are? (2) culture-society, journalism and
+  technology-it were edited 14:56-14:58 UTC today (journalism and culture-society switched back on) — yours?
+- Window: proposal now, 20 minutes, owner logged in to /admin.
+- Approval: needs "approve CR-2026-11-18-07" and "approve CR-2026-11-18-07 window now" (or a time).
+- Result:
+
 ### CR-2026-11-18-06  NDP worker: one bad feed must not crash the whole poll run (NUL bytes)
 - Requested by: Claude, from a read-only look at the failed worker pods (owner "keep going", 11-18 ~22:35).
 - Found: worker runs 09:40, 09:45 and 09:50 UTC on 11-18 failed (2 attempts each, 6 pods in Error):
