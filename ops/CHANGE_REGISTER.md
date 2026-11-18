@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | 11:07-11:28 ("approve CR-2026-11-17-04 window now" 11:0x) | done (NDP #266, worker b011f104) |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-17-03" 11-18 | 12:30-14:14 | done (NDP #268, api 6ba17846, web 5eeae633) |
 | CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | "approve CR-2026-11-17-02", "B", "approve CR-2026-11-17-02 window now" 11-18 | 11:38-12:28 (option B, whole) | done (NDP #267, api 6c75d01c, web 59622da6); CSV import pending owner review |
@@ -37,6 +38,32 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-18-01  NDP: channel statistics for every directory channel; discovery on active categories
+- Requested by: Claude (follow-ups left open by CR-2026-11-17-04 and CR-2026-11-17-02).
+- What changes:
+  1. Worker `apps/worker/src/channel-logos.js` (daily, already calls channels.list for all ~305 directory channel ids,
+     ~7 units): also writes subscribers (unless hidden), total views and video count to `channel_metrics`
+     (migration 020) for every returned channel, keyed like the directory (YouTube channel id). No extra API call,
+     no extra quota. The audience_metrics rows for the 10 linked accounts stay as today.
+  2. API `youtubeDirectory.js`: a channel card reads its latest channel_metrics subscribers / total views when no
+     linked account has them, with the measured date ("Statistiques au <date>"); nothing invented, hidden counts stay
+     absent. Today 32 of 334 cards show subscribers; expected ~300.
+  3. Worker `creator-agents.js` TOPIC_CATEGORY: YouTube topics mapped to switched-off categories move to active ones:
+     Sport -> sports-news (was other-sports), Physical_attractiveness -> fashion (was beauty),
+     'Lifestyle_(sociology)' -> lifestyle-living (was the main category), Health -> fitness-wellness (was
+     personal-development). Existing candidates' links are not changed.
+- Why: CR-11 found 32 subscriber counts for 334 channels; new discovery candidates should not land in switched-off
+  categories.
+- Class: MEDIUM (Get-ChangeRisk 11-18, run alone). No schema change (channel_metrics exists since migration 020).
+- Impact / downtime: worker build (CronJobs pull it on the next run) + api rollout (~10 s). First metrics on the next
+  daily logo run (or one run started by hand during the change).
+- Rollback: worker and api rollback tags (taken from the live images); `DELETE FROM channel_metrics` (only this step
+  writes it).
+- Checks after: worker + API tests; one run: ~7 units, rows in channel_metrics = channels returned x metrics shown;
+  directory cards with subscribers ~300, values equal to the YouTube API response for 3 sampled channels, hidden
+  counts absent; /youtube 200; Test-Build 8/8.
+- Approval: "approve CR-2026-11-18-01".
 
 ### CR-2026-11-17-02  NDP migration 020: nested category hierarchy + admin category management
 - Requested by: owner, 11-17 ("MASTER PROMPT - REDESIGN NOUVELLESDUPAYS YOUTUBE PAGE WITH NESTED CATEGORIES").
