@@ -53,8 +53,10 @@ done / rolled back / rejected / EMERGENCY.
 - Rollback: web rollback tag taken from the live imageID before the build.
 - Checks after: web build in CI pod; /youtube and a country page 200; after 11-19 07:25 a card with the date in
   French; Test-Build 8/8.
-- Approval: needs "approve CR-2026-11-18-02".
-- Result:
+- Approval: "approve CR-2026-11-18-02" (owner, 11-18).
+- Result: deployed 17:05 11-18, NDP known-good #270 (393f358), web cdcd6ae7, rollback-5eeae633; recovery point
+  2026-11-18_16-50-17_before-cr-2026-11-18-02-ndp-card-measure. CI build + pages 200, Test-Build 8/8. Date visible
+  from the 11-19 07:25 channel_metrics run (checked with CR-2026-11-18-01).
 
 ### CR-2026-11-18-01  NDP: channel statistics for every directory channel; discovery on active categories
 - Requested by: Claude (follow-ups left open by CR-2026-11-17-04 and CR-2026-11-17-02).
