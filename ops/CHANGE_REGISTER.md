@@ -63,8 +63,12 @@ done / rolled back / rejected / EMERGENCY.
   vmstat for 10 minutes; all NDP pods Running; Test-Build 8/8 (NDP scripts); recheck the next morning after the
   04:10 builds and 04:40 restart that the limit is still 500m.
 - Window: proposal now (~21:00 UTC, low traffic), 20 minutes, or another time you name.
-- Approval: needs "approve CR-2026-11-18-04" and "approve CR-2026-11-18-04 window now" (or a time).
-- Result:
+- Approval: "approve CR-2026-11-18-04", "approve CR-2026-11-18-04 window now" (owner, 11-18 ~21:13 UTC).
+- Result: ROLLED BACK. Applied 21:15:17; /youtube direct ~1.7 s -> ~0.78 s typical, throttling 11.8 s -> 1.8 s per
+  10 loads, API unchanged. Test-Build 21:16:17 7/8 (public API 429 = per-IP rate limit used up by my own public
+  test loads from this host in the same minute), so rolled back per the HIGH rule at 21:16:44 (250m verified);
+  Test-Build after rollback 8/8. Also found: ~2,000 API requests from this host's IP 20:56-21:04, source unknown.
+  Recovery point 2026-11-18_21-14-42_before-cr-2026-11-18-04-ndp-web-cpu-limi. A retry goes back to the owner.
 
 ### CR-2026-11-18-03  NDP web: lighter /youtube main page
 - Requested by: owner ("1, write the CR", 11-18) after Claude's measurement.
