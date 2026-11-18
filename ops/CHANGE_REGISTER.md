@@ -72,8 +72,13 @@ done / rolled back / rejected / EMERGENCY.
   public calls still limited (101 quick public /api/countries calls from this host -> 429 appears); /youtube and
   sitemap sample 200; node CPU/iowait 10 min; API tests; Test-Build 8/8 (no public bursts from this host before it).
 - Window: proposal 11-19 after the channel-metrics check (~08:00 UTC, 30 minutes), or a time you name.
-- Approval: needs "approve CR-2026-11-18-05" and "approve CR-2026-11-18-05 window <time>".
-- Result:
+- Approval: "approve CR-2026-11-18-05", "approve CR-2026-11-18-05 window now" (owner, 11-18 ~21:50 UTC).
+- Result: deployed 22:05-22:07, NDP known-good #273 (8a77519), API 22a18527 (rollback-0f15043c), web env
+  API_INTERNAL_URL set in the cluster; recovery point 2026-11-18_21-51-03_before-cr-2026-11-18-05-ndp-in-cluster-a.
+  Rendering calls now come from the web pod (10.42.x), 150 in-cluster calls all 200, public API still limited
+  (x-ratelimit headers), 31 public pages 200 with the public bucket untouched, 0 x 429 in 5 min, API tests 173/173,
+  Test-Build 8/8. Public /youtube 0.73-1.11 s (was 1.7-3.6 s). Slip: the first commit overwrote the existing
+  rate-limit test; restored before the build (8a77519). Next: ingress forwarded headers (separate CR).
 
 ### CR-2026-11-18-04  NDP on-prem: web pod CPU limit 250m -> 500m
 - Requested by: owner (chose "Web CPU" 11-18 ~20:50) after CR-2026-11-18-03 missed its speed target.
