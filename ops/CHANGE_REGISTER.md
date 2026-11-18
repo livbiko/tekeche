@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-17-04 | NDP worker: YouTube statistics for every directory channel (channels.list: logo, subscribers, views) | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | proposed: now, 30 min | awaits window approval |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | — | — | requested (after -02) |
 | CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | — | proposed: 40 min, any hour | requested |
 | CR-2026-11-17-01 | NDP API: stop fetching youtube.com/feeds/videos.xml (disallowed by YouTube robots.txt) | Claude (CR-11 finding) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-17-01" ~00:55 | 01:03-01:40 | done (NDP #265, api 2f90a226) |
@@ -58,6 +58,10 @@ done / rolled back / rejected / EMERGENCY.
      - New `video_channel_category_links (channel_key, category_id, is_primary)`; channel_key = YouTube channel id or
        lowercased URL (the CR-11 grouping), so one canonical channel however many rows/countries it has; indexes on
        category_id and channel_key.
+     - New `channel_metrics (channel_key, metric, value, source, measured_at)` - append-only like audience_metrics,
+       for directory channels with no social_accounts row (added 11-18 from CR-2026-11-17-04, owner option A);
+       index (channel_key, metric, measured_at DESC). The CR-04 worker step then writes subscribers / total views /
+       video count there after this window.
   2. Classification of the 312 channels + 25 approved creators into subcategories: proposed by rules (current topic,
      rail, name/description keywords) into a CSV for **owner review**, applied only after review (brief: do not
      publish wrongly classified channels). Until then a channel shows under its main category only.
@@ -94,16 +98,33 @@ done / rolled back / rejected / EMERGENCY.
   crawl of every generated URL (200, none empty); 390 px; tracking unchanged; Test-Build 8/8.
 - Approval: "approve CR-2026-11-17-03".
 
-### CR-2026-11-17-04  NDP worker: YouTube statistics for every directory channel
-- What changes: a daily worker step calls `channels.list` (part=snippet,statistics; 50 ids per call) for every
-  directory channel with a YouTube id (~312 -> ~7 units/day of 10,000; official API) and stores logo, subscribers
-  (unless hidden), total views, video count in `audience_metrics` with measured_at ("Statistiques au <date>" on
-  cards). Fills the CR-11 gaps (27 logos, 32 subscriber counts).
+### CR-2026-11-17-04  NDP worker: YouTube logos for every directory channel (narrowed 11-18)
+- Finding 11-18 (before any code): the directory has 305 valid YouTube channel ids; only 10 have a `social_accounts`
+  row, and `social_accounts_owner_check` requires a publisher, creator or discovered source - so statistics for the
+  other 295 cannot go to `audience_metrics` without a schema change (HIGH). Stopped and asked; owner chose option A
+  ("A, write the CR").
+- What changes now (no schema change): a worker step, at most once per 24 h, calls `channels.list` (part=snippet,
+  statistics; 50 ids per call, ~7 units) for every directory channel id and
+  1. sets `video_channels.logo_url` (column exists, empty for all 305) from the channel thumbnail on every row of that
+     channel, only where it is empty or was set by this step (a curated logo is never overwritten);
+  2. writes subscribers (unless hidden), total views and video count to `audience_metrics` for the channels that
+     already have a youtube `social_accounts` row (same rules as youtube-audience.js);
+  3. records its units in `agent_runs` (agent 'youtube') so discovery's daily budget counts them.
+  Channel ids the API does not return are logged, not changed.
+- Moved to CR-2026-11-17-02 (migration 020): `channel_metrics` table; after that window this step also writes
+  subscribers / views / video count for the other directory channels.
+- Old text (kept for the record): "stores logo, subscribers (unless hidden), total views, video count in
+  `audience_metrics` with measured_at ... Fills the CR-11 gaps (27 logos, 32 subscriber counts)."
 - Not here: recent-video performance, engagement, activity and growth rankings - they need playlistItems/videos.list
   (~4,300 units/day) -> owner decision on quota (Google increase request vs less discovery) first.
-- Class: MEDIUM (Get-ChangeRisk 11-17). Rollback: worker rollback tag; metrics rows additive (removable by source +
-  date). Checks: units used, rows written, cards show logos/numbers, hidden counts stay hidden, Test-Build 8/8.
-- Approval: "approve CR-2026-11-17-04".
+- Class: HIGH - Get-ChangeRisk 11-17 said MEDIUM; re-run 11-18 on the narrowed wording said HIGH, so HIGH (rule: the
+  higher class). Window: now, ~30 min (worker build + one run; readers unaffected). Rollback: worker rollback tag;
+  `UPDATE video_channels SET logo_url = NULL WHERE logo_url` set by this step (saved list of ids in the release
+  folder); metrics rows additive (removable by source + measured_at). Checks: worker tests; one run: units ~7, logos
+  set, no curated logo changed, metrics only for linked accounts, hidden counts stay hidden; /youtube shows the
+  logos; Test-Build 8/8.
+- Approval: "approve CR-2026-11-17-04" (11-18); narrowed scope "A, write the CR" (11-18); needs
+  "approve CR-2026-11-17-04 window now".
 
 ### CR-2026-11-17-01  NDP API: stop fetching youtube.com/feeds/videos.xml
 - Requested by: Claude (finding during CR-2026-11-16-11; rule: bot UA only, respect robots.txt).
