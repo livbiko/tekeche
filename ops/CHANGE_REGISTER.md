@@ -39,6 +39,27 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-18-06  NDP worker: one bad feed must not crash the whole poll run (NUL bytes)
+- Requested by: Claude, from a read-only look at the failed worker pods (owner "keep going", 11-18 ~22:35).
+- Found: worker runs 09:40, 09:45 and 09:50 UTC on 11-18 failed (2 attempts each, 6 pods in Error):
+  `invalid byte sequence for encoding "UTF8": 0x00` thrown by the error handler of `pollFeed` (poll.js:424) — a feed's
+  error message contained a NUL byte, writing it to feeds.last_status / last_error failed, and that second error was
+  not caught, so Promise.all rejected and no feed was polled or recorded in those 3 runs. It stopped by itself at
+  09:55; which feed is not in the logs (the run died before printing it).
+- What changes (worker `poll.js` only):
+  1. Strip `\u0000` from the error message before it is logged or stored.
+  2. The error-recording UPDATE in the catch block gets its own try/catch (logs and carries on).
+  3. Strip `\u0000` from the text fields of new article rows (headline, summary, author, category) before INSERT,
+     so a feed with a NUL in its content is stored instead of failing every run.
+  Tests: a fake feed whose error message has a NUL, and one with a NUL in a headline; the run completes for the
+  other feeds.
+- Class: MEDIUM (Get-ChangeRisk 11-18, run alone).
+- Impact / downtime: none (worker CronJob pulls :local on the next run after the build).
+- Rollback: worker rollback tag from the live imageID.
+- Checks after: worker tests; next 3 runs succeed; feeds ok count normal; Test-Build 8/8.
+- Approval: needs "approve CR-2026-11-18-06".
+- Result:
+
 ### CR-2026-11-18-05  NDP: page rendering no longer shares one API rate limit (web -> API inside the cluster)
 - Requested by: Claude, from the read-only investigation of the 20:56 burst (owner "keep going", 11-18).
 - Found (11-18 21:35-21:45 UTC, read-only):
