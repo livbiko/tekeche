@@ -64,8 +64,16 @@ done / rolled back / rejected / EMERGENCY.
   — keep them in, or set those rows to empty to leave creators as they are? (2) culture-society, journalism and
   technology-it were edited 14:56-14:58 UTC today (journalism and culture-society switched back on) — yours?
 - Window: proposal now, 20 minutes, owner logged in to /admin.
-- Approval: needs "approve CR-2026-11-18-07" and "approve CR-2026-11-18-07 window now" (or a time).
-- Result:
+- Approval: "approve CR-2026-11-18-07", "approve CR-2026-11-18-07 window now" (owner, 11-18 ~23:27); then owner chose
+  "Leave them as they are" for the 25 creators.
+- Result: APPLIED BY THE OWNER, NOT THROUGH THE PLANNED STEPS. The owner clicked "Appliquer" at 23:26:11 in the admin
+  tab where Claude had run "Vérifier" (23:23:13) with the full 237-row file — before the window approval, the
+  recovery point (23:28) and the before-snapshot; confirmed by the owner ("yes"). Written 23:26:12: 320 channel links
+  for 212 channels (212 primary) and the 25 approved creators' categories REPLACED (creator_category_links 1,435 ->
+  1,461), although the owner's later answer was to leave creators unchanged. No before-snapshot of those 25 creators'
+  links. Checks: sitemap /youtube 566 -> 1,067 URLs (501 new, 0 gone), 30 new pages 200 with channels, category
+  pages 200, 25 creator pages 200, unknown 404, Test-Build 8/8. Undo for channels: cr1807-reverse.sql (rehearsed);
+  creators: only from a dump taken before 23:26 — owner decision pending (keep / restore creators / undo all).
 
 ### CR-2026-11-18-06  NDP worker: one bad feed must not crash the whole poll run (NUL bytes)
 - Requested by: Claude, from a read-only look at the failed worker pods (owner "keep going", 11-18 ~22:35).
