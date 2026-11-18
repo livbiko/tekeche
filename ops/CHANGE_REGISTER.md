@@ -39,6 +39,33 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-18-04  NDP on-prem: web pod CPU limit 250m -> 500m
+- Requested by: owner (chose "Web CPU" 11-18 ~20:50) after CR-2026-11-18-03 missed its speed target.
+- Evidence (11-18 20:49 UTC, read-only): over 5 direct /youtube loads the web container was throttled in 56 of 79
+  CFS periods, 5.95 s throttled in total (~1.2 s per page). Node dr-rke2 (single node, 2 vCPU, shared with NDP api +
+  Postgres + worker CronJobs, bikocartridges, kendebabi/woyo mirrors and the RKE2 control plane): 639m used (31%),
+  vmstat 29-71% idle, 8-39% iowait, load 1.4-2.1. Requests 1825m (91%), limits 2300m (114%).
+- What changes: on .51 only, `kubectl -n nouvellesdupays set resources deploy/nouvellesdupays-web -c web
+  --limits=cpu=500m` (memory limit 256Mi and requests 20m / 64Mi unchanged; replicas stay 1). One rolling restart.
+  The setting lives in the cluster (the on-prem values were set by kubectl, `infra/k8s/07-web.yaml` is the old OKE
+  manifest with 500m / 2 replicas); the nightly dr-image-rollout only restarts, so it keeps the new limit. Recorded
+  in MAINTENANCE_LOG.
+- Why: /youtube rendering waits for CPU; cutting the throttling is the direct fix.
+- Class: HIGH (Get-ChangeRisk 11-18: infrastructure / production resources). Window below.
+- Risks: (1) the web pod may use up to 0.5 core during a burst, taking CPU from the API, Postgres or the control plane
+  on a 2-core node — limits go to 2550m (127% of the node), requests unchanged so scheduling is unaffected;
+  (2) the nightly kaniko builds (04:10-04:20) run with web bursts — slower builds, not failures; (3) ~10 s restart.
+- Rollback (one command, ~1 min): `kubectl ... set resources deploy/nouvellesdupays-web -c web --limits=cpu=250m`.
+  Triggers: API p50 slower than before by > 50 %, a pod in CrashLoop or OOM, node idle < 10 % for 5 min, any
+  Test-Build failure.
+- Checks after: throttled periods per /youtube load (before 56/79 over 5 loads); 10 timed loads direct + public
+  (before ~1.5 s typical direct); API /api/countries and /api/youtube/directory times before vs after; node top +
+  vmstat for 10 minutes; all NDP pods Running; Test-Build 8/8 (NDP scripts); recheck the next morning after the
+  04:10 builds and 04:40 restart that the limit is still 500m.
+- Window: proposal now (~21:00 UTC, low traffic), 20 minutes, or another time you name.
+- Approval: needs "approve CR-2026-11-18-04" and "approve CR-2026-11-18-04 window now" (or a time).
+- Result:
+
 ### CR-2026-11-18-03  NDP web: lighter /youtube main page
 - Requested by: owner ("1, write the CR", 11-18) after Claude's measurement.
 - Measured before (11-18 ~17:30 UTC): /youtube HTML 563 KB (106 KB gzip), of which ~330 KB is the Next.js page data
