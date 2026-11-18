@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-18-01" 11-18 | 15:01-15:20 | deployed (NDP #269); first data run 11-19 07:25 to verify |
 | CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | 11:07-11:28 ("approve CR-2026-11-17-04 window now" 11:0x) | done (NDP #266, worker b011f104) |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-17-03" 11-18 | 12:30-14:14 | done (NDP #268, api 6ba17846, web 5eeae633) |
 | CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | "approve CR-2026-11-17-02", "B", "approve CR-2026-11-17-02 window now" 11-18 | 11:38-12:28 (option B, whole) | done (NDP #267, api 6c75d01c, web 59622da6); CSV import pending owner review |
@@ -64,6 +64,10 @@ done / rolled back / rejected / EMERGENCY.
   directory cards with subscribers ~300, values equal to the YouTube API response for 3 sampled channels, hidden
   counts absent; /youtube 200; Test-Build 8/8.
 - Approval: "approve CR-2026-11-18-01".
+- Result: deployed 15:20 11-18, NDP known-good #269 (72a0773), worker 25d4ed8b / api 0f15043c; rollback-b011f104 /
+  rollback-6ba17846; recovery point 2026-11-18_15-01-34_before-cr-2026-11-18-01-channel-metrics. Tests worker 119/119,
+  API 171/171, Test-Build 8/8. The logo step runs at most every 20 h, so the first channel_metrics rows come at
+  11-19 07:25 (not forced); checks listed above to run then. Card date display: separate small web change.
 
 ### CR-2026-11-17-02  NDP migration 020: nested category hierarchy + admin category management
 - Requested by: owner, 11-17 ("MASTER PROMPT - REDESIGN NOUVELLESDUPAYS YOUTUBE PAGE WITH NESTED CATEGORIES").
