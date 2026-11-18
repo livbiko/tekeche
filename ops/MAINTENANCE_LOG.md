@@ -5,6 +5,22 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-18 22:20–22:27 UTC | MAINTENANCE (HIGH) | CR-2026-11-16-10: OCI policy + 30-day delete rule for tekeche-mongo-backups — ✅ done
+- **Approval**: "approve CR-2026-11-16-10 window now" (owner, 11-18 ~22:20). Get-ChangeRisk said MEDIUM; kept HIGH (IAM).
+  Recovery point `2026-11-18_22-22-47_before-cr-2026-11-16-10-oci-policy-and-l` with `oci-root-policies-before.json`
+  (15 root policies). Slip: the snapshot was first written into the wrong recovery-point folder (sorted by name picked
+  `mongo-rs0-arbiter-add-2026-07-31`); no file of that name existed there; moved to the right folder.
+- **Policy** `tekeche-backup-bucket-policy` (root compartment, ACTIVE, ocid1.policy.oc1..aaaaaaaa35cz...fo4aa), one statement:
+  `Allow service objectstorage-uk-london-1 to manage object-family in compartment id <tekeche-pub> where
+  target.bucket.name = 'tekeche-mongo-backups'` — Oracle's Object Storage service only, this bucket only.
+- **Lifecycle rule** on the bucket: `delete-after-30-days`, DELETE, 30 DAYS, prefix `tekeche/`, enabled (accepted first try).
+  Effect: backups older than 30 days are deleted by OCI; first ones (11-03) around 12-03. BIKODC local copies unchanged (14 days).
+  Bucket before: 1,768 objects, 11-03 01:00 .. 11-18 21:10.
+- **Checks**: 16 root policies = the 15 before (statements identical, NDP's included) + the new one; the 22:25 off-site upload
+  (22:10 backup, 26 files) completed; Test-Build 11/11.
+- **Rollback**: `oci os object-lifecycle-policy delete --bucket-name tekeche-mongo-backups`; `oci iam policy delete` of the new
+  policy. Neither touches stored objects.
+
 ## 2026-11-16 16:58–17:26 UTC | MAINTENANCE (HIGH) | CR-2026-11-16-09: Tekeche backups copied off-site to OCI — ✅ Build #66 known-good
 - **Approval**: "approve CR-2026-11-16-09 window now". Recovery point 2026-11-16_16-58-02 (10 MB dump) + all Tekeche* task XMLs.
 - **Bucket**: `tekeche-mongo-backups`, compartment tekeche-pub, uk-london-1, NoPublicAccess, Standard, versioning off, created

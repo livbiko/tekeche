@@ -405,7 +405,10 @@ done / rolled back / rejected / EMERGENCY.
 - Checks after: policy shows the 1 statement; lifecycle policy shows the rule enabled; NDP policy unchanged; an upload
   run still works (Test-Build 11/11).
 - Window (proposed): now, 15 minutes.
-- Approval: needs "approve CR-2026-11-16-10 window now".
+- Approval: "approve CR-2026-11-16-10 window now" (owner, 11-18 ~22:20 UTC).
+- Result: done 22:24-22:26 11-18. Policy tekeche-backup-bucket-policy ACTIVE (1 statement); lifecycle rule
+  delete-after-30-days enabled (prefix tekeche/); other 15 root policies unchanged; 22:25 upload OK; Test-Build 11/11.
+  Recovery point 2026-11-18_22-22-47_before-cr-2026-11-16-10-oci-policy-and-l (+ policy snapshot).
 
 ### CR-2026-11-16-09  Tekeche MongoDB backups copied off-site to OCI Object Storage
 - Requested by: owner, 11-16 ("c, write the CR"). Replaces CR-08 step 2 (copy to BIKODC1: SYSTEM got Access denied on
