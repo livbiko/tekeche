@@ -39,6 +39,33 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-18-03  NDP web: lighter /youtube main page
+- Requested by: owner ("1, write the CR", 11-18) after Claude's measurement.
+- Measured before (11-18 ~17:30 UTC): /youtube HTML 563 KB (106 KB gzip), of which ~330 KB is the Next.js page data
+  for the browser; 295 images, ~300 list items. The 6 API calls answer in 0.07-0.45 s; the web pod (1 replica,
+  CPU limit 250m) needs 1.2-2.8 s to send the whole page (same directly in the cluster and through dr-haproxy), so
+  the time is spent rendering. Client props: filter facets 41 KB, video list 24 KB.
+- What changes (web only, `app/youtube/(accueil)/page.tsx` + `components/DirectoryFilters.tsx` types if needed):
+  1. "Explorer par pays": the ~190 country cards with flags become, per continent, the continent link (+ the 5 African
+     region links, as today) and a compact list of plain country text links with their count — no flag images, no
+     card markup. Every country page stays linked from /youtube (kept on purpose: CR-2026-11-17-03 relies on these
+     links for crawlers) and stays in the sitemap; flags stay on the region and country pages.
+  2. The filters' client component gets only the fields it reads (countries: iso, name, continent, count;
+     categories: slug, name_fr, count, parent_slug; types / languages: key, label, count; continents: key, label).
+  3. "Vidéos sélectionnées": 24 videos instead of 60 (API `limit=24`).
+  No API, worker or DB change. Directory cards, rankings, filters and links behave as today.
+- Target (not a promise): HTML about a third smaller or better, server time for /youtube under 1 s typical, measured
+  the same way before and after.
+- Class: MEDIUM (Get-ChangeRisk 11-18, run alone).
+- Impact / downtime: one web build + rollout (~10 s).
+- Rollback: web rollback tag taken from the live imageID before the build (today cdcd6ae7).
+- Checks after: CI pod web build; same measurement (size, 5 timed loads direct and public); all 565 /youtube sitemap
+  URLs still 200 at a polite rate (under the 100/min API limit), unknown 404; every country link from before still
+  present on /youtube; 390 px screenshot without overflow; filters still work (country, category, sort); Test-Build
+  8/8 (NDP scripts).
+- Approval: needs "approve CR-2026-11-18-03".
+- Result:
+
 ### CR-2026-11-18-02  NDP web: measurement date on /youtube directory cards
 - Requested by: Claude (left open by CR-2026-11-18-01).
 - What changes: web only. `DirectoryCard.tsx` shows the date next to the numbers when the API gives
