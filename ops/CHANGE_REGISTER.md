@@ -39,6 +39,40 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-18-08  NDP: "Dernières vidéos" — latest uploads of the directory channels, daily, official API
+- Requested by: owner ("2, write the CR", 11-18 ~23:45) after asking why /youtube videos date from 02-03/10.
+- Found: "Vidéos sélectionnées" = youtube_videos, 42 hand-picked videos all added 10-02/10-03 (40 approved), nothing
+  added since; 41 of 42 have no published_at, the page shows the add date. No automatic source (feeds/videos.xml is
+  disallowed by youtube.com/robots.txt, stopped in CR-2026-11-17-01).
+- What changes:
+  1. Migration `021_channel_videos.sql` (new table only, nothing existing altered): channel_videos (youtube_video_id PK,
+     channel_key, title, published_at, thumbnail_url, fetched_at); index (published_at DESC), (channel_key).
+  2. Worker `channel-logos.js` daily step (same 20 h guard, same 'youtube' agent budget in agent_runs): after
+     channels.list, for each returned channel one `playlistItems.list` on its uploads playlist (part snippet,
+     contentDetails, maxResults 5; 1 unit each) -> upsert the 5 latest uploads. Videos older than 30 days and rows not
+     refreshed for 30 days are deleted (YouTube API data is not kept stale). Only titles, ids, dates and thumbnails
+     on i.ytimg.com are stored; nothing is downloaded or hosted. Stops cleanly when the budget is used.
+     Quota: ~305 units/day more (today 7/day for logos; agent 3,192 in the last 24 h; budget 8,000).
+  3. API `GET /api/youtube/latest-videos?limit=&country=&category=`: newest first, at most 2 per channel, only
+     channels shown in the directory; cached like the directory.
+  4. Web: a "Dernières vidéos" section on /youtube (24 videos: thumbnail, title, channel, country, "il y a 3 h"
+     from published_at, link to YouTube — no embed); the hand-picked "Vidéos sélectionnées" section stays below it.
+     All text in French.
+  Tests: worker (fake API: upsert, 30-day purge, budget stop), API (ordering, 2 per channel, filters), web build.
+- Class: HIGH (Get-ChangeRisk 11-18: database migration + quota + new feature). Window below.
+- Risks: quota ~305 units/day added to the shared YouTube budget (discovery gets less); the first run waits for the
+  20 h guard (next logo run 11-19 07:25) unless one run is started by hand in the window; a channel's uploads
+  playlist may be missing or private (counted, skipped).
+- Rollback: worker / API / web rollback tags from the live imageIDs; table left in place but unused, or dropped with
+  reverse.sql (`DROP TABLE channel_videos` — rehearsed); migration file guarded so re-runs are no-ops.
+- Checks after: migration rehearsed (BEGIN..ROLLBACK) then applied; one run: units used = channels + ~7, rows ~5 x
+  channels returned, 3 sampled videos match YouTube (title, date); /youtube shows "Dernières vidéos" with dates
+  from today/yesterday; 390 px no overflow; tests; Test-Build 8/8.
+- Window: proposal 11-19 after the channel-metrics check (~08:00 UTC, 60-90 minutes incl. build + one manual run),
+  or a time you name. Code and tests can be written before the window but NOT pushed (a push goes live at 04:10).
+- Approval: needs "approve CR-2026-11-18-08" and "approve CR-2026-11-18-08 window <time>".
+- Result:
+
 ### CR-2026-11-18-07  NDP data: import the channel classification (237 rows)
 - Requested by: owner ("do it for me" -> Claude filled the decisions, "run Vérifier", "write the CR", 11-18 ~23:30).
 - What changes: one import on /admin/categories ("Appliquer") of
