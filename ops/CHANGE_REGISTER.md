@@ -63,8 +63,12 @@ done / rolled back / rejected / EMERGENCY.
   URLs still 200 at a polite rate (under the 100/min API limit), unknown 404; every country link from before still
   present on /youtube; 390 px screenshot without overflow; filters still work (country, category, sort); Test-Build
   8/8 (NDP scripts).
-- Approval: needs "approve CR-2026-11-18-03".
-- Result:
+- Approval: "approve CR-2026-11-18-03" (owner, 11-18).
+- Result: deployed ~19:58 11-18, NDP known-good #271 (50b5e63), web e4efe04c, rollback-cdcd6ae7; recovery point
+  2026-11-18_19-38-52_before-cr-2026-11-18-03-lighter-ndp-yout. HTML 563 -> 393 KB (-30%), gzip 106 -> 91 KB, images
+  295 -> 91; all country/region/category links kept; 566/566 sitemap URLs 200, unknown 404; 390 px no overflow;
+  Test-Build 8/8. Speed target NOT met: /youtube still ~1.5 s typical (0.7-3.5 s) — rendering is CPU-bound at 250m.
+  Next step is an owner decision (more web CPU = HIGH, or render lower sections on demand).
 
 ### CR-2026-11-18-02  NDP web: measurement date on /youtube directory cards
 - Requested by: Claude (left open by CR-2026-11-18-01).
