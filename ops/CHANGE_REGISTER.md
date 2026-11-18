@@ -39,6 +39,42 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-18-05  NDP: page rendering no longer shares one API rate limit (web -> API inside the cluster)
+- Requested by: Claude, from the read-only investigation of the 20:56 burst (owner "keep going", 11-18).
+- Found (11-18 21:35-21:45 UTC, read-only):
+  1. Public traffic enters through IIS ARR on the ops host (site nouvellesdupays.com,
+     C:\inetpub\wwwroot\proxy-nouvellesdupays, rewrite to http://192.168.1.51). The ingress sees the client as
+     192.168.1.101 (3,058 of 3,119 requests 20:55-21:05, incl. GPTBot and OAI-SearchBot); its config has no
+     use-forwarded-headers, so the API (trustProxy, rate limit 100/min per IP) counts every visitor as one IP.
+  2. The on-prem web deployment has no API_INTERNAL_URL (the OKE manifest 07-web.yaml had it), so server-side
+     rendering calls https://nouvellesdupays.com (baked NEXT_PUBLIC_API_URL) and goes out and back through the BT
+     Hub and ARR: proven 21:40 — one in-cluster load of /youtube/benin made 8 API calls, all counted as 192.168.1.101.
+  3. Effect: the whole site shares 100 API calls/min. A /youtube page needs 6-10. Today since 15:12: 9 minutes with
+     429s (20:57-21:04, 21:16; 2,660 refusals) while GPTBot (639 requests in 6 h) and OAI-SearchBot crawled — every
+     reader got "Contenu momentanément indisponible" in those minutes. The "unexplained burst" was these bots.
+- What changes (this CR, NDP only):
+  1. Web deployment env `API_INTERNAL_URL=http://nouvellesdupays-api.nouvellesdupays.svc.cluster.local:4000`
+     (kubectl set env on .51; one rolling restart). Page rendering calls the API inside the cluster.
+  2. API `app.js`: rate-limit `allowList` for calls from the cluster pod network (10.42.0.0/16) that carry no
+     X-Forwarded-For (only in-cluster callers; public traffic always has one from the ingress). Test added.
+     API build + rollout.
+  Not in this CR (next, separate): ingress-nginx `use-forwarded-headers` + `proxy-real-ip-cidr` 192.168.1.101/32 so
+  browser-side API calls are limited per real visitor — global ingress setting, also affects bikocartridges,
+  kendebabi, livbiko; needs ARR's X-Forwarded-For checked first.
+- Why: bots crawling the site make it unavailable for everyone; render path also skips the hairpin (faster pages).
+- Class: HIGH (Get-ChangeRisk 11-18: infrastructure / environment variables / rate limits). Window below.
+- Risks: (1) page rendering no longer rate-limited at all — a heavy crawl now loads the API and Postgres instead of
+  being refused (2-core node; watch CPU / iowait); (2) wrong service name or port -> pages show "indisponible"
+  (checked by the CI build against the in-cluster URL before the window); (3) two ~10 s restarts.
+- Rollback: `kubectl set env deploy/nouvellesdupays-web API_INTERNAL_URL-` (~1 min) and API rollback tag from the
+  live imageID; recovery point.
+- Checks after: one in-cluster /youtube/benin load -> API log shows the calls from a 10.42.x address and no 429;
+  public calls still limited (101 quick public /api/countries calls from this host -> 429 appears); /youtube and
+  sitemap sample 200; node CPU/iowait 10 min; API tests; Test-Build 8/8 (no public bursts from this host before it).
+- Window: proposal 11-19 after the channel-metrics check (~08:00 UTC, 30 minutes), or a time you name.
+- Approval: needs "approve CR-2026-11-18-05" and "approve CR-2026-11-18-05 window <time>".
+- Result:
+
 ### CR-2026-11-18-04  NDP on-prem: web pod CPU limit 250m -> 500m
 - Requested by: owner (chose "Web CPU" 11-18 ~20:50) after CR-2026-11-18-03 missed its speed target.
 - Evidence (11-18 20:49 UTC, read-only): over 5 direct /youtube loads the web container was throttled in 56 of 79
