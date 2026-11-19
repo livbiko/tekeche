@@ -5,6 +5,18 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-19 16:53–17:20 UTC | INCIDENT / EMERGENCY | CR-2026-11-19-05: public HTTPS down ~27 min, caused by CR-2026-11-19-02 — ✅ restored (HTTPS now straight to IIS .101)
+- Cause: during the CR-19-02 second attempt (Beta Hub Manager) the two TCP 443 -> .50:8443 entries were deleted
+  (~16:52); the Beta then refused every new 443 rule ("Duplicate external port range") and a delete failed (CHOP3-803).
+  WAN 443 fell through to the Hub itself (cert bthomehub.home). All hostnames on 81.130.238.41 down from ~16:53.
+- Slowed by wrong signals: LAN hairpin tests hit the Hub, IIS logs are written in bursts (looked stale), fetch-tool DNS
+  still had OCI for tekeche. Outside fetches of NDP/livbiko were the real signal.
+- Actions: Hub restart ~17:06 (owner: "restart the Hub", ~2 min office network drop) - no effect. ~17:19 classic Hub
+  Manager: rule IIS-HTTPS TCP/UDP 443 -> 192.168.1.101:443 + Save (CHOP3-803 shown, rule applied).
+- Verified 17:20: outside NDP, /api/countries 193, livbiko, 225woyo; public client IPs straight to IIS; NDP Test-Build
+  8/8; uptime-state up 17:20:04 (DOWN mail ~16:56, UP mail 17:20). Port 80 still via .50:8880. Stale LivBikoServer
+  entries remain in the Hub table (delete failed) - next Hub change only with the owner, after a plan.
+
 ## 2026-11-19 ~16:05–17:10 UTC | MAINTENANCE (HIGH) | CR-2026-11-19-02: BT Hub 443/80 back to IIS .101 — ⏸ stopped, not done, no outage
 - Approvals: "approve CR-2026-11-19-02 window now", then "approve CR-2026-11-19-02 revised method: delete and recreate
   LivBikoServer and LivBikoServer80 rules, test rule first, window now". Recovery points Tekeche + NDP 16:07 (NDP with

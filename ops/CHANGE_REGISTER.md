@@ -5,9 +5,10 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-19-05 | EMERGENCY: public HTTPS outage 16:53-17:20 UTC caused by CR-2026-11-19-02 (Hub 443 rules removed, new rule refused); Hub restart; IIS-HTTPS rule added | Claude (during CR-19-02) | EMERGENCY | owner: "restart the Hub" (restart only) | 11-19 16:53-17:20 | done - restored |
 | CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
 | CR-2026-11-19-03 | NDP uptime monitor every 2 min + all public hostnames (Tekeche, livbiko, 225woyo, kendebabi) | Claude (outage review 11-19) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-19-03" 11-19 ~10:50 | 10:52-11:03 | done (NDP #276, a198758) |
-| CR-2026-11-19-02 | BT Hub: public TCP 443/80 back to IIS BikoDC .101 (as before 11-14 07:30), dr-haproxy .50 out of the public path | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | 11-19 window: stopped, path unchanged, test rule CRTEST left | in progress (owner decision) |
+| CR-2026-11-19-02 | BT Hub: public TCP 443/80 back to IIS BikoDC .101 (as before 11-14 07:30), dr-haproxy .50 out of the public path | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | 11-19: HTTPS 443 -> IIS .101 live 17:19 (port 80 still .50); caused outage CR-19-05 | partially done |
 | CR-2026-11-19-01 | EMERGENCY: reset frozen dr-haproxy (all public sites down 06:11-07:35 and 07:41-~10:22) | Claude found it (uptime + checks), owner reset | EMERGENCY (Get-ChangeRisk said MEDIUM; HIGH by the rule) | owner reset it in their own ESXi session, "done" ~10:24 | — | done (service back ~10:22; Test-Build 8/8) |
 | CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-18-01" 11-18 | 15:01-15:20 | done (NDP #269); first data run 11-19 08:25 (not 07:25: 20 h guard by seconds) verified: 915 rows, 305 channels x 3 metrics |
 | CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | 11:07-11:28 ("approve CR-2026-11-17-04 window now" 11:0x) | done (NDP #266, worker b011f104) |
@@ -92,6 +93,19 @@ done / rolled back / rejected / EMERGENCY.
   02:bf:c0:a8:01:64) shows IP N/A - device-bound rules to it go nowhere. Likely 11-14 mechanism: the same row-shift
   when rules were edited. Next: owner decision (new Hub Manager Beta, owner-driven edit, or BT support/factory-style
   rebuild of the forwarding table); CRTEST to be removed in that same session.
+- 11-19 second attempt (owner: "try the Beta Hub Manager", same approval). Beta: CRTEST deleted cleanly (live at once);
+  deleted the 2 TCP 443 -> .50 entries ~16:52; Beta then refused every new 443 rule ("Duplicate external port range",
+  even after deleting the 2 UDP 443 entries) and a delete failed (CHOP3-803). => PUBLIC OUTAGE ~16:53-17:20 UTC (all
+  hostnames on 81.130.238.41: WAN 443 answered by the Hub itself, cert bthomehub.home). Misreads that cost time: LAN
+  hairpin tests and the buffered IIS logs both looked "fine"/"down" wrongly; only outside fetches are truth. Hub restart
+  ~17:06 (owner: "restart the Hub") did NOT help (classic view showed a stale table). Fix ~17:19 in classic view:
+  deleted rule LivBikoServer (pending), added IIS-HTTPS TCP/UDP 443 -> 192.168.1.101:443, Save (CHOP3-803 shown, but
+  IIS-HTTPS applied). Verified: outside fetch NDP / /api/countries (193) / livbiko / 225woyo OK, public client IPs
+  connected straight to IIS, NDP Test-Build 8/8 17:20, uptime-state up 17:20:04 ("Sites back up" mailed).
+- State now: 443 -> IIS .101 DIRECT (goal met for HTTPS). Port 80 still -> .50:8880 (http redirect only, still via
+  dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
+  their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
+  Status: partially done (HTTPS) - incident CR-2026-11-19-05.
 
 ### CR-2026-11-19-03  Uptime monitor every 2 minutes, all public hostnames
 - Requested by: Claude (outage review 11-19).
