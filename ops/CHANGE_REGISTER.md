@@ -6,7 +6,7 @@ done / rolled back / rejected / EMERGENCY.
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
 | CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
-| CR-2026-11-19-03 | NDP uptime monitor every 2 min + all public hostnames (Tekeche, livbiko, 225woyo, kendebabi) | Claude (outage review 11-19) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-19-03 | NDP uptime monitor every 2 min + all public hostnames (Tekeche, livbiko, 225woyo, kendebabi) | Claude (outage review 11-19) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-19-03" 11-19 ~10:50 | 10:52-11:03 | done (NDP #276, a198758) |
 | CR-2026-11-19-02 | BT Hub: public TCP 443/80 back to IIS BikoDC .101 (as before 11-14 07:30), dr-haproxy .50 out of the public path | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | proposed: 15 min, owner in Hub Manager | requested |
 | CR-2026-11-19-01 | EMERGENCY: reset frozen dr-haproxy (all public sites down 06:11-07:35 and 07:41-~10:22) | Claude found it (uptime + checks), owner reset | EMERGENCY (Get-ChangeRisk said MEDIUM; HIGH by the rule) | owner reset it in their own ESXi session, "done" ~10:24 | — | done (service back ~10:22; Test-Build 8/8) |
 | CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-18-01" 11-18 | 15:01-15:20 | done (NDP #269); first data run 11-19 08:25 (not 07:25: 20 h guard by seconds) verified: 915 rows, 305 channels x 3 metrics |
@@ -81,6 +81,10 @@ done / rolled back / rejected / EMERGENCY.
 - Rollback: re-apply the saved CronJob/ConfigMap (kept in the recovery point).
 - Checks after: one run OK with no email; a forced-failure run on uptime-state-test (threshold 1) sends one DOWN email
   (as Build #252); Test-Build 8/8.
+- Approval: "approve CR-2026-11-19-03" (owner, 11-19 ~10:50).
+- Result: recovery point 2026-11-19_10-52-52; test run 7/7 OK no mail; forced failure -> one DOWN mail "[NDP] Site
+  DOWN: forced-test", test state reset by hand; live uptime-script = repo (sha256), CronJob */2, deadline 110 s;
+  scheduled runs 11:00/11:02 7/7 OK; Test-Build 8/8; NDP known-good #276 (a198758). Done.
 
 ### CR-2026-11-19-04  IIS Dynamic IP Restrictions on the public sites
 - Requested by: Claude (outage review 11-19; owner asked for controls against attacks).
