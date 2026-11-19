@@ -5,7 +5,8 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-18-01" 11-18 | 15:01-15:20 | deployed (NDP #269); first data run 11-19 07:25 to verify |
+| CR-2026-11-19-01 | EMERGENCY: reset frozen dr-haproxy (all public sites down 07:50-~10:22) | Claude found it (uptime + checks), owner reset | EMERGENCY (Get-ChangeRisk said MEDIUM; HIGH by the rule) | owner reset it in their own ESXi session, "done" ~10:24 | — | done (service back ~10:22; Test-Build 8/8) |
+| CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-18-01" 11-18 | 15:01-15:20 | done (NDP #269); first data run 11-19 08:25 (not 07:25: 20 h guard by seconds) verified: 915 rows, 305 channels x 3 metrics |
 | CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | 11:07-11:28 ("approve CR-2026-11-17-04 window now" 11:0x) | done (NDP #266, worker b011f104) |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-17-03" 11-18 | 12:30-14:14 | done (NDP #268, api 6ba17846, web 5eeae633) |
 | CR-2026-11-17-02 | NDP migration 020: category hierarchy from the brief (8 categories, 70 subcategories), channel-category links, admin category management | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk) | "approve CR-2026-11-17-02", "B", "approve CR-2026-11-17-02 window now" 11-18 | 11:38-12:28 (option B, whole) | done (NDP #267, api 6c75d01c, web 59622da6); CSV import pending owner review |
@@ -38,6 +39,23 @@ done / rolled back / rejected / EMERGENCY.
 - Approval (owner's words + time):
 - Result:
 ```
+
+### CR-2026-11-19-01  EMERGENCY: reset frozen dr-haproxy (third freeze in 6 days)
+- Requested by: Claude found it 11-19 ~08:31 while checking CR-2026-11-18-08; the owner did the reset.
+- What changed: ESXi Reset of VM dr-haproxy (vms/70, 192.168.1.50). Nothing else.
+- Why / evidence: uptime-state down since 07:50:03 UTC (homepage + api, every 10-min run, 16 fails to 10:20);
+  .50 answered ping but TCP 80/443 timed out; ingress .51 (200 in 0.02 s) and IIS .101 answered; api.tekeche.com via
+  .50 failed too. Same signs as 11-14 / 11-16 (CR-2026-11-16-01).
+- Class: Get-ChangeRisk said MEDIUM; treated as HIGH (public entry point) and done as EMERGENCY (section 5). The
+  automated ESXi tab was logged out (inactivity), Claude does not enter ESXi passwords: owner reset it themselves.
+- Impact: NouvellesDuPays, Tekeche (api.tekeche.com, tekeche.com), livbiko.com, 225woyo.com, kendebabi.com
+  unreachable from outside ~07:50 to ~10:22 UTC (~2.5 h). Down email sent by the uptime job at the state change.
+- Rollback: none (a reset).
+- Checks after (10:25-10:27): via the public IP: nouvellesdupays.com / and /api/countries 200, api.tekeche.com/health
+  200, tekeche.com 200, livbiko.com 200, 225woyo.com 200, kendebabi.com 200, security.tekeche.com 302; NDP Test-Build
+  8/8. uptime-state to flip "up" at the 10:30 run (recovery email).
+- Follow-up (normal process): CR-2026-11-16-02 (leftover snapshot, main suspect) still "requested" — its read-only
+  step 1 needs the owner logged in to ESXi; deleting needs "approve CR-2026-11-16-02 window <time>".
 
 ### CR-2026-11-18-08  NDP: "Dernières vidéos" — latest uploads of the directory channels, daily, official API
 - Requested by: owner ("2, write the CR", 11-18 ~23:45) after asking why /youtube videos date from 02-03/10.
@@ -77,6 +95,10 @@ done / rolled back / rejected / EMERGENCY.
   174/174, worker 124/124; worker runs 00:40/00:45 OK; pages 200; Test-Build 8/8. Deviation from the CR: no manual
   uploads run (the 20 h guard; forcing it would fake the quota bookkeeping) — first videos with the 07:25 run, to
   check then. Added in the window: tab hidden while the section is empty (199e264).
+  First run 11-19 08:25 (07:25 skipped: guard counts from 11-18 11:25:18, job started seconds before): 1,302 videos
+  from 274 channels (298 returned, 7 playlist 404 skipped), 0 purged, quota 312 units, run 4 m 50 s; API 12 items
+  max 2/channel 0.66 s; /youtube shows section + tab, "il y a ..." dates (checked at the ingress during the
+  dr-haproxy outage, CR-2026-11-19-01). 3 videos vs YouTube: pending.
 
 ### CR-2026-11-18-07  NDP data: import the channel classification (237 rows)
 - Requested by: owner ("do it for me" -> Claude filled the decisions, "run Vérifier", "write the CR", 11-18 ~23:30).
@@ -263,6 +285,7 @@ done / rolled back / rejected / EMERGENCY.
 - Result: deployed 17:05 11-18, NDP known-good #270 (393f358), web cdcd6ae7, rollback-5eeae633; recovery point
   2026-11-18_16-50-17_before-cr-2026-11-18-02-ndp-card-measure. CI build + pages 200, Test-Build 8/8. Date visible
   from the 11-19 07:25 channel_metrics run (checked with CR-2026-11-18-01).
+  Verified 11-19 after the 08:25 run: /youtube has 38 "Statistiques au ..." titles and "au 19 nov." on the cards. Done.
 
 ### CR-2026-11-18-01  NDP: channel statistics for every directory channel; discovery on active categories
 - Requested by: Claude (follow-ups left open by CR-2026-11-17-04 and CR-2026-11-17-02).
@@ -293,6 +316,8 @@ done / rolled back / rejected / EMERGENCY.
   rollback-6ba17846; recovery point 2026-11-18_15-01-34_before-cr-2026-11-18-01-channel-metrics. Tests worker 119/119,
   API 171/171, Test-Build 8/8. The logo step runs at most every 20 h, so the first channel_metrics rows come at
   11-19 07:25 (not forced); checks listed above to run then. Card date display: separate small web change.
+  Verified 11-19: first run at 08:25 (not 07:25), channel_metrics 915 rows = 305 channels x subscribers /
+  total_views / video_count. Done.
 
 ### CR-2026-11-17-02  NDP migration 020: nested category hierarchy + admin category management
 - Requested by: owner, 11-17 ("MASTER PROMPT - REDESIGN NOUVELLESDUPAYS YOUTUBE PAGE WITH NESTED CATEGORIES").

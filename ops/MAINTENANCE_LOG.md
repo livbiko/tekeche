@@ -5,6 +5,20 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-19 07:50–~10:22 UTC | INCIDENT / EMERGENCY | CR-2026-11-19-01: dr-haproxy (192.168.1.50) froze a third time — all public sites down ~2.5 h — ✅ recovered
+- **Found**: by Claude at ~08:31 while checking CR-2026-11-18-08 (public curl 000 after 21 s). uptime-state down
+  since 07:50:03 (homepage + api), 16 failed runs to 10:20; the job mails only on a state change (one down mail).
+- **Signs**: .50 answered ping, TCP 80/443 timed out; ingress .51 200 (0.02 s) and IIS .101 answered;
+  api.tekeche.com via .50 failed. Same as 11-14 and 11-16.
+- **Action**: ESXi Reset of dr-haproxy, done by the owner in their own ESXi session (the automated tab was logged out
+  for inactivity; Claude does not enter ESXi passwords). Owner "done" ~10:24.
+- **After (10:25-10:27)**: via the public IP 81.130.238.41: nouvellesdupays.com / and /api/countries 200,
+  api.tekeche.com/health 200, tekeche.com 200, livbiko.com 200, 225woyo.com 200, kendebabi.com 200,
+  security.tekeche.com 302; NDP Test-Build 8/8. (A direct --resolve test to .50:443 fails the TLS handshake while the
+  public path works - test-method quirk, not a fault.)
+- **Open**: CR-2026-11-16-02 (leftover 11-15 snapshot, main suspect) still requested; 3 freezes in 6 days; nothing
+  pages the owner beyond the one state-change email.
+
 ## 2026-11-18 22:20–22:27 UTC | MAINTENANCE (HIGH) | CR-2026-11-16-10: OCI policy + 30-day delete rule for tekeche-mongo-backups — ✅ done
 - **Approval**: "approve CR-2026-11-16-10 window now" (owner, 11-18 ~22:20). Get-ChangeRisk said MEDIUM; kept HIGH (IAM).
   Recovery point `2026-11-18_22-22-47_before-cr-2026-11-16-10-oci-policy-and-l` with `oci-root-policies-before.json`
