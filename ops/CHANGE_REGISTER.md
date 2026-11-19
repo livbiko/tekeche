@@ -7,7 +7,7 @@ done / rolled back / rejected / EMERGENCY.
 |---|---|---|---|---|---|---|
 | CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
 | CR-2026-11-19-03 | NDP uptime monitor every 2 min + all public hostnames (Tekeche, livbiko, 225woyo, kendebabi) | Claude (outage review 11-19) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-19-03" 11-19 ~10:50 | 10:52-11:03 | done (NDP #276, a198758) |
-| CR-2026-11-19-02 | BT Hub: public TCP 443/80 back to IIS BikoDC .101 (as before 11-14 07:30), dr-haproxy .50 out of the public path | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | proposed: 15 min, owner in Hub Manager | requested |
+| CR-2026-11-19-02 | BT Hub: public TCP 443/80 back to IIS BikoDC .101 (as before 11-14 07:30), dr-haproxy .50 out of the public path | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | 11-19 window: stopped, path unchanged, test rule CRTEST left | in progress (owner decision) |
 | CR-2026-11-19-01 | EMERGENCY: reset frozen dr-haproxy (all public sites down 06:11-07:35 and 07:41-~10:22) | Claude found it (uptime + checks), owner reset | EMERGENCY (Get-ChangeRisk said MEDIUM; HIGH by the rule) | owner reset it in their own ESXi session, "done" ~10:24 | — | done (service back ~10:22; Test-Build 8/8) |
 | CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-18-01" 11-18 | 15:01-15:20 | done (NDP #269); first data run 11-19 08:25 (not 07:25: 20 h guard by seconds) verified: 915 rows, 305 channels x 3 metrics |
 | CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | 11:07-11:28 ("approve CR-2026-11-17-04 window now" 11:0x) | done (NDP #266, worker b011f104) |
@@ -69,6 +69,29 @@ done / rolled back / rejected / EMERGENCY.
 - Window: 15 minutes, owner logged in to Hub Manager in the automated Chrome tab (Claude does not enter the Hub
   password). Proposal: as soon as the owner is available (quiet hours better: 03:00 UTC).
 - Approval: needs "approve CR-2026-11-19-02 window <time/now>".
+- 11-19 ~16:05 owner: "approve CR-2026-11-19-02 window now". Recovery points Tekeche 2026-11-19_16-07-38_before-cr-
+  2026-11-19-02-bt-hub-443-80-ba, NDP 2026-11-19_16-07-40_... (+ on-prem pg dump 1.1G). Pre-check: IIS .101 answers all 7
+  hostnames directly (https 200/302, http 301/200, certs to 2027). Hub (SH31B r5.19.3) event log only starts at the Hub
+  restart 15/11 21:34 - the 11-14 changes cannot be traced. Table before: rule "LivBikoServer" = TCP 443->.50:8443 x2
+  (device MAC 00:0c:29:f7:d8:4a), UDP 443->.101 x2 (user-defined IP), TCP/UDP 443->443 with NO device; rule
+  "LivBikoServer80" = TCP 80->.50:8880 x2 (same MAC), TCP 80->80 with NO device. The old direct rules lost their device
+  (likely how the 11-14 switch started). Hub deletes a rule BY NAME (all entries, applied at once) and a device edit
+  duplicated rows/flagged invalid -> stopped unchanged, method went back to the owner.
+- Revised method, owner 11-19: "approve CR-2026-11-19-02 revised method: delete and recreate LivBikoServer and
+  LivBikoServer80 rules, test rule first, window now". 1) create + delete a test rule on a spare port to prove the
+  create flow; 2) delete LivBikoServer + LivBikoServer80; 3) create LivBikoServer user-defined 192.168.1.101 TCP/UDP
+  443->443 and LivBikoServer80 192.168.1.101 TCP 80->80. Outage ~2-3 min. Rollback: recreate both rules to .50:8443 /
+  .50:8880 the same way.
+- Result 11-19 (window, ~16:30-17:10 UTC): NOT DONE, stopped with the public path unchanged (all 7 hostnames + /health
+  200/302 via 81.130.238.41, http 301). Saved changes: only test rule CRTEST TCP 18443 -> 192.168.1.101:443 (user-
+  defined IP) - proven working (public :18443 -> IIS 200 in 0.1 s); it is STILL ON the Hub (same IIS sites on an extra
+  port). Findings: deletes are pending until Save (good: one-Save swap possible), BUT the Hub editor is row-index based:
+  "delete LivBikoServer" removed the wrong entry (dead TCP/UDP 443 entry became UDP) and deleting CRTEST moved CRTEST's
+  IP onto the dead LivBikoServer row below it. Both pending sets discarded (Back, no Save). Device labels also flip
+  between loads (Meraki-Webhooks shown as .105 then .214; .105 does not answer, .214 = MX). The device "BikoDC" (MAC
+  02:bf:c0:a8:01:64) shows IP N/A - device-bound rules to it go nowhere. Likely 11-14 mechanism: the same row-shift
+  when rules were edited. Next: owner decision (new Hub Manager Beta, owner-driven edit, or BT support/factory-style
+  rebuild of the forwarding table); CRTEST to be removed in that same session.
 
 ### CR-2026-11-19-03  Uptime monitor every 2 minutes, all public hostnames
 - Requested by: Claude (outage review 11-19).

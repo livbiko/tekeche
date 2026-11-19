@@ -5,6 +5,17 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-19 ~16:05–17:10 UTC | MAINTENANCE (HIGH) | CR-2026-11-19-02: BT Hub 443/80 back to IIS .101 — ⏸ stopped, not done, no outage
+- Approvals: "approve CR-2026-11-19-02 window now", then "approve CR-2026-11-19-02 revised method: delete and recreate
+  LivBikoServer and LivBikoServer80 rules, test rule first, window now". Recovery points Tekeche + NDP 16:07 (NDP with
+  1.1G on-prem dump). Pre-check: IIS .101 serves all 7 hostnames directly.
+- Done: test rule CRTEST TCP 18443 -> 192.168.1.101:443 saved and proven via the public IP (200). Left in place.
+- Stopped: the Hub port-forwarding editor shifts entries by row (wrong entry removed on "delete LivBikoServer"; deleting
+  CRTEST moved its IP onto the dead LivBikoServer row). Both pending sets discarded without Save. Public path unchanged,
+  verified after: all 7 hostnames + api /health 200/302, http 301.
+- Root-cause note: Hub device "BikoDC" (02:bf:c0:a8:01:64) has IP N/A; the original direct 443/80 rules are bound to no
+  device. Details in CHANGE_REGISTER CR-2026-11-19-02.
+
 ## 2026-11-19 06:11–~10:22 UTC | INCIDENT / EMERGENCY | CR-2026-11-19-01: dr-haproxy (192.168.1.50) froze a third time — all public sites down ~4 h — ✅ recovered
 - **Correction (~11:00)**: IIS logs show the stop at 06:11:29 (not 07:50), traffic again 07:35-07:40, stop again ~07:41;
   uptime mailed DOWN ~06:30, UP 07:40, DOWN ~08:00, UP 10:30. Root-cause review and fixes: CR-2026-11-19-02/03/04.
