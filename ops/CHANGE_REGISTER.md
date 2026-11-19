@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-19-06 | BT Hub (via BT Business support): port 80 -> IIS .101, remove stale LivBikoServer entries | Claude (after CR-19-02/-05) | HIGH | — | with BT, owner on the call | requested |
+| CR-2026-11-19-06 | BT Hub (via BT Business support): port 80 -> IIS .101, remove stale LivBikoServer entries | Claude (after CR-19-02/-05) | HIGH | — | with BT, owner on the call | closed 11-19 - no change (HTTPS done under CR-19-02; port 80 + stale entries pending) |
 | CR-2026-11-19-05 | EMERGENCY: public HTTPS outage 16:53-17:20 UTC caused by CR-2026-11-19-02 (Hub 443 rules removed, new rule refused); Hub restart; IIS-HTTPS rule added | Claude (during CR-19-02) | EMERGENCY | owner: "restart the Hub" (restart only) | 11-19 16:53-17:20 | done - restored |
 | CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
 | CR-2026-11-19-03 | NDP uptime monitor every 2 min + all public hostnames (Tekeche, livbiko, 225woyo, kendebabi) | Claude (outage review 11-19) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-19-03" 11-19 ~10:50 | 10:52-11:03 | done (NDP #276, a198758) |
@@ -123,6 +123,12 @@ done / rolled back / rejected / EMERGENCY.
   cert (not bthomehub.home); Get-NetTCPConnection :443/:80 shows public IPs on .101; NDP Test-Build 8/8; uptime up.
 - Rollback: BT re-adds TCP 80 -> 192.168.1.50:8880.
 - Class: HIGH (Hub, public path). Approval: "approve CR-2026-11-19-06 window <time>" (owner on the BT call).
+- Result 11-19: window approved ~17:28 (recovery points 17-28-35/17-28-37). BT made no change (table read-only
+  checked: IIS-HTTP absent, LivBikoServer80 -> .50:8880 still present). Owner did not approve the revised method
+  (Claude edits the Hub). Owner: "close CR-06". CLOSED, no change made. State at close (checked from here with full
+  cert checks, 81.130.238.41): nouvellesdupays.com + tekeche.com https 200 (direct to IIS .101, rule IIS-HTTPS);
+  http 301 -> https still via dr-haproxy .50:8880. Still open: port 80 off .50 and the stale LivBikoServer entries.
+  Needs a new CR (BT or owner-approved Hub edit).
 
 ### CR-2026-11-19-03  Uptime monitor every 2 minutes, all public hostnames
 - Requested by: Claude (outage review 11-19).
