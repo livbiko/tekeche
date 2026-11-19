@@ -5,7 +5,9 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
-## 2026-11-19 07:50–~10:22 UTC | INCIDENT / EMERGENCY | CR-2026-11-19-01: dr-haproxy (192.168.1.50) froze a third time — all public sites down ~2.5 h — ✅ recovered
+## 2026-11-19 06:11–~10:22 UTC | INCIDENT / EMERGENCY | CR-2026-11-19-01: dr-haproxy (192.168.1.50) froze a third time — all public sites down ~4 h — ✅ recovered
+- **Correction (~11:00)**: IIS logs show the stop at 06:11:29 (not 07:50), traffic again 07:35-07:40, stop again ~07:41;
+  uptime mailed DOWN ~06:30, UP 07:40, DOWN ~08:00, UP 10:30. Root-cause review and fixes: CR-2026-11-19-02/03/04.
 - **Found**: by Claude at ~08:31 while checking CR-2026-11-18-08 (public curl 000 after 21 s). uptime-state down
   since 07:50:03 (homepage + api), 16 failed runs to 10:20; the job mails only on a state change (one down mail).
 - **Signs**: .50 answered ping, TCP 80/443 timed out; ingress .51 200 (0.02 s) and IIS .101 answered;

@@ -5,7 +5,10 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-19-01 | EMERGENCY: reset frozen dr-haproxy (all public sites down 07:50-~10:22) | Claude found it (uptime + checks), owner reset | EMERGENCY (Get-ChangeRisk said MEDIUM; HIGH by the rule) | owner reset it in their own ESXi session, "done" ~10:24 | — | done (service back ~10:22; Test-Build 8/8) |
+| CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
+| CR-2026-11-19-03 | NDP uptime monitor every 2 min + all public hostnames (Tekeche, livbiko, 225woyo, kendebabi) | Claude (outage review 11-19) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-19-02 | BT Hub: public TCP 443/80 back to IIS BikoDC .101 (as before 11-14 07:30), dr-haproxy .50 out of the public path | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | proposed: 15 min, owner in Hub Manager | requested |
+| CR-2026-11-19-01 | EMERGENCY: reset frozen dr-haproxy (all public sites down 06:11-07:35 and 07:41-~10:22) | Claude found it (uptime + checks), owner reset | EMERGENCY (Get-ChangeRisk said MEDIUM; HIGH by the rule) | owner reset it in their own ESXi session, "done" ~10:24 | — | done (service back ~10:22; Test-Build 8/8) |
 | CR-2026-11-18-01 | NDP worker + API: channel statistics into channel_metrics, shown on cards; discovery topic map on active categories | Claude (follow-up of CR-2026-11-17-02/04) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-18-01" 11-18 | 15:01-15:20 | done (NDP #269); first data run 11-19 08:25 (not 07:25: 20 h guard by seconds) verified: 915 rows, 305 channels x 3 metrics |
 | CR-2026-11-17-04 | NDP worker: daily YouTube logos for every directory channel + statistics for channels with an account row (narrowed 11-18, owner option A) | owner (nested-categories brief 11-17) | HIGH (Get-ChangeRisk 11-18 on the narrowed change; was MEDIUM) | "approve CR-2026-11-17-04" 11-18; narrowed "A, write the CR" 11-18 | 11:07-11:28 ("approve CR-2026-11-17-04 window now" 11:0x) | done (NDP #266, worker b011f104) |
 | CR-2026-11-17-03 | NDP /youtube nested pages: region / country / category / subcategory routes, breadcrumbs, nested menu, filters without reload | owner (nested-categories brief 11-17) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-17-03" 11-18 | 12:30-14:14 | done (NDP #268, api 6ba17846, web 5eeae633) |
@@ -40,9 +43,63 @@ done / rolled back / rejected / EMERGENCY.
 - Result:
 ```
 
+### CR-2026-11-19-02  BT Hub: public 443/80 back to IIS on BikoDC; dr-haproxy out of the public path
+- Requested by: Claude (root-cause review of CR-2026-11-19-01, owner asked for a permanent fix, 11-19).
+- Evidence (IIS logs, all sites): until 11-14 07:30 the Hub forwarded straight to IIS .101 (real visitor IPs, months
+  without a public-path freeze). From 11-14 07:30 traffic arrives from .50 only. 11-14: .50 from 07:30, NOTHING
+  12:31-17:00 (unnoticed 4.5 h outage), direct to IIS again ~17:00-20:38, .50 again from 20:38, freeze 20:39. dr-haproxy
+  froze 11-14, 11-16, 11-19 = every freeze since it entered the path; traffic flat (~110-115/min) up to the minute of
+  each stop (no request flood). No change record, no Claude session and no UPnP mapping (no IGD answers) explains the
+  11-14 switches. .50 is pure TCP passthrough (same certificates public / .50:8443 / IIS) - it adds nothing IIS lacks.
+- What changes: BT Hub Manager > Advanced > Firewall > Port forwarding: TCP 443 -> 192.168.1.101:443 and TCP 80 ->
+  192.168.1.101:80 (old: 443 -> .50:8443, 80 -> .50:8880). Record the full table before (screenshot + text). UDP
+  443/500/4500 (VPN) untouched. dr-haproxy VM stays on (powered, unused) until the cause is known.
+- Read-only first: Hub event log (who/when the 11-14 forwarding changes were made, admin logins), Hub remote-access
+  setting, the full forwarding table.
+- Why: removes the component that froze 3 times in 6 days; IIS sees real visitor IPs again (attack visibility,
+  per-IP limits possible - CR-2026-11-19-04).
+- Class: HIGH (Get-ChangeRisk). Window below.
+- Impact: ~1-2 min of refused connections while the rule is saved (no Hub restart expected; if the Hub asks for a
+  restart: stop, ~75 s outage, needs the owner's yes). IIS on .101 becomes the only box in the path (it already was
+  for every request, behind .50).
+- Rollback: put the two rules back to .50:8443 / .50:8880 (values recorded before).
+- Checks after: from outside (WebFetch) nouvellesdupays.com, /api/countries, api.tekeche.com/health, tekeche.com,
+  livbiko.com, 225woyo.com, kendebabi.com, security.tekeche.com; port 80 -> https redirect; IIS logs show public
+  client IPs, none from .50; NDP Test-Build 8/8; uptime-state up.
+- Window: 15 minutes, owner logged in to Hub Manager in the automated Chrome tab (Claude does not enter the Hub
+  password). Proposal: as soon as the owner is available (quiet hours better: 03:00 UTC).
+- Approval: needs "approve CR-2026-11-19-02 window <time/now>".
+
+### CR-2026-11-19-03  Uptime monitor every 2 minutes, all public hostnames
+- Requested by: Claude (outage review 11-19).
+- What changes: CronJob nouvellesdupays-uptime schedule */10 -> */2; uptime.sh checks also api.tekeche.com/health,
+  tekeche.com, livbiko.com, 225woyo.com, kendebabi.com (the failed names in the email); FAIL_THRESHOLD stays 2 (DOWN
+  email after ~4 min instead of ~20). ConfigMap uptime-script + CronJob only; same Brevo key, same recipient.
+- Why: 11-19 the 06:11 outage was mailed ~06:30; a bypass of .50 or a reset could start 15 min earlier. Tekeche
+  hostnames are not checked at all today.
+- Class: MEDIUM (Get-ChangeRisk). Impact: ~720 small requests a day through the public path; no downtime.
+- Rollback: re-apply the saved CronJob/ConfigMap (kept in the recovery point).
+- Checks after: one run OK with no email; a forced-failure run on uptime-state-test (threshold 1) sends one DOWN email
+  (as Build #252); Test-Build 8/8.
+
+### CR-2026-11-19-04  IIS Dynamic IP Restrictions on the public sites
+- Requested by: Claude (outage review 11-19; owner asked for controls against attacks).
+- Depends on CR-2026-11-19-02 (with .50 in the path every visitor is 192.168.1.50 and a per-IP limit would block
+  everyone).
+- What changes: install the IIS "IP and Domain Restrictions" feature if missing; per public site: deny by concurrent
+  requests (> 40 from one IP) and by request rate (> 300 per 10 s from one IP), deny action 403; exempt LAN
+  192.168.1.0/24 and the OCI range 10.0.0.0/16. Logging-only mode first for 24 h (Dynamic IP Restrictions logging
+  only), then enforce after reading the log.
+- Class: HIGH (Get-ChangeRisk). Rollback: disable the two settings per site (applicationHost.config backup in the
+  recovery point).
+- Checks after: normal browsing, NDP Test-Build, Tekeche Test-Build, a 400-request burst from one outside IP gets 403.
+
 ### CR-2026-11-19-01  EMERGENCY: reset frozen dr-haproxy (third freeze in 6 days)
 - Requested by: Claude found it 11-19 ~08:31 while checking CR-2026-11-18-08; the owner did the reset.
 - What changed: ESXi Reset of VM dr-haproxy (vms/70, 192.168.1.50). Nothing else.
+- Correction (11-19 ~11:00, IIS logs): the outage began at 06:11:29, not 07:50 (normal ~110 req/min until 06:11, then
+  nothing); .50 passed traffic again 07:35-07:40 (uptime run 07:40 OK) and stopped again ~07:41. The uptime job mailed
+  DOWN ~06:30, UP 07:40, DOWN ~08:00, UP 10:30. Total ~4 h down.
 - Why / evidence: uptime-state down since 07:50:03 UTC (homepage + api, every 10-min run, 16 fails to 10:20);
   .50 answered ping but TCP 80/443 timed out; ingress .51 (200 in 0.02 s) and IIS .101 answered; api.tekeche.com via
   .50 failed too. Same signs as 11-14 / 11-16 (CR-2026-11-16-01).
