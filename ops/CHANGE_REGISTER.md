@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-19-06 | BT Hub (via BT Business support): port 80 -> IIS .101, remove stale LivBikoServer entries | Claude (after CR-19-02/-05) | HIGH | — | with BT, owner on the call | requested |
 | CR-2026-11-19-05 | EMERGENCY: public HTTPS outage 16:53-17:20 UTC caused by CR-2026-11-19-02 (Hub 443 rules removed, new rule refused); Hub restart; IIS-HTTPS rule added | Claude (during CR-19-02) | EMERGENCY | owner: "restart the Hub" (restart only) | 11-19 16:53-17:20 | done - restored |
 | CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
 | CR-2026-11-19-03 | NDP uptime monitor every 2 min + all public hostnames (Tekeche, livbiko, 225woyo, kendebabi) | Claude (outage review 11-19) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-19-03" 11-19 ~10:50 | 10:52-11:03 | done (NDP #276, a198758) |
@@ -106,6 +107,22 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-19-06  BT Hub: port 80 to IIS .101 + remove stale LivBikoServer entries (via BT Business support)
+- Requested by: Claude after CR-19-02/-05 (owner "go-ahead" 11-19 - not an approval; this CR records the plan).
+- Why: port 80 still goes to dr-haproxy (.50:8880, http->https redirect only); the Hub table still lists stale
+  LivBikoServer entries (TCP 443 -> .50:8443 x2, UDP 443 -> .101 x2, device-less 443 and 80) whose delete fails
+  (CHOP3-803) - after a Hub reboot the wrong rule could win again. The Hub UIs proved unsafe for this (CR-19-05).
+- What changes (BT does it, owner on the call): remove all "LivBikoServer" and "LivBikoServer80" entries; keep
+  IIS-HTTPS (TCP/UDP 443 -> 192.168.1.101:443); add IIS-HTTP TCP 80 -> 192.168.1.101:80; all other rules (VPN UDP
+  500/4500, Meraki .214, CWPHost .113) untouched. Ask BT why the rule store and the running rules disagree.
+- Pre-check (done 11-19): IIS .101 answers http on 80 for all hostnames (301, livbiko 200).
+- Impact: HTTP redirect may blip ~1 min; HTTPS unaffected if BT does not touch IIS-HTTPS; a Hub reboot = ~2 min
+  office-wide drop.
+- Checks after: from OUTSIDE (WebFetch) all hostnames https + http->https; cert subject on 81.130.238.41 is the site
+  cert (not bthomehub.home); Get-NetTCPConnection :443/:80 shows public IPs on .101; NDP Test-Build 8/8; uptime up.
+- Rollback: BT re-adds TCP 80 -> 192.168.1.50:8880.
+- Class: HIGH (Hub, public path). Approval: "approve CR-2026-11-19-06 window <time>" (owner on the BT call).
 
 ### CR-2026-11-19-03  Uptime monitor every 2 minutes, all public hostnames
 - Requested by: Claude (outage review 11-19).
