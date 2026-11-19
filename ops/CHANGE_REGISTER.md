@@ -70,8 +70,13 @@ done / rolled back / rejected / EMERGENCY.
   from today/yesterday; 390 px no overflow; tests; Test-Build 8/8.
 - Window: proposal 11-19 after the channel-metrics check (~08:00 UTC, 60-90 minutes incl. build + one manual run),
   or a time you name. Code and tests can be written before the window but NOT pushed (a push goes live at 04:10).
-- Approval: needs "approve CR-2026-11-18-08" and "approve CR-2026-11-18-08 window <time>".
-- Result:
+- Approval: "approve CR-2026-11-18-08" (11-18 ~23:50), "approve CR-2026-11-18-08 window now" (11-19 ~00:05).
+- Result: deployed 00:15-00:50 11-19, NDP known-good #275 (ce68f66 + 199e264). Migration 021 rehearsed then applied;
+  api 3e4d51f1, web 16cb4105, worker 6672e084; rollback tags api 22a18527 / web e4efe04c / worker 00116118; recovery
+  point 2026-11-19_00-08-33_before-cr-2026-11-18-08-ndp-latest-video + DB dump ndp-daily-2026-11-19.dump. Tests API
+  174/174, worker 124/124; worker runs 00:40/00:45 OK; pages 200; Test-Build 8/8. Deviation from the CR: no manual
+  uploads run (the 20 h guard; forcing it would fake the quota bookkeeping) — first videos with the 07:25 run, to
+  check then. Added in the window: tab hidden while the section is empty (199e264).
 
 ### CR-2026-11-18-07  NDP data: import the channel classification (237 rows)
 - Requested by: owner ("do it for me" -> Claude filled the decisions, "run Vérifier", "write the CR", 11-18 ~23:30).
