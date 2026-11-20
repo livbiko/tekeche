@@ -5,7 +5,8 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | — | — | requested |
+| CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
+| CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | part A: "approve CR-2026-11-20-01 part A window now" (11-20 ~00:25) | part A now | part A in progress; part B requested |
 | CR-2026-11-19-06 | BT Hub (via BT Business support): port 80 -> IIS .101, remove stale LivBikoServer entries | Claude (after CR-19-02/-05) | HIGH | — | with BT, owner on the call | closed 11-19 - no change (HTTPS done under CR-19-02; port 80 + stale entries pending) |
 | CR-2026-11-19-05 | EMERGENCY: public HTTPS outage 16:53-17:20 UTC caused by CR-2026-11-19-02 (Hub 443 rules removed, new rule refused); Hub restart; IIS-HTTPS rule added | Claude (during CR-19-02) | EMERGENCY | owner: "restart the Hub" (restart only) | 11-19 16:53-17:20 | done - restored |
 | CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
@@ -108,6 +109,27 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-20-02  EMERGENCY: etcd hung on dr-rke2 (.51) - sites down 04:24-13:18 UTC
+- Symptom: IIS (W3SVC9) answered 502 for nouvellesdupays.com from 04:24:18 to 13:15:31 (short recovery 10:56-10:59);
+  from outside at 13:08 NDP and 225woyo.com timed out, tekeche/livbiko/kendebabi were up. Hub/IIS path fine
+  (external connections on IIS :443, certs valid).
+- Cause found: on .51 the etcd process (pid 1417, up 20 days) stopped answering (/health timed out, its log
+  ends 04:23:30, already "apply request took too long" 100-300 ms just before). From 11:02 rke2-server crash-looped
+  (530 failed starts: "failed to reconcile with local datastore: context deadline exceeded"), kube-apiserver timed
+  out. 04:23 = the daily image rebuild window (Kaniko builds 04:10-04:20 on the same disk; dr-image-sync-web was
+  stuck "Unknown" for 9 h). Why the running web/api pods stopped serving while the API was down is NOT proven.
+- Not an attack: no request flood; the failure is inside the cluster's database.
+- Action (minimum): copied etcd member dir to /home/ubuntu/etcd-backup-2026-11-20T1314 (376 MB); SIGTERM, then
+  SIGKILL etcd (did not stop in 20 s); systemctl restart rke2-server -> active 13:18:41, node Ready, etcd new pid.
+  Missed CronJobs then ran (incl. dr-image-rollout: new api/web pods 13:20).
+- Checks: 13:19 + 13:21 all 6 hostnames 200 via 81.130.238.41 with full cert checks; /api/countries 200; outside
+  WebFetch nouvellesdupays.com + 225woyo.com load; uptime-state "up".
+- Gap: the uptime CronJob runs INSIDE this cluster, so it could not run and sent no DOWN email for 9 h.
+- Follow-ups (need CRs): (1) uptime check from outside the cluster (e.g. a Windows task on BikoDC or OCI);
+  (2) etcd/disk: defrag + check latency of the .51 datastore, move the 04:10 Kaniko builds off etcd's disk or
+  space them out; (3) an etcd/apiserver health watchdog on .51; (4) find why pods stopped serving.
+- CR-2026-11-20-01 part A (discovery) was not involved: its code is committed locally only, nothing applied.
 
 ### CR-2026-11-20-01  NDP discovery: all regions + priority countries + search-API discovery
 - Requested by: owner 11-20 ("write the CR for items 1 and 2" of the discovery-brief status).

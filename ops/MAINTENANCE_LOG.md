@@ -5,6 +5,13 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-20 04:24–13:18 UTC | INCIDENT / EMERGENCY | CR-2026-11-20-02: etcd hung on dr-rke2 (.51), NDP + on-prem-served sites down ~9 h
+- **Detected**: owner 13:07 ("why all my websites are down again"). IIS W3SVC9 502 from 04:24:18; uptime monitor silent (it runs in the broken cluster).
+- **Cause**: etcd pid 1417 on .51 stopped answering ~04:23 (log ends 04:23:30, slow applies before, during the 04:10 image-rebuild window); rke2-server crash-looped from 11:02 (530 failed starts, "failed to reconcile with local datastore").
+- **Fix 13:14–13:18**: etcd data copied to /home/ubuntu/etcd-backup-2026-11-20T1314; etcd killed; rke2-server restarted -> active 13:18:41, node Ready.
+- **Verified**: all 6 hostnames 200 via the public IP (strict TLS) at 13:19 and after the catch-up rollout 13:21; outside fetch OK; uptime-state up.
+- **Open**: outside-the-cluster uptime check; etcd disk latency / Kaniko load; why pods stopped serving. CR-2026-11-20-01 part A window: code ready, unpushed, nothing applied.
+
 ## 2026-11-19 16:53–17:20 UTC | INCIDENT / EMERGENCY | CR-2026-11-19-05: public HTTPS down ~27 min, caused by CR-2026-11-19-02 — ✅ restored (HTTPS now straight to IIS .101)
 - Cause: during the CR-19-02 second attempt (Beta Hub Manager) the two TCP 443 -> .50:8443 entries were deleted
   (~16:52); the Beta then refused every new 443 rule ("Duplicate external port range") and a delete failed (CHOP3-803).
