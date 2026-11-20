@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | — | — | requested |
 | CR-2026-11-19-06 | BT Hub (via BT Business support): port 80 -> IIS .101, remove stale LivBikoServer entries | Claude (after CR-19-02/-05) | HIGH | — | with BT, owner on the call | closed 11-19 - no change (HTTPS done under CR-19-02; port 80 + stale entries pending) |
 | CR-2026-11-19-05 | EMERGENCY: public HTTPS outage 16:53-17:20 UTC caused by CR-2026-11-19-02 (Hub 443 rules removed, new rule refused); Hub restart; IIS-HTTPS rule added | Claude (during CR-19-02) | EMERGENCY | owner: "restart the Hub" (restart only) | 11-19 16:53-17:20 | done - restored |
 | CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
@@ -107,6 +108,53 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-20-01  NDP discovery: all regions + priority countries + search-API discovery
+- Requested by: owner 11-20 ("write the CR for items 1 and 2" of the discovery-brief status).
+- Why (measured in prod 11-20): 193/193 countries have an active publisher, but 18 have fewer than 3 and 8 have
+  only 1 (Mongolia, Vatican City, Trinidad and Tobago, Micronesia, Palau, Nauru, Kiribati, Tuvalu); Tuvalu has no
+  article in 7 days. The hourly job nouvellesdupays-discovery only mines homepages of AFRICAN publishers for outbound
+  links (DISCOVERY_REGION = the 5 African regions, MINE_LIMIT 6, CHECK_LIMIT 40); its last run found 0 new
+  candidates. Countries outside Africa get no automatic discovery at all.
+- What changes - Part A (no new key, code + CronJobs):
+  1. apps/worker/src/discover.js: DISCOVERY_REGION accepts "all" (every countries.region); new
+     DISCOVERY_PRIORITY_MAX_ACTIVE (default 2) = mine/check only countries with <= N active publishers, re-computed
+     every run from prod data (no fixed list).
+  2. CronJob nouvellesdupays-discovery (hourly): DISCOVERY_REGION -> all. Limits unchanged (6 homepages mined,
+     40 candidates checked per run).
+  3. New CronJob nouvellesdupays-discovery-priority, every 6 h (minute 47, not 17, so the two never overlap;
+     concurrencyPolicy Forbid, activeDeadline 1500 s, backoffLimit 0): same image, priority mode.
+- What changes - Part B (only after the owner has chosen and paid for a search API and created the key):
+  4. New search step in discover.js: per priority country, queries built from the country registry (name in its
+     official languages + "news"/"actualites"/"noticias"/... and the capital), results -> the SAME candidate
+     pipeline (dedupe by domain against publishers/submissions/candidates, robots.txt, feed/sitemap test, spam
+     check) with discovery_method='search' and the query stored. Nothing is auto-approved: candidates land in
+     /admin/discovery for the owner as today.
+  5. Budget: DISCOVERY_SEARCH_BUDGET_PER_RUN (default 30 queries) + monthly cap DISCOVERY_SEARCH_BUDGET_MONTH
+     (default 3000), counted in a new table discovery_search_log (migration, additive, reversible); the step stops
+     when either is reached. Key in a new Secret ndp-search-api (never in git, never printed).
+  - Provider: owner's choice. Must be an official search API whose terms allow this use (no scraping of search
+    result pages). Candidate: Brave Search API. Bing Web Search API is retired. Price/quota: owner checks at sign-up.
+- Not in scope: TikTok/Facebook discovery (no permitted API), auto-approval, the admin dashboard, the 4 scores.
+- Impact: new crawl load = robots.txt + homepage + feed tests for up to 40 candidates per run (bot UA, robots
+  respected, as today), plus the 6-hourly run. DB: inserts into discovered_sources only (+ discovery_search_log in
+  B). No change to publishers, articles, the public site or the ingest worker. Search cost (B) capped by budget.
+  Review load for the owner grows (more candidates in /admin/discovery).
+- Tests before deploy: discover.test.js fixtures (fetch mocked): "all" regions, priority filter (<= N active),
+  search step dedupe/budget stop/no-key = skipped (B), existing tests still pass; dry run against prod data
+  (read-only, DISCOVERY_DRY_RUN) listing what would be mined/checked.
+- Deploy: branch -> owner pushes to main (daily 04:10 rebuild makes main live; push only in the window) -> image
+  rebuild (Kaniko, one at a time) -> apply CronJobs -> trigger one manual run of each -> NDP Test-Build 8/8.
+- Checks after: both CronJobs listed with the right schedules; first runs Complete, logs show countries outside
+  Africa mined; new discovered_sources rows have country + method; no errors in worker/api; site pages unchanged;
+  uptime up. Part B: discovery_search_log counts <= budget; candidates carry discovery_method='search'.
+- Recovery point: Tekeche + NDP New-RecoveryPoint before starting; save current CronJob YAML.
+- Rollback: re-apply the saved nouvellesdupays-discovery CronJob (5 African regions); delete CronJob
+  nouvellesdupays-discovery-priority; previous image tag; Part B: delete Secret ndp-search-api, migration down drops
+  discovery_search_log. Candidates already found stay as review items (owner can reject; nothing deleted).
+- Class: HIGH (CronJob change + new Secret; Get-ChangeRisk said MEDIUM, higher class used). Duration ~45 min per
+  part. Approval: "approve CR-2026-11-20-01 part A window <time>" and, later, "approve CR-2026-11-20-01 part B
+  window <time>" (after the key exists).
 
 ### CR-2026-11-19-06  BT Hub: port 80 to IIS .101 + remove stale LivBikoServer entries (via BT Business support)
 - Requested by: Claude after CR-19-02/-05 (owner "go-ahead" 11-19 - not an approval; this CR records the plan).
