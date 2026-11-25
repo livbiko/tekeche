@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | in progress |
 | CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | — | part 1: window | requested |
 | CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | A: "approve CR-2026-11-25-02 part A" (11-25) | B: needs a window | A ROLLED BACK 11-25 22:01 (worker runs timed out during the test build); B requested |
 | CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-01" (11-25) | — | done 11-25 21:35 |
@@ -152,6 +152,15 @@ done / rolled back / rejected / EMERGENCY.
   or after CR-25-03 is done.)
 - Rollback: previous api/web images (tags saved from the live imageIDs before deploy); git revert.
 - Class: MEDIUM (Get-ChangeRisk). Approval: "approve CR-2026-11-25-04".
+- Progress 11-25 22:18-22:45: NDP recovery point 2026-11-25_22-17-59 (dump 1.2G, live api/web imageIDs saved in
+  live-images-before.txt). Built + committed NDP 90b4c99: API latest-videos multi-type + category + updated_at, new
+  GET /api/youtube/explorer; web banner (IndependentVoicesBanner), tree (CountryExplorer + ExplorerShell), page wiring.
+  Tests: API 176/176 (2 new: multi-type/latest fields; explorer counts = directory counts for every country,
+  category and subcategory); tsc clean; next build OK; local check on the test DB (desktop 1366 + phone 390
+  screenshots: banner, tree, no page overflow). A local check on production data was blocked (prod DB password on
+  this host) - real-data check after deploy. Deploy plan: owner pushes NDP main -> nightly 04:10-04:40 rebuild +
+  rollout (no daytime build on .51: it times out worker runs, CR-25-02 A) -> Claude runs Test-Build + live checks
+  next session; rollback = previous imageIDs + git revert.
 
 ### CR-2026-11-25-03  Build the NDP images off .51 (GitHub Actions) + check the ESXi storage (replaces CR-25-02 part A)
 - Requested by: owner 11-25 ("do it for me" = write the recommended next CR), after CR-2026-11-25-02 part A was rolled back.
