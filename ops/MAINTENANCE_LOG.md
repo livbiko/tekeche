@@ -5,6 +5,11 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-25 22:57–23:28 UTC | MAINTENANCE (HIGH) | CR-2026-11-25-03 part 1: NDP images built on GitHub Actions, mirrored to .51
+- **Change**: workflow .github/workflows/images.yml (03:50 UTC + on demand) -> public ghcr.io/livbiko/nouvellesdupays-*; CronJob dr-image-mirror 04:10 copies :main -> 192.168.1.51:30500/*:local; Kaniko dr-image-sync-{api,worker,web} suspended.
+- **Verified**: GitHub run OK (web 61 s vs 10-12 min on .51); mirror 44 s, digests equal; etcd 0 fsyncs over 0.5 s during it; worker on the GHCR image Complete; Test-Build 8/8.
+- **Next**: first night 03:50 -> 04:10 -> 04:40, then Set-KnownGood with CR-2026-11-25-04's live /youtube check.
+
 ## 2026-11-25 21:41–22:03 UTC | CHANGE (MEDIUM) | CR-2026-11-25-02 part A: gentler nightly web build — ROLLED BACK
 - **Change**: 4 build CronJobs (kaniko pinned, web 500m CPU + redo snapshots + no compressed caching, web 04:25, rollout 05:00).
 - **Test**: web build 12.5 min; etcd average fsync 50 ms, 22 fsyncs over 0.5 s; worker runs 21:50 + 21:55 DeadlineExceeded -> Test-Build 7/8.

@@ -7,7 +7,7 @@ done / rolled back / rejected / EMERGENCY.
 |---|---|---|---|---|---|---|
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | in progress |
-| CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | — | part 1: window | requested |
+| CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | part 1: "approve CR-2026-11-25-03 part 1 window now" (11-25 ~23:00); revised: "approve CR-2026-11-25-03 revised method: public GHCR packages, no token, window now" | part 1 11-25 22:57-23:28 | part 1 done (first night to check); part 2 later |
 | CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | A: "approve CR-2026-11-25-02 part A" (11-25) | B: needs a window | A ROLLED BACK 11-25 22:01 (worker runs timed out during the test build); B requested |
 | CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-01" (11-25) | — | done 11-25 21:35 |
 | CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
@@ -216,6 +216,18 @@ done / rolled back / rejected / EMERGENCY.
 - Part 2 (HIGH, later, unchanged from CR-25-02 part B): ESXi storage check with the owner logged in; etcd on its own
   disk only if a faster datastore exists. Decided after Part 1's measurements.
 - Approval: "approve CR-2026-11-25-03 part 1 window <time>" (owner also creates the read-only GitHub token).
+- Part 1 result 11-25 22:57-23:28: recovery points 22-57-56 / 22-57-58 (dump 1.2G), Kaniko CronJobs saved. Repo is
+  PUBLIC (Actions minutes free). Workflow images.yml pushed (NDP d95098e), run 45718492343: api 25 s, worker 23 s,
+  web 61 s, prune OK. Token route failed 3x (owner script never reached .51 - sudo log empty); owner approved the
+  revised method "public GHCR packages, no token" and made the 3 packages public. NOTE: Claude's first "private"
+  check was wrong (its Accept header lacked the OCI manifest type, so it returned 404 either way) - the token may
+  never have been needed. Applied CronJob dr-image-mirror (04:10, crane copy, Secret ghcr-read optional/unused); test
+  run 23:22:56-23:23:40 (44 s): 3 digests local = GHCR; etcd during it 172 fsyncs, 0 over 0.5 s, 6 over 128 ms,
+  +8 slow applies (Kaniko web build: 22 / 187 / +475 over 12.5 min). Suspended dr-image-sync-{api,worker,web}
+  (kept). Worker 23:25 ran on the GHCR image a3e01cc9 - Complete, 872/883 feeds, 89 articles. Test-Build NDP 8/8.
+  Set-KnownGood waits for the 04:40 rollout (api/web still old images) - with CR-2026-11-25-04's live check.
+  Rollback: kubectl delete cronjob dr-image-mirror; patch dr-image-sync-{api,worker,web} suspend=false.
+  Owner: delete the unused read:packages token on GitHub if one was created.
 
 ### CR-2026-11-25-02  etcd disk on dr-rke2 (.51): stop the nightly build from starving etcd; give etcd its own disk
 - Requested by: owner 11-25 ("write the CR for item 1"), follow-up 1 of CR-2026-11-20-02.
