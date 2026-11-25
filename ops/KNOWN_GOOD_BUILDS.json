@@ -856,5 +856,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  67,
+        "dateCreated":  "2026-11-25T21:37:11.6237541+00:00",
+        "apiCommit":  "0974b39827e931f89df08dd5053e449f0217538a",
+        "apiBranch":  "master",
+        "mobileCommit":  "f73c1ebb411ebe8dba61e4f980220d1222d108e3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "CR-2026-11-25-01: uptime check outside the RKE2 cluster (task NDP-Uptime-Outside)",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

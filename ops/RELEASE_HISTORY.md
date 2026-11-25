@@ -654,3 +654,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: CR-2026-11-16-09: Tekeche backups copied hourly to OCI bucket tekeche-mongo-backups
 
+
+## Build #67 — 2026-11-25 21:37
+
+- **API commit**: 0974b398 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: CR-2026-11-25-01: uptime check outside the RKE2 cluster (task NDP-Uptime-Outside)
+
