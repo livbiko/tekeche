@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | — | ~15 min | requested |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | in progress |
 | CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | — | part 1: window | requested |
 | CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | A: "approve CR-2026-11-25-02 part A" (11-25) | B: needs a window | A ROLLED BACK 11-25 22:01 (worker runs timed out during the test build); B requested |
@@ -113,6 +114,21 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-25-05  Temporary BikoDC firewall rule: TCP 3100 from the LAN, for the /youtube preview check
+- Requested by: owner 11-25 ("try chrome extension again", "open port 3100"); for CR-2026-11-25-04's browser check.
+- Why: the preview (new /youtube build on BikoDC :3100, test database with sample data) answers locally, but the
+  owner's Chrome (Claude in Chrome) runs on another LAN machine and the Windows Firewall blocks inbound 3100 (checked:
+  .51 -> 192.168.1.101:3100 times out). The BT Hub is NOT changed (that would expose the preview to the internet).
+- What changes: New-NetFirewallRule "TEMP-CR-2026-11-25-05-preview-3100", inbound, TCP 3100, allow, remote address
+  192.168.1.0/24 only. Nothing else is listening on 3100 (only the preview).
+- Impact: the preview (sample data, no secrets, no admin) is reachable from the LAN for the test (~15 min).
+- Test: from .51 -> 192.168.1.101:3100 answers 200; extension screenshots desktop 1366 + phone 390; expand/collapse,
+  keyboard, country search, banner buttons.
+- Rollback / end: Remove-NetFirewallRule -DisplayName "TEMP-CR-2026-11-25-05-preview-3100"; check from .51 that 3100
+  times out again; stop the preview servers and remove the test database.
+- Recovery point: Tekeche New-RecoveryPoint before (Get-ChangeRisk: MEDIUM). Test-Build Tekeche + NDP after.
+- Class: MEDIUM. Approval: "approve CR-2026-11-25-05".
 
 ### CR-2026-11-25-04  NDP /youtube redesign phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree
 - Requested by: owner 11-25 (YouTube master brief, sections 2-6). Phases 2 (languages: central translation system,
