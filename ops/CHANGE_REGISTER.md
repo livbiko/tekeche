@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | — | ~15 min | requested |
+| CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | in progress |
 | CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | — | part 1: window | requested |
 | CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | A: "approve CR-2026-11-25-02 part A" (11-25) | B: needs a window | A ROLLED BACK 11-25 22:01 (worker runs timed out during the test build); B requested |
@@ -129,6 +129,12 @@ done / rolled back / rejected / EMERGENCY.
   times out again; stop the preview servers and remove the test database.
 - Recovery point: Tekeche New-RecoveryPoint before (Get-ChangeRisk: MEDIUM). Test-Build Tekeche + NDP after.
 - Class: MEDIUM. Approval: "approve CR-2026-11-25-05".
+- Result 11-25 22:50-22:52: recovery point 2026-11-25_22-50-39; rule added; .51 -> :3100 200; Claude in Chrome loaded
+  the preview at desktop width: banner next/pause work (wrap to start at the end), tree regions/countries open, links
+  /youtube/cote-divoire[/news-media], search "nige" leaves only Nigeria, no horizontal overflow. Phone width could not
+  be set in the extension window (stayed 1897 px) - phone layout was checked with headless Chromium at 390 px.
+  Rule removed (verified absent; .51 -> :3100 times out again); preview servers stopped; test DB removed.
+  Test-Build Tekeche 11/11, NDP 8/8.
 
 ### CR-2026-11-25-04  NDP /youtube redesign phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree
 - Requested by: owner 11-25 (YouTube master brief, sections 2-6). Phases 2 (languages: central translation system,
