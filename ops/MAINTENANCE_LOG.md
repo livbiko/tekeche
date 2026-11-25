@@ -5,6 +5,12 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-25 21:41–22:03 UTC | CHANGE (MEDIUM) | CR-2026-11-25-02 part A: gentler nightly web build — ROLLED BACK
+- **Change**: 4 build CronJobs (kaniko pinned, web 500m CPU + redo snapshots + no compressed caching, web 04:25, rollout 05:00).
+- **Test**: web build 12.5 min; etcd average fsync 50 ms, 22 fsyncs over 0.5 s; worker runs 21:50 + 21:55 DeadlineExceeded -> Test-Build 7/8.
+- **Rollback 22:01**: saved CronJob YAML re-applied and verified; worker 22:00 Complete; Test-Build 8/8 22:02. Repo reverted (NDP 1fef0eb).
+- **Next**: revised CR - build images off .51 and/or Part B (etcd own disk).
+
 ## 2026-11-25 21:32–21:36 UTC | CHANGE (MEDIUM) | CR-2026-11-25-01: uptime check outside the RKE2 cluster
 - **Change**: ops/scripts/Watch-PublicUptime.ps1 + scheduled task NDP-Uptime-Outside on BikoDC (SYSTEM, every 2 min, limit 5 min, IgnoreNew). 7 checks via 81.130.238.41 with strict TLS; DOWN mail after 2 failed runs, UP mail on recovery (Brevo, noreply@nouvellesdupays.com -> owner). State/log in C:/ops/uptime-outside.
 - **Verified**: all-up run, simulated DOWN/UP, test mails from the admin account and from SYSTEM; first scheduled run result 0; Test-Build Tekeche 11/11, NDP 8/8.

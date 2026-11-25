@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | — | B: needs a window | requested |
+| CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | A: "approve CR-2026-11-25-02 part A" (11-25) | B: needs a window | A ROLLED BACK 11-25 22:01 (worker runs timed out during the test build); B requested |
 | CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-01" (11-25) | — | done 11-25 21:35 |
 | CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
 | CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | part A: "approve CR-2026-11-20-01 part A window now" (11-20 ~00:25, lapsed unpushed; re-approved same words 11-25) | part A 11-25 21:09-21:27 | part A done (Build #277); part B requested |
@@ -155,6 +155,17 @@ done / rolled back / rejected / EMERGENCY.
   fresh, site up; etcd metrics compared.
 - Class: Get-ChangeRisk said MEDIUM. Part A: MEDIUM -> approval "approve CR-2026-11-25-02 part A".
   Part B: HIGH (etcd data move, cluster stop) -> "approve CR-2026-11-25-02 part B window <time>".
+- Part A result 11-25 21:41-22:03: recovery points 21-41-19 / 21-41-21 (dump 1.2G); applied the 4 build CronJobs
+  (kaniko pinned sha256:4e7a52dd..., web 500m CPU + --snapshot-mode=redo + --compressed-caching=false, web 04:25,
+  rollout 05:00; repo had a stale rollout image bitnami/kubectl:1.31 - aligned to live registry.k8s.io/kubectl:v1.35.7).
+  Test: one web build 21:47:13-21:59:47 (Complete, 12.5 min). During it: 2,584 etcd fsyncs, average 50 ms (lifetime
+  24 ms), 187 over 128 ms, 22 over 0.5 s, +475 slow applies, I/O pressure 75-90%. Success goal (no fsync over 0.5 s)
+  NOT met. Worker runs 21:50 and 21:55 failed (DeadlineExceeded) during the build -> Test-Build 7/8 -> ROLLED BACK
+  at 22:01 (saved CronJob YAML re-applied, verified: old schedules, :latest, CPU 1, original args); worker 22:00 run
+  Complete; Test-Build 8/8 at 22:02. Repo reverted (1fef0eb), rollout image alignment kept.
+  Finding: the 11-18 worker failures (~04:20 UTC) also fell in the nightly web build - the build starves .51
+  whatever its CPU limit (it is disk-bound: npm ci + kaniko filesystem snapshots). Better fix than throttling: build
+  the images somewhere else (not on .51), and/or Part B (etcd on its own, faster disk). Needs a revised CR.
 
 ### CR-2026-11-25-01  Uptime check outside the on-prem cluster (BikoDC scheduled task)
 - Requested by: Claude, follow-up 1 of CR-2026-11-20-02 (owner "go next" 11-25).
