@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-01" (11-25) | — | done 11-25 21:35 |
 | CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
 | CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | part A: "approve CR-2026-11-20-01 part A window now" (11-20 ~00:25, lapsed unpushed; re-approved same words 11-25) | part A 11-25 21:09-21:27 | part A done (Build #277); part B requested |
 | CR-2026-11-19-06 | BT Hub (via BT Business support): port 80 -> IIS .101, remove stale LivBikoServer entries | Claude (after CR-19-02/-05) | HIGH | — | with BT, owner on the call | closed 11-19 - no change (HTTPS done under CR-19-02; port 80 + stale entries pending) |
@@ -135,6 +135,13 @@ done / rolled back / rejected / EMERGENCY.
 - Recovery point: Tekeche New-RecoveryPoint before starting. Test-Build (Tekeche + NDP) after.
 - Rollback: Unregister-ScheduledTask NDP-Uptime-Outside; delete C:/ops/uptime-outside; revert the script commit.
 - Class: MEDIUM. Approval: "approve CR-2026-11-25-01".
+- Result 11-25 21:32-21:36: recovery point 2026-11-25_21-32-41; script committed; Brevo key copied from the cluster
+  secret into C:/ops/uptime-outside/brevo.key (DPAPI LocalMachine, ACL SYSTEM:R + Administrators:F, never printed).
+  Tests: normal run all up (no mail); simulated outage on a test state file -> no mail after run 1, DOWN after run 2,
+  UP on recovery; [TEST] mail; [SYSTEM] test mail from a SYSTEM task (removed after). Task NDP-Uptime-Outside
+  (SYSTEM, every 2 min) first run result 0, state up. Deviation: task time limit 5 min (not 60 s) + IgnoreNew,
+  because 7 checks timing out take ~105 s. Test-Build Tekeche 11/11, NDP 8/8. Owner: confirm the 4 test mails
+  ([TEST] DOWN, [TEST] UP, [TEST] mail delivery, [SYSTEM][TEST]) arrived.
 
 ### CR-2026-11-20-02  EMERGENCY: etcd hung on dr-rke2 (.51) - sites down 04:24-13:18 UTC
 - Symptom: IIS (W3SVC9) answered 502 for nouvellesdupays.com from 04:24:18 to 13:15:31 (short recovery 10:56-10:59);

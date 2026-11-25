@@ -5,6 +5,11 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-25 21:32–21:36 UTC | CHANGE (MEDIUM) | CR-2026-11-25-01: uptime check outside the RKE2 cluster
+- **Change**: ops/scripts/Watch-PublicUptime.ps1 + scheduled task NDP-Uptime-Outside on BikoDC (SYSTEM, every 2 min, limit 5 min, IgnoreNew). 7 checks via 81.130.238.41 with strict TLS; DOWN mail after 2 failed runs, UP mail on recovery (Brevo, noreply@nouvellesdupays.com -> owner). State/log in C:/ops/uptime-outside.
+- **Verified**: all-up run, simulated DOWN/UP, test mails from the admin account and from SYSTEM; first scheduled run result 0; Test-Build Tekeche 11/11, NDP 8/8.
+- **Rollback**: Unregister-ScheduledTask NDP-Uptime-Outside; delete C:/ops/uptime-outside.
+
 ## 2026-11-25 21:09–21:27 UTC | MAINTENANCE (HIGH) | CR-2026-11-20-01 part A: NDP discovery on all regions + 6-hourly priority run
 - **Approval**: "approve CR-2026-11-20-01 part A window now" (11-25; the 11-20 approval had lapsed unpushed). Push done by Claude on owner's "do it for me".
 - **Change**: NDP main 5a5cfad (discover.js: DISCOVERY_REGION=all, DISCOVERY_PRIORITY_MAX_ACTIVE, DISCOVERY_DRY_RUN; tests 127/127). Worker image sha256:f4ab48e1. CronJobs: nouvellesdupays-discovery -> all regions; new nouvellesdupays-discovery-priority (47 */6, countries with <=2 active publishers, 18 today).
