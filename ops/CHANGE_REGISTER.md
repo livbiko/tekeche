@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | — | B: needs a window | requested |
 | CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-01" (11-25) | — | done 11-25 21:35 |
 | CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
 | CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | part A: "approve CR-2026-11-20-01 part A window now" (11-20 ~00:25, lapsed unpushed; re-approved same words 11-25) | part A 11-25 21:09-21:27 | part A done (Build #277); part B requested |
@@ -110,6 +111,50 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-25-02  etcd disk on dr-rke2 (.51): stop the nightly build from starving etcd; give etcd its own disk
+- Requested by: owner 11-25 ("write the CR for item 1"), follow-up 1 of CR-2026-11-20-02.
+- Facts measured 11-25 (read-only, .51 = 2 vCPU, 5.9 GB RAM, one 200 GB virtual disk "ROTA=1", etcd + containerd +
+  Kaniko builds all on /dev/sda1):
+  - etcd WAL fsync since boot (26 days, 1.72 M): only 11% under 8 ms, 56% under 16 ms, 77% under 32 ms; ~18,000
+    over 128 ms and ~720 over 0.5 s; average 24 ms. etcd's guidance is p99 under 10 ms - this disk is ~10x too slow.
+  - Backend commit average 49 ms; 32,049 "slow apply" events. Disk average write latency (diskstats) 41 ms.
+  - Linux I/O pressure right now (no build running): "some" 16%, "full" 7-11% - the disk is busy all the time.
+    Load average 3.4-3.9 on 2 vCPUs.
+  - etcd database is small (11.7 MB, 7.5 MB in use): defragmenting would gain ~4 MB - NOT the fix.
+  - Nightly builds: api 04:10 (~1 min), worker 04:15 (~1 min), web 04:20 (~10 min, Kaniko, CPU limit 1 of the
+    node's 2, memory 2 Gi), rollout 04:40. The 11-20 freeze started 04:23:30 - during the web build. Kaniko image is
+    "executor:latest" (not pinned).
+  - Not yet known: the ESXi datastore type (SSD/HDD) under .51 and what else uses it (dr-haproxy .50 has a 69 GB
+    snapshot, CR-2026-11-16-02, possibly on the same datastore).
+- Part A (no downtime, MEDIUM): make the nightly web build gentler.
+  1. dr-image-sync-web: CPU limit 1 -> 500m; Kaniko flags --snapshot-mode=redo and --compressed-caching=false
+     (less disk and memory churn); pin the Kaniko image to the digest running today instead of :latest
+     (same for the api/worker sync jobs).
+  2. Spread the schedule so nothing overlaps the web build: web 04:20 -> 04:25 (api/worker done by then),
+     rollout 04:40 -> 05:00 (web may now take ~15-20 min). The 04:10 rebuild rule stays (a push still goes live
+     next morning, ~20 min later than now).
+  3. Measure for 2 nights: etcd fsync histogram before/after 04:00-05:00 (metrics on 127.0.0.1:2381), build time,
+     I/O pressure. Success = no fsync over 0.5 s during the build window and no slow-apply burst.
+  - Impact: images ready later in the night; nothing changes for readers. Rollback: re-apply the saved CronJob YAMLs.
+- Part B (HIGH, own window, after Part A data + an ESXi read-only check): a dedicated virtual disk for etcd.
+  1. Owner opens the ESXi host client (logged in); Claude reads datastore type/free space and the other VMs on it.
+  2. Add a 10-20 GB virtual disk to dr-rke2 on the fastest datastore available (SSD if any), format ext4, mount at
+     /var/lib/rancher/rke2/server/db (fstab by UUID).
+  3. Stop rke2-server (cluster API down; whether running pods keep serving is unproven - assume the sites go down
+     for the ~10-15 min window), etcd snapshot (`rke2 etcd-snapshot save`) + copy of db/, copy the data onto the new
+     disk, start rke2-server, check node Ready, etcd health, fsync histogram.
+  - Rollback: stop rke2, unmount the new disk (old db/ kept untouched underneath), start rke2; or restore the
+    snapshot (`rke2 server --cluster-reset --cluster-reset-restore-path=...`).
+  - If the ESXi check shows only one slow datastore, a new disk on it will not help: Part B then becomes "move .51
+    to faster storage / reduce what shares it" and comes back to the owner as a revised CR.
+- Not in scope: the etcd watchdog (follow-up 2), the third-place uptime check (follow-up 3), the dr-haproxy
+  snapshot (CR-2026-11-16-02).
+- Recovery points: Tekeche + NDP before each part; save the 4 sync/rollout CronJob YAMLs.
+- Tests after: Test-Build NDP 8/8 (+ Tekeche 11/11); next morning: all 3 builds Complete, rollout done, images
+  fresh, site up; etcd metrics compared.
+- Class: Get-ChangeRisk said MEDIUM. Part A: MEDIUM -> approval "approve CR-2026-11-25-02 part A".
+  Part B: HIGH (etcd data move, cluster stop) -> "approve CR-2026-11-25-02 part B window <time>".
 
 ### CR-2026-11-25-01  Uptime check outside the on-prem cluster (BikoDC scheduled task)
 - Requested by: Claude, follow-up 1 of CR-2026-11-20-02 (owner "go next" 11-25).
