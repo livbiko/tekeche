@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | — | part 1: window | requested |
 | CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | A: "approve CR-2026-11-25-02 part A" (11-25) | B: needs a window | A ROLLED BACK 11-25 22:01 (worker runs timed out during the test build); B requested |
 | CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-01" (11-25) | — | done 11-25 21:35 |
@@ -112,6 +113,45 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-25-04  NDP /youtube redesign phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree
+- Requested by: owner 11-25 (YouTube master brief, sections 2-6). Phases 2 (languages: central translation system,
+  selector, detection saved > browser > country > French, 9 languages incl. Arabic right-to-left) and 3 (hreflang/SEO)
+  get their own CRs.
+- Found (read-only 11-25): /youtube already has tabs, a "Pays" section, nested pages /youtube/<pays>/<cat>/<sous-cat>,
+  the category hierarchy + channel links in the DB (migration 020), flags from countries.flag_url, stored videos in
+  channel_videos (filled daily by the YouTube API job), and GET /api/youtube/latest-videos (accepts the directory
+  filters). The old banner "À la une · meilleur score africain" is a single top-ranked creator card.
+- Banner data today (last 30 days, Africa): voix-locales 23 videos / 12 channels, media-en-ligne 2 / 1,
+  voix-panafricaines 0, createur-independant 0 (their uploads are not collected), collectif 0. So the banner starts
+  with ~25 videos from ~13 channels; fresh once a day (YouTube API quota), not live.
+- What changes:
+  1. API (read-only, no migration): latest-videos accepts several types at once (type=a,b,c) and returns each video's
+     channel category; new GET /api/youtube/explorer = regions -> countries (ISO, French name, flag) -> categories ->
+     subcategories with channel counts computed from the DB (cached like the directory). Countries with 0 channels
+     shown greyed, not hidden counts.
+  2. Web /youtube: the old featured card is removed; new banner "VOIX INDÉPENDANTES AFRICAINES" (subtitle as in the
+     brief) = carousel of the latest videos of African voix-locales, voix-panafricaines, media-en-ligne,
+     createur-independant and collectif channels: thumbnail, channel, flag, title, date, category, "Voir la vidéo",
+     "Chaîne officielle"; latest first, max 2 per channel, no duplicates; previous/next buttons, pause, no auto-scroll
+     when the visitor prefers reduced motion; "Mis à jour le ..." from the newest stored video; empty/error state.
+     Refresh: page data revalidated every 15 min + the banner re-fetches every 15 min while open (configurable).
+  3. "Explorer par pays": Afrique first (5 regions), then Europe, Asie, Moyen-Orient, Amérique du Nord, Amérique du
+     Sud, Océanie - from the countries table (not hard-coded); expand region > country > category > subcategory, counts
+     on each level, links to the existing /youtube/<pays>/<cat>/<sous-cat> pages (no new routes), current place
+     highlighted, breadcrumbs, a country search box, keyboard + screen-reader accessible (button/aria-expanded).
+     Desktop: sidebar next to the listings; mobile: a collapsible drawer.
+  4. No new npm dependency; flags from the DB; everything in French (owner rule).
+- Not in scope: languages (phase 2), new data collection for creators' videos (separate CR - would use YouTube quota),
+  Facebook/TikTok pages (the explorer component is written to be reused).
+- Tests: API tests for explorer counts (= DB counts) and multi-type latest-videos on the throwaway test DB; web
+  typecheck + next build; browser check desktop + phone width (banner, explorer expand/collapse, keyboard, links);
+  counts spot-checked against SQL for 3 countries; existing /youtube sections and country pages unchanged.
+- Deploy: branch -> push to main in the window -> api + web image rebuild -> rollout -> Test-Build NDP 8/8.
+  (Note CR-2026-11-25-03: a manual web build on .51 makes worker runs time out - deploy right after a worker run,
+  or after CR-25-03 is done.)
+- Rollback: previous api/web images (tags saved from the live imageIDs before deploy); git revert.
+- Class: MEDIUM (Get-ChangeRisk). Approval: "approve CR-2026-11-25-04".
 
 ### CR-2026-11-25-03  Build the NDP images off .51 (GitHub Actions) + check the ESXi storage (replaces CR-25-02 part A)
 - Requested by: owner 11-25 ("do it for me" = write the recommended next CR), after CR-2026-11-25-02 part A was rolled back.
