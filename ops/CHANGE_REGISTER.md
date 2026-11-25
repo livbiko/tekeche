@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | — | — | requested |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | in progress |
 | CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | part 1: "approve CR-2026-11-25-03 part 1 window now" (11-25 ~23:00); revised: "approve CR-2026-11-25-03 revised method: public GHCR packages, no token, window now" | part 1 11-25 22:57-23:28 | part 1 done (first night to check); part 2 later |
@@ -114,6 +115,45 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-25-06  NDP /youtube phase 2: languages (translation system, selector, detection, 9 languages)
+- Requested by: owner 11-25 ("write the CR for YouTube phase 2"); brief section 1 (YouTube master prompt 11-25).
+  Phase 3 (language URLs, hreflang/canonical per language, localised SEO titles in search results) stays separate.
+- Facts (read 11-25): the whole site is French (<html lang="fr">, French text written inside ~15 files used by the
+  /youtube pages: the 4 /youtube routes, YoutubeListing, CountryCreatorsView, DirectoryFilters, DirectoryCard,
+  IndependentVoicesBanner, CountryExplorer, LatestVideos, VideoDirectory, LandingActions, LeadForm, LitePlayer,
+  SiteFooter, not-found). Category names exist in the DB in French and English (creator_categories.name_fr/name_en);
+  country names come from the browser/runtime (Intl.DisplayNames) for any language; an IP-country lookup already
+  exists on the globe page (lib/geo.ts, ipapi.co from the browser). No new npm package is needed.
+- What changes (part 2a - framework + French/English):
+  1. Central dictionaries apps/web/src/i18n/{fr,en}.json + a t() helper (server and client); every user-facing
+     string of the /youtube pages and of the shared components above moves there (French text unchanged).
+  2. Language choice, in this order: (1) the visitor's saved choice (cookie ndp_lang, 1 year); (2) the browser's
+     languages (Accept-Language on the server, so the first page is already right); (3) only when neither gives a
+     supported language: the country (existing ipapi.co lookup in the browser, country->language table from the
+     brief, e.g. CI/SN/ML->fr, NG/GH->en, MZ/AO/BR/PT->pt, KE->sw/en), saved as a suggestion; (4) French. No GPS
+     prompt. Search engines (no cookie, usually no Accept-Language) get French = today's page.
+  3. Selector "🌐 Français ▾" in the /youtube header: changing it sets the cookie and re-renders the same URL with
+     the same query (country, category, search kept). Response header Vary: Cookie, Accept-Language.
+  4. <html lang> (and dir) set from the chosen language on /youtube pages; dates and numbers formatted for it;
+     country names per language (Intl.DisplayNames); category names from the DB (name_en for English).
+  5. Channel descriptions and video titles stay as published (owner rule 11-16: only those stay untranslated).
+- Part 2b (after 2a is live and checked): Portuguese, Spanish, Arabic (right-to-left: dir="rtl", layout audited for
+  left/right spacing), German, Italian, Chinese, Swahili. DB migration 022 (additive): creator_categories.names
+  jsonb {pt, es, ar, de, it, zh, sw}, filled once, editable later on /admin/categories; the API returns the name for
+  the requested language, falling back to French. Rollback: column unused/dropped by the down script.
+- Translation quality (said plainly): Claude writes the translations. They should be reviewed by a native speaker
+  per language before being promoted; until then each non-French language is marked "beta" in the selector.
+- Not in scope: other pages of the site (globe, /africa, /creators) - same framework can be extended later; Facebook
+  and TikTok pages; machine translation of channel content.
+- Tests: unit tests for the language choice (cookie > Accept-Language > country > French; unsupported codes),
+  a test that every key exists in every dictionary; API test for category names per language (2b); browser checks:
+  CI visitor (fr), NG/UK (en), manual switch keeps the filters, saved choice wins, Arabic page right-to-left (2b),
+  phone + desktop; existing pages unchanged in French (screenshot diff of /youtube before/after in French).
+- Deploy: push to main -> GitHub build 03:50 -> mirror 04:10 -> rollout 04:40 (or a manual run of the same chain);
+  Test-Build NDP 8/8 + live checks; rollback = previous images (IDs saved) + git revert; 2b migration additive.
+- Class: Get-ChangeRisk said LOW; MEDIUM used (migration in 2b, every /youtube page touched).
+  Approval: "approve CR-2026-11-25-06 part 2a", later "approve CR-2026-11-25-06 part 2b".
 
 ### CR-2026-11-25-05  Temporary BikoDC firewall rule: TCP 3100 from the LAN, for the /youtube preview check
 - Requested by: owner 11-25 ("try chrome extension again", "open port 3100"); for CR-2026-11-25-04's browser check.
