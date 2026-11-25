@@ -5,6 +5,12 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-25 21:09–21:27 UTC | MAINTENANCE (HIGH) | CR-2026-11-20-01 part A: NDP discovery on all regions + 6-hourly priority run
+- **Approval**: "approve CR-2026-11-20-01 part A window now" (11-25; the 11-20 approval had lapsed unpushed). Push done by Claude on owner's "do it for me".
+- **Change**: NDP main 5a5cfad (discover.js: DISCOVERY_REGION=all, DISCOVERY_PRIORITY_MAX_ACTIVE, DISCOVERY_DRY_RUN; tests 127/127). Worker image sha256:f4ab48e1. CronJobs: nouvellesdupays-discovery -> all regions; new nouvellesdupays-discovery-priority (47 */6, countries with <=2 active publishers, 18 today).
+- **Verified**: manual runs Complete (36 + 1 new candidates); Test-Build 8/8; Build #277 known-good.
+- **Rollback**: saved CronJob YAML in NDP recovery point 2026-11-25_21-09-04; delete the priority CronJob.
+
 ## 2026-11-20 04:24–13:18 UTC | INCIDENT / EMERGENCY | CR-2026-11-20-02: etcd hung on dr-rke2 (.51), NDP + on-prem-served sites down ~9 h
 - **Detected**: owner 13:07 ("why all my websites are down again"). IIS W3SVC9 502 from 04:24:18; uptime monitor silent (it runs in the broken cluster).
 - **Cause**: etcd pid 1417 on .51 stopped answering ~04:23 (log ends 04:23:30, slow applies before, during the 04:10 image-rebuild window); rke2-server crash-looped from 11:02 (530 failed starts, "failed to reconcile with local datastore").

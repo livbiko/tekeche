@@ -6,7 +6,7 @@ done / rolled back / rejected / EMERGENCY.
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
 | CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
-| CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | part A: "approve CR-2026-11-20-01 part A window now" (11-20 ~00:25) | part A now | part A in progress; part B requested |
+| CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | part A: "approve CR-2026-11-20-01 part A window now" (11-20 ~00:25, lapsed unpushed; re-approved same words 11-25) | part A 11-25 21:09-21:27 | part A done (Build #277); part B requested |
 | CR-2026-11-19-06 | BT Hub (via BT Business support): port 80 -> IIS .101, remove stale LivBikoServer entries | Claude (after CR-19-02/-05) | HIGH | — | with BT, owner on the call | closed 11-19 - no change (HTTPS done under CR-19-02; port 80 + stale entries pending) |
 | CR-2026-11-19-05 | EMERGENCY: public HTTPS outage 16:53-17:20 UTC caused by CR-2026-11-19-02 (Hub 443 rules removed, new rule refused); Hub restart; IIS-HTTPS rule added | Claude (during CR-19-02) | EMERGENCY | owner: "restart the Hub" (restart only) | 11-19 16:53-17:20 | done - restored |
 | CR-2026-11-19-04 | IIS on BikoDC: Dynamic IP Restrictions (per-client rate + concurrent limits) on the public sites — only after CR-2026-11-19-02 | Claude (outage review 11-19) | HIGH (Get-ChangeRisk) | — | to propose after -02 | requested |
@@ -177,6 +177,14 @@ done / rolled back / rejected / EMERGENCY.
 - Class: HIGH (CronJob change + new Secret; Get-ChangeRisk said MEDIUM, higher class used). Duration ~45 min per
   part. Approval: "approve CR-2026-11-20-01 part A window <time>" and, later, "approve CR-2026-11-20-01 part B
   window <time>" (after the key exists).
+- Part A result 11-25 (window 21:09-21:27, owner re-approved; owner "do it for me" -> Claude pushed 5a5cfad, ls-remote
+  verified): recovery points 2026-11-25_21-09-02 / 21-09-04 (dump 1.2G); worker image rebuilt from main
+  sha256:f4ab48e1..., change checked inside the image + dry run (18 priority countries); applied ONLY the two CronJobs
+  (discovery -> "all", new discovery-priority 47 */6); one manual run each: discovery mined 6 (BBC, Guardian,
+  Independent, Mirror, Le Monde, Le Figaro) -> 36 new candidates, checked 37 (20 ok, 11 not_news, 4 unreachable,
+  1 spam_suspect, 1 robots); priority mined 6 -> 1 new, checked 1. Test-Build 8/8, Set-KnownGood Build #277.
+  Rollback if needed: re-apply cronjob-nouvellesdupays-discovery.before.yaml from the NDP recovery point, delete
+  CronJob nouvellesdupays-discovery-priority, previous worker image from worker-image-before.txt (11-20 point).
 
 ### CR-2026-11-19-06  BT Hub: port 80 to IIS .101 + remove stale LivBikoServer entries (via BT Business support)
 - Requested by: Claude after CR-19-02/-05 (owner "go-ahead" 11-19 - not an approval; this CR records the plan).
