@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | — | part 1: window | requested |
 | CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | A: "approve CR-2026-11-25-02 part A" (11-25) | B: needs a window | A ROLLED BACK 11-25 22:01 (worker runs timed out during the test build); B requested |
 | CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-01" (11-25) | — | done 11-25 21:35 |
 | CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
@@ -111,6 +112,39 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-25-03  Build the NDP images off .51 (GitHub Actions) + check the ESXi storage (replaces CR-25-02 part A)
+- Requested by: owner 11-25 ("do it for me" = write the recommended next CR), after CR-2026-11-25-02 part A was rolled back.
+- Why: measured 11-25 - the nightly web image build on .51 is disk-bound (npm ci + Kaniko filesystem snapshots). During
+  one build: etcd fsync average 50 ms (24 ms otherwise), 22 fsyncs over 0.5 s, I/O pressure 75-90%, two worker runs
+  timed out. The 11-18 worker failures (~04:20) and the 11-20 etcd freeze (04:23) fell in the same window. Throttling
+  the build's CPU did not help. Other VMs are not an option: .52 is the NDP database, .52/.54 refuse Claude's key.
+- What changes (Part 1, MEDIUM by Get-ChangeRisk, treated HIGH: new credential + deploy pipeline):
+  1. NDP repo: .github/workflows/images.yml - on a schedule (03:50 UTC daily) and by hand (workflow_dispatch), build
+     api, worker and web from main on GitHub's runners (same Dockerfiles, same build arg NEXT_PUBLIC_API_URL) and push
+     to the PRIVATE GitHub Container Registry: ghcr.io/livbiko/nouvellesdupays-{api,web,worker}:main + :<commit sha>.
+     Uses the workflow's own GITHUB_TOKEN (packages: write) - no secret added to the repo.
+  2. On .51: the three Kaniko CronJobs dr-image-sync-{api,worker,web} are replaced by ONE light job
+     dr-image-mirror (04:10): copies the three :main images from GHCR into the local registry 192.168.1.51:30500 as
+     :local (crane copy - registry-to-registry, no npm, no build, no snapshots; a few hundred MB written). Everything
+     else stays as is: every Deployment/CronJob keeps "192.168.1.51:30500/nouvellesdupays-*:local", dr-image-rollout
+     04:40 unchanged, a push to main still goes live the next morning.
+  3. Credential: a GitHub token that can only READ packages (owner creates it: fine-grained or classic read:packages),
+     stored as a k8s Secret ghcr-read in the nouvellesdupays namespace, used only by dr-image-mirror. The owner pastes it
+     into the command Claude gives (never in chat, never in git).
+  4. Images stay private (not public: they contain the built app).
+- Tests (Part 1): run the workflow by hand -> 3 images in GHCR with the commit sha; run dr-image-mirror by hand ->
+  digests in the local registry = GHCR digests; measure etcd fsync + I/O pressure during the mirror (goal: no fsync
+  over 0.5 s, no worker failure); restart api/web once (= normal rollout) -> Test-Build NDP 8/8, site checks.
+  First night after: GitHub run 03:50 green, mirror 04:10 Complete, rollout 04:40 Complete, no worker failure
+  04:00-05:00, etcd slow-apply count compared with earlier nights.
+- Impact: GitHub Actions minutes (~10-15 min/day; private repos get a monthly free quota that depends on the plan -
+  owner checks); GHCR storage (old :sha tags pruned to the last 10). Readers: nothing changes.
+- Rollback: re-apply the saved Kaniko CronJobs (recovery point), delete dr-image-mirror + Secret ghcr-read, disable the
+  workflow. The local :local images keep working throughout.
+- Part 2 (HIGH, later, unchanged from CR-25-02 part B): ESXi storage check with the owner logged in; etcd on its own
+  disk only if a faster datastore exists. Decided after Part 1's measurements.
+- Approval: "approve CR-2026-11-25-03 part 1 window <time>" (owner also creates the read-only GitHub token).
 
 ### CR-2026-11-25-02  etcd disk on dr-rke2 (.51): stop the nightly build from starving etcd; give etcd its own disk
 - Requested by: owner 11-25 ("write the CR for item 1"), follow-up 1 of CR-2026-11-20-02.
