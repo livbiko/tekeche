@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
 | CR-2026-11-20-01 | NDP discovery: (A) link-mining on all regions + 6-hourly run for countries with <3 active publishers; (B) search-API discovery (needs a paid search API key) | Claude (owner asked 11-20) | HIGH (Get-ChangeRisk said MEDIUM; HIGH used: CronJob + new Secret) | part A: "approve CR-2026-11-20-01 part A window now" (11-20 ~00:25, lapsed unpushed; re-approved same words 11-25) | part A 11-25 21:09-21:27 | part A done (Build #277); part B requested |
 | CR-2026-11-19-06 | BT Hub (via BT Business support): port 80 -> IIS .101, remove stale LivBikoServer entries | Claude (after CR-19-02/-05) | HIGH | — | with BT, owner on the call | closed 11-19 - no change (HTTPS done under CR-19-02; port 80 + stale entries pending) |
@@ -109,6 +110,31 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-25-01  Uptime check outside the on-prem cluster (BikoDC scheduled task)
+- Requested by: Claude, follow-up 1 of CR-2026-11-20-02 (owner "go next" 11-25).
+- Why: 11-20 the sites were down 9 h with no alert - the only uptime check (CronJob nouvellesdupays-uptime) runs
+  inside the RKE2 cluster on .51 that had failed.
+- What changes:
+  1. New script tekeche/ops/scripts/Watch-PublicUptime.ps1 (in git): every run checks https://<host>/ for
+     nouvellesdupays.com, tekeche.com, api.tekeche.com/health, livbiko.com, 225woyo.com, kendebabi.com and
+     nouvellesdupays.com/api/countries through the public IP 81.130.238.41 (curl --resolve, full TLS check, 15 s
+     timeout; 2xx/3xx = up). Same rule as the cluster check: DOWN mail after 2 failed runs in a row (~4 min), one
+     UP mail on recovery, listing which hosts failed and the error. State in C:/ops/uptime-outside/state.json.
+  2. Mail via the Brevo API, sender noreply@nouvellesdupays.com (already authenticated), to the owner's address
+     (same as the cluster check). The NDP Brevo key is copied from the cluster secret into a DPAPI-encrypted file
+     (LocalMachine scope, ACL SYSTEM + Administrators) - never in git, never printed.
+  3. Scheduled task "NDP-Uptime-Outside" on BikoDC, SYSTEM, every 2 min, 60 s limit, no overlap.
+  4. One test mail (subject "[TEST] uptime-outside") to prove delivery, then normal mode.
+- Impact: ~4,300 small HTTPS requests/day through the Hub to IIS (same as the cluster check); no change to any site,
+  the Hub, IIS or the cluster. Two DOWN mails if both checks see an outage - intended.
+- Limits (said plainly): it runs on BikoDC, which also hosts IIS - if BikoDC itself or the internet line is down,
+  it cannot send. A check from a third place (OCI or an external monitor) would close that; separate CR.
+- Tests: run the script once by hand (all up -> no mail, state written); simulate a failure with a test host list
+  pointing at an unused port (DOWN after 2 runs, then UP) using a separate test state file; test mail received.
+- Recovery point: Tekeche New-RecoveryPoint before starting. Test-Build (Tekeche + NDP) after.
+- Rollback: Unregister-ScheduledTask NDP-Uptime-Outside; delete C:/ops/uptime-outside; revert the script commit.
+- Class: MEDIUM. Approval: "approve CR-2026-11-25-01".
 
 ### CR-2026-11-20-02  EMERGENCY: etcd hung on dr-rke2 (.51) - sites down 04:24-13:18 UTC
 - Symptom: IIS (W3SVC9) answered 502 for nouvellesdupays.com from 04:24:18 to 13:15:31 (short recovery 10:56-10:59);
