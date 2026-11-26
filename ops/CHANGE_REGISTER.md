@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | — | — | requested |
 | CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b done (Build #280) |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | done - live 11-26 04:40, Build #278 |
@@ -115,6 +116,44 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-26-01  NDP /youtube phase 3: one address per language + hreflang (search engines)
+- Requested by: owner 11-26 ("write the CR for YouTube phase 3"); brief section 8 (localised titles, language
+  metadata, canonical + alternate-language URLs).
+- Today (after CR-2026-11-25-06): every /youtube page exists in 9 languages but at ONE address; the language comes
+  from a cookie or the browser. Search engines only ever see French (they send no cookie and usually no
+  Accept-Language), so the 8 other languages are invisible to Google; a shared link opens in the reader's own
+  language, not the sender's. Measured: ~110 places in ~25 files build /youtube links; no Next.js middleware/proxy
+  yet; the sitemap lists 1,067 /youtube URLs.
+- What changes:
+  1. Addresses: French stays exactly where it is (/youtube/...: no URL change, no lost ranking). Each other language
+     gets a prefix: /en/youtube/..., /pt/youtube/..., /es/, /ar/, /de/, /it/, /zh/, /sw/ - same page paths after it.
+     A Next.js proxy (src/proxy.ts) rewrites /<lang>/youtube/... to the existing pages and passes the language; no
+     page is duplicated in the code. Unknown prefixes stay 404.
+  2. Which language wins: the address. /en/youtube/... is always English, whatever the cookie or browser.
+  3. /youtube/... (French address) for a visitor whose chosen language (saved choice, else browser) is not French:
+     a temporary redirect (302, not cached) to the same page in their language. No headers (crawlers) -> French 200,
+     as today. A visitor who picks Français in the selector stays on /youtube.
+  4. Selector: switching language goes to that language's address of the same page (filters kept) and saves the
+     choice as today.
+  5. Links inside /youtube pages keep the current language's prefix (one helper, localePath()).
+  6. Search engines: every page declares its canonical address (its own language) and <link rel="alternate"
+     hreflang> for all 9 languages + x-default (= the French address); <html lang>/dir already right. Sitemap: each
+     /youtube entry lists its 9 language versions (xhtml:link alternates) - same 1,067 entries, not 9x more.
+  7. Not changed: other pages of the site (globe, /africa, /creators stay French-only), the API, the database.
+- Impact: new URLs appear in Google over the following weeks (8 more versions of each /youtube page); French URLs
+  and their ranking are unchanged. A visitor with an English browser landing on /youtube now sees the address
+  change to /en/youtube (today it stays /youtube and shows English). Old shared /youtube links keep working.
+- Tests: proxy rewrites (/en/youtube/x -> page with locale en; /xx/youtube -> 404), redirect rules (cookie en ->
+  302 /en/...; no headers -> 200 French; cookie fr + en browser -> 200 French; query string kept), localePath for all
+  9 languages, every internal /youtube link on the pages carries the prefix (crawl of the built pages), hreflang/
+  canonical on a page of each kind, sitemap alternates valid XML; web i18n + API suites; local browser check
+  (selector switch keeps page + filters, Arabic RTL at /ar/youtube); then live: each language address 200, redirect
+  from /youtube for an English browser, Google's view (no headers) unchanged French, Test-Build 8/8.
+- Deploy: branch -> owner push -> GitHub build -> mirror -> rollout restart (same as part 2a/2b, ~15 min).
+- Rollback: previous images (from 7afd51f: api 65460688, web 126798d7) + git revert; the prefixed addresses then
+  404 (only Google's copies would point there for a while); French addresses never change.
+- Class: MEDIUM (Get-ChangeRisk). Approval: "approve CR-2026-11-26-01".
 
 ### CR-2026-11-25-06  NDP /youtube phase 2: languages (translation system, selector, detection, 9 languages)
 - Requested by: owner 11-25 ("write the CR for YouTube phase 2"); brief section 1 (YouTube master prompt 11-25).
