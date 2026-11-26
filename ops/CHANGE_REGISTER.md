@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05 | 2a done (Build #279); 2b requested |
+| CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b in progress |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | done - live 11-26 04:40, Build #278 |
 | CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | part 1: "approve CR-2026-11-25-03 part 1 window now" (11-25 ~23:00); revised: "approve CR-2026-11-25-03 revised method: public GHCR packages, no token, window now"; "approve CR-2026-11-25-03 revised method: build on push to main, window now" (11-26) | part 1 11-25 22:57-23:28 | part 1 done, night checked 11-26, Build #278; part 2 later |
@@ -174,6 +174,16 @@ done / rolled back / rejected / EMERGENCY.
   Claude in Chrome: selector switch keeps ?country=CI and the filter; test cookie deleted afterwards (owner's Chrome
   lists en-GB first, so /youtube now shows English for the owner until they pick Français). Test-Build 8/8,
   Set-KnownGood Build #279. Rollback: GHCR images from d95098e (api 7ff158f9, web 8bc21525) + git revert 0daeeae.
+- Part 2b 11-26 13:13-14:25 ("approve CR-2026-11-25-06 part 2b"): recovery point 2026-11-26_13-13-22 (dump 1.2G).
+  Built on branch feat/youtube-i18n-2b (e00e0bb): dictionaries pt/es/ar/de/it/zh/sw (303 keys each, Claude's
+  translations, marked beta), country suggestions per the brief, Arabic right-to-left (dir/lang from the server,
+  logical start/end spacing, carousel mirrored), migration 022 creator_categories.names for the 80 active categories,
+  API returns names. Tests: web i18n 7/7, API 178/178, tsc clean, next build OK; local check: every language's
+  page text + direction, Arabic screenshots desktop/phone. Production migration 022: rehearsed (BEGIN..ROLLBACK,
+  UPDATE 80, column gone after rollback), applied 14:20 (UPDATE 80, 80/83 named; the 3 switched-off ones fall back
+  to French); live site unchanged (old code ignores the column). Merged into main 7afd51f, waiting for the owner's
+  push. Rollback: images from 0daeeae (api 7dbdf17b, web fc6b7173) + git revert 7afd51f; then
+  ops/release-category-names/reverse.sql (drop the column) only after the old images are back.
 
 ### CR-2026-11-25-05  Temporary BikoDC firewall rule: TCP 3100 from the LAN, for the /youtube preview check
 - Requested by: owner 11-25 ("try chrome extension again", "open port 3100"); for CR-2026-11-25-04's browser check.
