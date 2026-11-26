@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b in progress |
+| CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b done (Build #280) |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | done - live 11-26 04:40, Build #278 |
 | CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | part 1: "approve CR-2026-11-25-03 part 1 window now" (11-25 ~23:00); revised: "approve CR-2026-11-25-03 revised method: public GHCR packages, no token, window now"; "approve CR-2026-11-25-03 revised method: build on push to main, window now" (11-26) | part 1 11-25 22:57-23:28 | part 1 done, night checked 11-26, Build #278; part 2 later |
@@ -184,6 +184,13 @@ done / rolled back / rejected / EMERGENCY.
   to French); live site unchanged (old code ignores the column). Merged into main 7afd51f, waiting for the owner's
   push. Rollback: images from 0daeeae (api 7dbdf17b, web fc6b7173) + git revert 7afd51f; then
   ops/release-category-names/reverse.sql (drop the column) only after the old images are back.
+- Part 2b deploy 11-26 13:40-13:51: owner pushed 7afd51f -> GitHub run 45832325690 (push) OK, GHCR = commit (api
+  65460688, worker 11118686, web 126798d7); manual mirror (digests equal) + rollout restart, tested only after the
+  old pods were gone. Live via the public IP: no header/fr -> French, en/pt/es/ar/de/it/zh/sw browsers -> their
+  language (Arabic dir=rtl), cookie ar country page and cookie pt category page translated, German category names
+  present; /youtube, /afrique, /cote-divoire, /categorie/news-media 200, unknown 404. Test-Build 8/8, Set-KnownGood
+  Build #280. CR-2026-11-25-06 DONE (phase 3 = language URLs/hreflang, separate CR). All non-French languages stay
+  "beta" until a native speaker reviews them.
 
 ### CR-2026-11-25-05  Temporary BikoDC firewall rule: TCP 3100 from the LAN, for the /youtube preview check
 - Requested by: owner 11-25 ("try chrome extension again", "open port 3100"); for CR-2026-11-25-04's browser check.

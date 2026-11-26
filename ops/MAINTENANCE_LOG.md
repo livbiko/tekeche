@@ -5,6 +5,12 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-26 13:13–13:51 UTC | CHANGE (MEDIUM) | CR-2026-11-25-06 part 2b: /youtube in 9 languages + migration 022
+- **DB**: migration 022 creator_categories.names (additive) rehearsed then applied 13:3x (80/83 named).
+- **Deploy**: merge 7afd51f -> GitHub build on push -> mirror -> rollout restart api/web.
+- **Verified**: 9 languages live, Arabic right-to-left, translated category names, Test-Build 8/8; Build #280.
+- **Rollback**: images from 0daeeae (api 7dbdf17b, web fc6b7173) + git revert 7afd51f, then reverse.sql.
+
 ## 2026-11-26 12:55–13:09 UTC | CHANGE (MEDIUM) | CR-2026-11-25-06 part 2a: /youtube in French and English
 - **Deploy**: merge 0daeeae -> GitHub build on push -> manual mirror -> rollout restart api/web (few-second blip).
 - **Verified**: language order live (saved choice > browser > French), French text unchanged, English pages, selector keeps filters; Test-Build 8/8; Build #279.
