@@ -5,6 +5,11 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-26 12:10 UTC | CHECK | CR-2026-11-25-04 live + CR-2026-11-25-03 part 1 first night
+- **Night**: GitHub schedule 03:50 did not fire (manual 23:04 build already current); dr-image-mirror 04:10 + dr-image-rollout 04:40 Complete; no worker failure.
+- **Live /youtube**: new banner (24 real videos), tree (193 countries, counts = directory), old card gone; Test-Build 8/8; Build #278 known-good.
+- **Open**: push-triggered GitHub build (schedule unreliable); etcd still 37 fsyncs > 0.5 s in 13 h without builds -> CR-03 part 2.
+
 ## 2026-11-25 22:57–23:28 UTC | MAINTENANCE (HIGH) | CR-2026-11-25-03 part 1: NDP images built on GitHub Actions, mirrored to .51
 - **Change**: workflow .github/workflows/images.yml (03:50 UTC + on demand) -> public ghcr.io/livbiko/nouvellesdupays-*; CronJob dr-image-mirror 04:10 copies :main -> 192.168.1.51:30500/*:local; Kaniko dr-image-sync-{api,worker,web} suspended.
 - **Verified**: GitHub run OK (web 61 s vs 10-12 min on .51); mirror 44 s, digests equal; etcd 0 fsyncs over 0.5 s during it; worker on the GHCR image Complete; Test-Build 8/8.

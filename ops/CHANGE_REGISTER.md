@@ -7,8 +7,8 @@ done / rolled back / rejected / EMERGENCY.
 |---|---|---|---|---|---|---|
 | CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | deploy after CR-04 live check | 2a in progress |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
-| CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | in progress |
-| CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | part 1: "approve CR-2026-11-25-03 part 1 window now" (11-25 ~23:00); revised: "approve CR-2026-11-25-03 revised method: public GHCR packages, no token, window now" | part 1 11-25 22:57-23:28 | part 1 done (first night to check); part 2 later |
+| CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | done - live 11-26 04:40, Build #278 |
+| CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | part 1: "approve CR-2026-11-25-03 part 1 window now" (11-25 ~23:00); revised: "approve CR-2026-11-25-03 revised method: public GHCR packages, no token, window now" | part 1 11-25 22:57-23:28 | part 1 done, night checked 11-26, Build #278; part 2 later |
 | CR-2026-11-25-02 | etcd disk on dr-rke2 (.51): (A) gentler nightly web build + schedule spread + measure; (B) dedicated virtual disk for etcd | Claude (owner asked 11-25; follow-up 1 of CR-2026-11-20-02) | A: MEDIUM, B: HIGH (Get-ChangeRisk said MEDIUM) | A: "approve CR-2026-11-25-02 part A" (11-25) | B: needs a window | A ROLLED BACK 11-25 22:01 (worker runs timed out during the test build); B requested |
 | CR-2026-11-25-01 | Uptime check OUTSIDE the RKE2 cluster: scheduled task on BikoDC, 6 public hostnames every 2 min, Brevo mail on DOWN/UP | Claude (follow-up 1 of CR-2026-11-20-02) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-01" (11-25) | — | done 11-25 21:35 |
 | CR-2026-11-20-02 | EMERGENCY: NDP (+ every site served from on-prem RKE2 .51) down 04:24-13:18 UTC - etcd on .51 hung; etcd killed + rke2-server restarted | Claude (owner: "why all my websites are down again ? fix that") | EMERGENCY | owner "fix that" 13:07; emergency rule (minimum action) | 13:14-13:18 | done - restored 13:18 |
@@ -234,6 +234,10 @@ done / rolled back / rejected / EMERGENCY.
   this host) - real-data check after deploy. Deploy plan: owner pushes NDP main -> nightly 04:10-04:40 rebuild +
   rollout (no daytime build on .51: it times out worker runs, CR-25-02 A) -> Claude runs Test-Build + live checks
   next session; rollback = previous imageIDs + git revert.
+- Live check 11-26 12:10: rollout 04:40 put the GHCR api/web images (7ff158f9/8bc21525, from d95098e) live. Live
+  /youtube: banner "Voix indépendantes africaines" 24 real videos / 13 channels, old "meilleur score africain"
+  card gone, tree present (193 countries, 188 with channels, Africa 94 first with 5 regions; CI 12 = directory 12),
+  no horizontal overflow (Claude in Chrome). Test-Build 8/8, Set-KnownGood Build #278 (NDP main daba031). DONE.
 
 ### CR-2026-11-25-03  Build the NDP images off .51 (GitHub Actions) + check the ESXi storage (replaces CR-25-02 part A)
 - Requested by: owner 11-25 ("do it for me" = write the recommended next CR), after CR-2026-11-25-02 part A was rolled back.
@@ -279,6 +283,11 @@ done / rolled back / rejected / EMERGENCY.
   Set-KnownGood waits for the 04:40 rollout (api/web still old images) - with CR-2026-11-25-04's live check.
   Rollback: kubectl delete cronjob dr-image-mirror; patch dr-image-sync-{api,worker,web} suspend=false.
   Owner: delete the unused read:packages token on GitHub if one was created.
+- First night 11-26: GitHub's scheduled 03:50 run did NOT start (GitHub drops/delays schedules; only the manual
+  23:04 run exists) - harmless tonight (that build already had main's code). mirror 04:10 Complete (same digests),
+  rollout 04:40 Complete, no worker failure. etcd: 0 slow fsyncs during the 23:22 copy, but 37 over 0.5 s between
+  11-25 23:23 and 11-26 12:10 with no build on .51 -> the disk itself still needs part 2. Follow-up proposed: also
+  build on every push to main (event push), schedule kept as a second chance.
 
 ### CR-2026-11-25-02  etcd disk on dr-rke2 (.51): stop the nightly build from starving etcd; give etcd its own disk
 - Requested by: owner 11-25 ("write the CR for item 1"), follow-up 1 of CR-2026-11-20-02.
