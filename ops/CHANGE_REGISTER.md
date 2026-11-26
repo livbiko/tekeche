@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | — | — | requested |
+| CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | deploy after CR-04 live check | 2a in progress |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | in progress |
 | CR-2026-11-25-03 | Build NDP images off .51 on GitHub Actions -> GHCR, light mirror job on .51 replaces the 3 Kaniko builds; then ESXi storage check (replaces CR-25-02 part A) | Claude (owner 11-25 "do it for me") | HIGH (Get-ChangeRisk said MEDIUM; new credential + pipeline) | part 1: "approve CR-2026-11-25-03 part 1 window now" (11-25 ~23:00); revised: "approve CR-2026-11-25-03 revised method: public GHCR packages, no token, window now" | part 1 11-25 22:57-23:28 | part 1 done (first night to check); part 2 later |
@@ -154,6 +154,17 @@ done / rolled back / rejected / EMERGENCY.
   Test-Build NDP 8/8 + live checks; rollback = previous images (IDs saved) + git revert; 2b migration additive.
 - Class: Get-ChangeRisk said LOW; MEDIUM used (migration in 2b, every /youtube page touched).
   Approval: "approve CR-2026-11-25-06 part 2a", later "approve CR-2026-11-25-06 part 2b".
+- Part 2a progress 11-25 23:32 -> 11-26 00:10: NDP recovery point 2026-11-25_23-32-32 (dump 1.2G). Built on branch
+  feat/youtube-i18n-2a (NDP 0034312, NOT on main): i18n dictionaries fr/en (303 keys; fr = the French text as it
+  was), language order cookie > Accept-Language > French (country suggestion in the browser only when neither names
+  a supported language), LanguageSelector on every /youtube page, all /youtube pages + their components localised
+  (shared components default to French, other pages unchanged), API adds English category names. Tests: web i18n
+  6/6 (found + fixed: unknown country codes showed "Unknown Region"), API 177/177, tsc clean, next build OK. Local
+  check on the test DB: no header / fr browser -> French (text identical to before), en browser -> English, cookie
+  overrides the browser; screenshots EN desktop + EN phone. Vary header dropped: Next.js replaces it and these
+  pages are Cache-Control private/no-store, so no shared cache can mix languages.
+  Deploy waits for CR-2026-11-25-04 (phase 1) to be checked live after the 04:40 rollout; then merge to main (owner
+  push) -> GitHub build -> mirror -> rollout, Test-Build + live checks. Rollback: previous images + git revert.
 
 ### CR-2026-11-25-05  Temporary BikoDC firewall rule: TCP 3100 from the LAN, for the /youtube preview check
 - Requested by: owner 11-25 ("try chrome extension again", "open port 3100"); for CR-2026-11-25-04's browser check.
