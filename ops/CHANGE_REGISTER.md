@@ -6,7 +6,7 @@ done / rolled back / rejected / EMERGENCY.
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
 | CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | — | — | requested |
-| CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-01" (11-26 ~14:05) | — | in progress |
+| CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-01" (11-26 ~14:05) | deployed 11-26 20:28-20:34 | done (Build #68) |
 | CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b done (Build #280) |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
 | CR-2026-11-25-04 | NDP /youtube phase 1 (French): "Voix indépendantes africaines" banner + "Explorer par pays" tree + read-only explorer API | Claude (owner YouTube brief 11-25) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-03 the CR-2026-11-25-04" (11-25; CR-03 part not valid - no part/window) | — | done - live 11-26 04:40, Build #278 |
@@ -194,6 +194,12 @@ done / rolled back / rejected / EMERGENCY.
   200 French, en browser 307 /en/... (query kept), cookie fr stays, /en /ar 200, /xx 404, /creators untouched; 0
   unprefixed /youtube links on /en and /ar home, country, region, category pages; 10 hreflang + own canonical each;
   sitemap: the /youtube entries carry 10 alternates, others none. Not changed: 404 pages render as before.
+- Deployed 11-26 20:28-20:34 UTC: owner push 107a7a7..d6c6798, GitHub images run 45891289139 ok, GHCR :main =
+  :d6c6798 (api 0e860bfc, web 3b85e60c, worker 62ac74be), recovery point 2026-11-26_20-30-22, mirror job, rollout
+  restart api/web, old pods gone. Live: /youtube 200 French, en browser 307 /en/youtube, cookie fr stays, cookie pt
+  wins over browser de, /fr/youtube/afrique?x=1 308 with query, /en and /ar 200 (lang en / dir rtl), /xx 404, news
+  home 200; /en/youtube canonical own address, 10 hreflang, 920 youtube links all /en/; sitemap 1067 ar alternates.
+  Test-Build 11/11, Set-KnownGood Build #68. Rollback: images api 65460688 / web 126798d7 + git revert d6c6798.
   Waiting for the owner's push. Rollback: images from 7afd51f (api 65460688, web 126798d7) + git revert d6c6798.
 
 ### CR-2026-11-25-06  NDP /youtube phase 2: languages (translation system, selector, detection, 9 languages)

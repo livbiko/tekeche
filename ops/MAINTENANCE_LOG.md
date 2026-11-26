@@ -5,6 +5,11 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-26 20:28–20:34 UTC | CHANGE (MEDIUM) | CR-2026-11-26-01: /youtube one address per language + hreflang
+- **Deploy**: owner push d6c6798 -> GitHub build -> mirror -> rollout restart api/web (old pods gone before tests).
+- **Verified**: redirects/rewrites, canonical + 10 hreflang, links keep language, sitemap alternates; Test-Build 11/11; Build #68.
+- **Rollback**: images api 65460688 / web 126798d7 + git revert d6c6798.
+
 ## 2026-11-26 13:13–13:51 UTC | CHANGE (MEDIUM) | CR-2026-11-25-06 part 2b: /youtube in 9 languages + migration 022
 - **DB**: migration 022 creator_categories.names (additive) rehearsed then applied 13:3x (80/83 named).
 - **Deploy**: merge 7afd51f -> GitHub build on push -> mirror -> rollout restart api/web.

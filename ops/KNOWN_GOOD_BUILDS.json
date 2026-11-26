@@ -869,5 +869,18 @@
         "productionSafe":  true,
         "testResults":  "passed",
         "deployStatus":  "deployed"
+    },
+    {
+        "buildNumber":  68,
+        "dateCreated":  "2026-11-26T20:34:26.3709171+00:00",
+        "apiCommit":  "0974b39827e931f89df08dd5053e449f0217538a",
+        "apiBranch":  "master",
+        "mobileCommit":  "f73c1ebb411ebe8dba61e4f980220d1222d108e3",
+        "apiVersion":  "1.0.0",
+        "mobileVersion":  "1.0.0",
+        "note":  "CR-2026-11-26-01 NDP /youtube language addresses + hreflang live (d6c6798; api 0e860bfc, web 3b85e60c)",
+        "productionSafe":  true,
+        "testResults":  "passed",
+        "deployStatus":  "deployed"
     }
 ]

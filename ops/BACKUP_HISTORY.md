@@ -2118,3 +2118,303 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-10-03_10-35-34_before-dr-rke2-51-netplan-default-gw-1-2"`
 
+
+## 2026-10-05 12:28:29 — Before: push renewed TLS certs to OCI standby nginx (approved window 2026-10-05)
+
+- **ID**: 2026-10-05_12-28-25_before-push-renewed-tls-certs-to-oci-sta
+- **Reason**: 
+- **API commit**: a053f7d5  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10376.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-10-05_12-28-25_before-push-renewed-tls-certs-to-oci-sta"`
+
+
+## 2026-10-18 12:26:44 — Before: tekeche-api securityMonitor alert e-mail flood fix
+
+- **ID**: 2026-10-18_12-26-40_before-tekeche-api-securitymonitor-alert
+- **Reason**: 
+- **API commit**: a053f7d5  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10405.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-10-18_12-26-40_before-tekeche-api-securitymonitor-alert"`
+
+
+## 2026-10-18 15:52:13 — Before: merge origin/master into tekeche-api (Build #63)
+
+- **ID**: 2026-10-18_15-52-11_before-merge-origin-master-into-tekeche
+- **Reason**: 
+- **API commit**: a1c04465  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10405.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-10-18_15-52-11_before-merge-origin-master-into-tekeche"`
+
+
+## 2026-10-18 16:47:23 — Before: fixed merge origin/master into tekeche-api (Build #63 retry)
+
+- **ID**: 2026-10-18_16-47-21_before-fixed-merge-origin-master-into-te
+- **Reason**: 
+- **API commit**: a1c04465  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10405.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-10-18_16-47-21_before-fixed-merge-origin-master-into-te"`
+
+
+## 2026-11-16 16:29:58 — CR-2026-11-16-06 test (dump from production MongoDB)
+
+- **ID**: 2026-11-16_16-29-56_cr-2026-11-16-06-test-dump-from-producti
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-16_16-29-56_cr-2026-11-16-06-test-dump-from-producti"`
+
+
+## 2026-11-16 16:46:18 — Before: CR-2026-11-16-08 Tekeche backups hourly + copy
+
+- **ID**: 2026-11-16_16-46-16_before-cr-2026-11-16-08-tekeche-backups
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-16_16-46-16_before-cr-2026-11-16-08-tekeche-backups"`
+
+
+## 2026-11-16 16:58:04 — Before: CR-2026-11-16-09 Tekeche backups off-site to OCI
+
+- **ID**: 2026-11-16_16-58-02_before-cr-2026-11-16-09-tekeche-backups
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-16_16-58-02_before-cr-2026-11-16-09-tekeche-backups"`
+
+
+## 2026-11-18 16:50:19 — Before: CR-2026-11-18-02 NDP card measurement date
+
+- **ID**: 2026-11-18_16-50-17_before-cr-2026-11-18-02-ndp-card-measure
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-18_16-50-17_before-cr-2026-11-18-02-ndp-card-measure"`
+
+
+## 2026-11-18 19:38:54 — Before: CR-2026-11-18-03 lighter NDP youtube page
+
+- **ID**: 2026-11-18_19-38-52_before-cr-2026-11-18-03-lighter-ndp-yout
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-18_19-38-52_before-cr-2026-11-18-03-lighter-ndp-yout"`
+
+
+## 2026-11-18 21:14:44 — Before: CR-2026-11-18-04 NDP web CPU limit 500m
+
+- **ID**: 2026-11-18_21-14-42_before-cr-2026-11-18-04-ndp-web-cpu-limi
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-18_21-14-42_before-cr-2026-11-18-04-ndp-web-cpu-limi"`
+
+
+## 2026-11-18 21:25:04 — Before: CR-2026-11-18-04 retry NDP web CPU limit 500m
+
+- **ID**: 2026-11-18_21-25-02_before-cr-2026-11-18-04-retry-ndp-web-cp
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-18_21-25-02_before-cr-2026-11-18-04-retry-ndp-web-cp"`
+
+
+## 2026-11-18 21:51:05 — Before: CR-2026-11-18-05 NDP in-cluster API calls and rate-limit allowList
+
+- **ID**: 2026-11-18_21-51-03_before-cr-2026-11-18-05-ndp-in-cluster-a
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-18_21-51-03_before-cr-2026-11-18-05-ndp-in-cluster-a"`
+
+
+## 2026-11-18 22:22:49 — Before: CR-2026-11-16-10 OCI policy and lifecycle for tekeche-mongo-backups
+
+- **ID**: 2026-11-18_22-22-47_before-cr-2026-11-16-10-oci-policy-and-l
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-18_22-22-47_before-cr-2026-11-16-10-oci-policy-and-l"`
+
+
+## 2026-11-18 22:38:51 — Before: CR-2026-11-18-06 NDP worker NUL-byte fix
+
+- **ID**: 2026-11-18_22-38-49_before-cr-2026-11-18-06-ndp-worker-nul-b
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-18_22-38-49_before-cr-2026-11-18-06-ndp-worker-nul-b"`
+
+
+## 2026-11-18 23:28:02 — Before: CR-2026-11-18-07 NDP channel classification import
+
+- **ID**: 2026-11-18_23-28-00_before-cr-2026-11-18-07-ndp-channel-clas
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-18_23-28-00_before-cr-2026-11-18-07-ndp-channel-clas"`
+
+
+## 2026-11-19 00:08:35 — Before: CR-2026-11-18-08 NDP latest videos migration 021
+
+- **ID**: 2026-11-19_00-08-33_before-cr-2026-11-18-08-ndp-latest-video
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-19_00-08-33_before-cr-2026-11-18-08-ndp-latest-video"`
+
+
+## 2026-11-19 16:07:40 — Before: CR-2026-11-19-02 BT Hub 443/80 back to IIS .101
+
+- **ID**: 2026-11-19_16-07-38_before-cr-2026-11-19-02-bt-hub-443-80-ba
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-19_16-07-38_before-cr-2026-11-19-02-bt-hub-443-80-ba"`
+
+
+## 2026-11-19 17:28:37 — Before: CR-2026-11-19-06 Hub port 80 + stale rules via BT
+
+- **ID**: 2026-11-19_17-28-35_before-cr-2026-11-19-06-hub-port-80-stal
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-19_17-28-35_before-cr-2026-11-19-06-hub-port-80-stal"`
+
+
+## 2026-11-20 00:27:16 — Before: CR-2026-11-20-01 part A NDP discovery all regions + priority
+
+- **ID**: 2026-11-20_00-27-14_before-cr-2026-11-20-01-part-a-ndp-disco
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-20_00-27-14_before-cr-2026-11-20-01-part-a-ndp-disco"`
+
+
+## 2026-11-25 21:09:04 — Before: CR-2026-11-20-01 part A (re-approved 11-25) NDP discovery
+
+- **ID**: 2026-11-25_21-09-02_before-cr-2026-11-20-01-part-a-re-approv
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-25_21-09-02_before-cr-2026-11-20-01-part-a-re-approv"`
+
+
+## 2026-11-25 21:32:43 — Before: CR-2026-11-25-01 uptime check outside the cluster
+
+- **ID**: 2026-11-25_21-32-41_before-cr-2026-11-25-01-uptime-check-out
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-25_21-32-41_before-cr-2026-11-25-01-uptime-check-out"`
+
+
+## 2026-11-25 21:41:21 — Before: CR-2026-11-25-02 part A gentler nightly web build
+
+- **ID**: 2026-11-25_21-41-19_before-cr-2026-11-25-02-part-a-gentler-n
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-25_21-41-19_before-cr-2026-11-25-02-part-a-gentler-n"`
+
+
+## 2026-11-25 22:50:41 — Before: CR-2026-11-25-05 temporary firewall rule 3100
+
+- **ID**: 2026-11-25_22-50-39_before-cr-2026-11-25-05-temporary-firewa
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-25_22-50-39_before-cr-2026-11-25-05-temporary-firewa"`
+
+
+## 2026-11-25 22:57:58 — Before: CR-2026-11-25-03 part 1 images on GitHub Actions
+
+- **ID**: 2026-11-25_22-57-56_before-cr-2026-11-25-03-part-1-images-on
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-25_22-57-56_before-cr-2026-11-25-03-part-1-images-on"`
+
+
+## 2026-11-26 20:30:24 — Before: CR-2026-11-26-01 deploy (NDP youtube language addresses, d6c6798)
+
+- **ID**: 2026-11-26_20-30-22_before-cr-2026-11-26-01-deploy-ndp-youtu
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-26_20-30-22_before-cr-2026-11-26-01-deploy-ndp-youtu"`
+

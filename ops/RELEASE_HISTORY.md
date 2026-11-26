@@ -664,3 +664,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: CR-2026-11-25-01: uptime check outside the RKE2 cluster (task NDP-Uptime-Outside)
 
+
+## Build #68 — 2026-11-26 20:34
+
+- **API commit**: 0974b398 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: CR-2026-11-26-01 NDP /youtube language addresses + hreflang live (d6c6798; api 0e860bfc, web 3b85e60c)
+
