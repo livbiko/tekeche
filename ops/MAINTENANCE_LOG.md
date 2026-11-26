@@ -5,6 +5,11 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-26 12:55–13:09 UTC | CHANGE (MEDIUM) | CR-2026-11-25-06 part 2a: /youtube in French and English
+- **Deploy**: merge 0daeeae -> GitHub build on push -> manual mirror -> rollout restart api/web (few-second blip).
+- **Verified**: language order live (saved choice > browser > French), French text unchanged, English pages, selector keeps filters; Test-Build 8/8; Build #279.
+- **Rollback**: images from d95098e (api 7ff158f9, web 8bc21525) + git revert 0daeeae.
+
 ## 2026-11-26 12:10 UTC | CHECK | CR-2026-11-25-04 live + CR-2026-11-25-03 part 1 first night
 - **Night**: GitHub schedule 03:50 did not fire (manual 23:04 build already current); dr-image-mirror 04:10 + dr-image-rollout 04:40 Complete; no worker failure.
 - **Live /youtube**: new banner (24 real videos), tree (193 countries, counts = directory), old card gone; Test-Build 8/8; Build #278 known-good.
