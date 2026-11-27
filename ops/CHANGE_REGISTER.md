@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-27-03 | NDP web: no empty tab bar on /facebook; cookie banner in the page's language on /<lang>/youtube and /<lang>/facebook | Claude (owner 11-27 "write them up as one CR") | MEDIUM | — | — | requested |
 | CR-2026-11-27-02 | NDP worker: "Dernières vidéos" refresh really every 3 h (start-time tolerance) + a skipped refresh says why | Claude (owner 11-27 "write it up as a CR") | MEDIUM | owner 11-27 "approve CR-2026-11-27-02" | — | done (Build #282) |
 | CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | owner 11-27 | 2026-11-27 15:03-15:48 UTC | done (Build #281); click-to-load checked live |
 | CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | deployed 11-27 01:30-01:39 | done (Build #69) |
@@ -119,6 +120,33 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-27-03  NDP web: /facebook empty tab bar + cookie banner in the page's language
+- Requested by: owner 11-27 ("check this: https://nouvellesdupays.com/en/facebook", then "write them up as one CR").
+- Facts (live 11-27, public IP + headless Edge screenshot): /en/facebook 200, all English, canonical + 10 hreflang,
+  no Facebook request. Two defects:
+  1. With no videos, /facebook still shows a tab bar "Discover · Videos"; the Videos section is hidden while empty,
+     so that tab leads nowhere (Claude's bug, CR-2026-11-27-01, components/FacebookView.tsx). Goes away by itself once
+     a video exists.
+  2. The cookie consent banner and its settings panel are French only (components/TrackingProvider.tsx, in the root
+     layout, no language): English, Arabic, ... readers of /<lang>/youtube and /<lang>/facebook see "Votre vie privée /
+     Tout accepter / Tout refuser / Personnaliser" in French. Existing since the banner was added; site-wide.
+- What changes:
+  1. FacebookView: the tab bar only when the page has at least one video (no change once videos exist).
+  2. TrackingProvider: its texts (title, explanation, 3 buttons, "En savoir plus", settings panel: "Choix des cookies",
+     Nécessaires / Mesure d'audience / Publicité (Meta Pixel) with their descriptions, save button) move to the i18n
+     dictionaries (consent.* keys, 9 languages; non-French marked beta like the rest). The language comes from the
+     address (/<lang>/youtube, /<lang>/facebook via splitLocale); every other page stays French as today. Arabic
+     right to left. Consent logic, cookie names, categories, defaults and what is loaded before a choice: unchanged
+     (text only). The /privacy page itself stays French (separate item).
+- Impact: text and layout only; no API, DB or tracking change. Risk: a mistake in the consent wording - French text
+  kept word for word; translations reviewed for the same meaning (beta, native review pending as for /youtube).
+- Tests: web i18n tests (consent.* keys in all 9 files), tsc, next build; local preview: /facebook empty (no tab bar),
+  banner in fr / en / ar (rtl) / zh, buttons still set the same consent values (checked in browser storage);
+  live after deploy; Test-Build.
+- Deploy: web image only (merge -> owner push -> GitHub build -> mirror -> rollout restart web). Recovery point before.
+  Rollback: previous web image + git revert. No migration.
+- Class: MEDIUM (Get-ChangeRisk; touches the consent banner). Approval: "approve CR-2026-11-27-03".
 
 ### CR-2026-11-27-02  NDP worker: "Dernières vidéos" refresh really every 3 h
 - Requested by: owner 11-27 ("check the YouTube quota usage", then "yes, write it up as a CR").
