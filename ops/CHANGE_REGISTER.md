@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | — | — | requested |
+| CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | — | in progress: merged, waiting for push |
 | CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-01" (11-26 ~14:05) | deployed 11-26 20:28-20:34 | done (Build #68) |
 | CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b done (Build #280) |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
@@ -149,6 +149,14 @@ done / rolled back / rejected / EMERGENCY.
   hourly run.
 - Rollback: previous images + git revert (the 20 h spacing comes back by itself).
 - Class: MEDIUM (Get-ChangeRisk). Approval: "approve CR-2026-11-26-02".
+- Approved 11-27 ("approve CR-2026-11-26-02"). Progress 11-27 01:14-: recovery point 2026-11-27_01-14-02. Merged
+  into NDP main f11cb28 (branch 1cc316c): worker refreshLatestUploads every 3 h (playlistItems only, channels with
+  channel_metrics in 3 days, a channel-logos run counts), discovery reserve = recent activity 200 + channels + 5;
+  web: banner-style IndependentCreatorsCarousel (id independants) after Dernières vidéos and before "Chaînes YouTube
+  par pays", tab order, "Mis à jour le" under Dernières vidéos, intro "toutes les 3 heures" in 9 languages. Tests:
+  worker 129/129 (new uploads tests), web tsc + 9/9, next build ok; local render (public API) fr + ar: order
+  decouvrir, dernieres-videos, independants, pages-pays; 4/4 creators as cards. Waiting for the owner's push.
+  Rollback images: api 0e860bfc, web 3b85e60c, worker 62ac74be + git revert f11cb28.
 
 ### CR-2026-11-26-01  NDP /youtube phase 3: one address per language + hreflang (search engines)
 - Requested by: owner 11-26 ("write the CR for YouTube phase 3"); brief section 8 (localised titles, language

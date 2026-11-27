@@ -2418,3 +2418,15 @@ Recovery points are stored in `recovery-points/` and are never overwritten.
 - **Files affected**: 
 - **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-26_20-30-22_before-cr-2026-11-26-01-deploy-ndp-youtu"`
 
+
+## 2026-11-27 01:14:05 — Before: CR-2026-11-26-02 fresher latest videos + creators carousel
+
+- **ID**: 2026-11-27_01-14-02_before-cr-2026-11-26-02-fresher-latest-v
+- **Reason**: 
+- **API commit**: 0974b398  (master)
+- **Mobile commit**: f73c1ebb (main)
+- **Impact**: Low
+- **DB dump**: 10115.3 KB
+- **Files affected**: 
+- **Rollback**: `.\Invoke-Rollback.ps1 -PointId "2026-11-27_01-14-02_before-cr-2026-11-26-02-fresher-latest-v"`
+
