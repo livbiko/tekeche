@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | owner 11-27 | 2026-11-27 15:03-15:48 UTC | done (Build #281); player click check open |
+| CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | owner 11-27 | 2026-11-27 15:03-15:48 UTC | done (Build #281); click-to-load checked live |
 | CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | deployed 11-27 01:30-01:39 | done (Build #69) |
 | CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-01" (11-26 ~14:05) | deployed 11-26 20:28-20:34 | done (Build #68) |
 | CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b done (Build #280) |
@@ -159,7 +159,10 @@ done / rolled back / rejected / EMERGENCY.
 - Deploy 15:40-15:48: owner pushed b8fc0fa -> GitHub run 46027396456 OK (api 7a945a26, web 811ec4ff, worker 33dd319d),
   mirror + rollout; live checks passed (see MAINTENANCE_LOG); Test-Build 8/8, Set-KnownGood Build #281. Rollback:
   images from f11cb28 (api 0e860bfc, web 3b85e60c, worker 62ac74be) + git revert b8fc0fa, then reverse.sql.
-  Open: first video added in /admin/facebook and the "Lire" click checked in the owner's Chrome.
+- Live player check 11-27 (owner's Chrome, owner logged in): test video added in /admin/facebook (Meta's old sample
+  link facebook.com/facebook/videos/10153231379946729), shown on /facebook; before the click 0 iframes and 0 requests to
+  Facebook; after "Play" the official plugin loaded in the card. Facebook answered "Video unavailable" for that sample,
+  so real playback is still to be seen with the team's first real video. Test video hidden again (0 public).
 
 ### CR-2026-11-26-02  NDP /youtube: fresher "Dernières vidéos" + independent creators as a carousel, moved up
 - Requested by: owner 11-26 ("make Latest videos always up to date then make African independent creators design
