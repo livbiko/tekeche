@@ -5,6 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
+| CR-2026-11-27-02 | NDP worker: "Dernières vidéos" refresh really every 3 h (start-time tolerance) + a skipped refresh says why | Claude (owner 11-27 "write it up as a CR") | MEDIUM | — | — | requested |
 | CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | owner 11-27 | 2026-11-27 15:03-15:48 UTC | done (Build #281); click-to-load checked live |
 | CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | deployed 11-27 01:30-01:39 | done (Build #69) |
 | CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-01" (11-26 ~14:05) | deployed 11-26 20:28-20:34 | done (Build #68) |
@@ -118,6 +119,34 @@ done / rolled back / rejected / EMERGENCY.
   dr-haproxy). Classic table still lists stale LivBikoServer entries (.50 TCP 443 x2, UDP 443 x2, device-less 443/80);
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
+
+### CR-2026-11-27-02  NDP worker: "Dernières vidéos" refresh really every 3 h
+- Requested by: owner 11-27 ("check the YouTube quota usage", then "yes, write it up as a CR").
+- Facts (production agent_runs, read-only, 11-27 17:06 UTC): 24 h total 7,418 of 8,000 (limit respected). Uploads
+  refreshes (CR-2026-11-26-02) at 01:35 (manual), 09:25:09, [11:25:08 daily channel-logos, counts as one], 14:25:34;
+  none 04:25-08:25. Budget left now 582.
+- Correction of Claude's first reading (told the owner 11-27): the creator search did NOT eat the uploads' units in
+  steady state - it always left the 510 reserved units (200 recent activity + 310 uploads) unused (15:25 run stopped
+  with 72 left AFTER the reserve). Holding back 8 refreshes a day is not needed.
+- Actual causes:
+  1. Transition: the 24 h window still held the 11-26 searches made before CR-2026-11-26-02 (51 units left at
+     11-26 17:25), so after 01:35 no refresh fitted (needs 305) until 09:25. One-off; no change needed.
+  2. Start-time race: "due" = no uploads/logos run started in the last exactly 3 h, checked by an hourly CronJob
+     (:25). The uploads step starts after the recent-activity step, whose length varies (14:25: 25 s). If the next
+     run reaches the check a few seconds earlier than the last one did (e.g. 17:25:20 vs 14:25:34), it is not due
+     and the refresh slips one hour (every 3-4 h instead of 3).
+  3. A refresh skipped for budget leaves no row, so the gap is invisible on /admin/creators and in agent_runs.
+- What changes (apps/worker/src/channel-logos.js only):
+  1. Due when the last uploads/logos run started more than 3 h minus 10 min ago (UPLOADS_SLACK_MINUTES = 10).
+  2. A refresh skipped for budget writes a 'skipped' agent_runs row "channel-uploads skipped: N units left, M needed"
+     (0 units; not counted as a refresh).
+  No change to the budget split, the reserve or the creator search.
+- Impact: up to 8 refreshes a day as designed (~2,440 units, unchanged plan); no change to pages or API.
+- Tests: worker tests (due at 2 h 55 min, not due at 2 h 45 min; budget skip writes a skipped row that does not count
+  as a refresh; existing 129 pass); Test-Build; next runs checked on production (refresh every 3 h).
+- Deploy: worker image only (merge -> owner push -> GitHub build -> mirror; the hourly CronJob pulls :local, Always).
+  Rollback: previous worker image + git revert. Recovery point before. No migration.
+- Class: MEDIUM (Get-ChangeRisk). Approval: "approve CR-2026-11-27-02".
 
 ### CR-2026-11-27-01  NDP /facebook: Facebook videos page like /youtube (videos added by the team)
 - Requested by: owner 11-26/27 ("build https://nouvellesdupays.com/facebook for facebook videos similare to
