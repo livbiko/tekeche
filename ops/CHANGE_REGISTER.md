@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | — | — | requested |
+| CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | owner 11-27 | 2026-11-27 15:03-15:48 UTC | done (Build #281); player click check open |
 | CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | deployed 11-27 01:30-01:39 | done (Build #69) |
 | CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-01" (11-26 ~14:05) | deployed 11-26 20:28-20:34 | done (Build #68) |
 | CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b done (Build #280) |
@@ -151,6 +151,15 @@ done / rolled back / rejected / EMERGENCY.
   if it holds no videos the owner wants kept).
 - Class: HIGH (database migration per CHANGE_MGMT; the script said MEDIUM - the higher class is used).
   Approval: "approve CR-2026-11-27-01 window <time|now>".
+- Approved 11-27 ("approve CR-2026-11-27-01 window now"); window opened 15:03 UTC. Recovery points tekeche
+  2026-11-27_15-03-58, NDP 2026-11-27_15-05-11 (DB dump 1.3G). Built + merged into main b8fc0fa (API 182/182, web
+  10/10, tsc, next build, local preview desktop/390 px/Arabic). Places reuse the /youtube ones; country pages exist only
+  for countries with videos. Menu link on the home page from 20 videos (FACEBOOK_MENU_MIN). Migration 023 rehearsed and
+  applied on production (0 rows).
+- Deploy 15:40-15:48: owner pushed b8fc0fa -> GitHub run 46027396456 OK (api 7a945a26, web 811ec4ff, worker 33dd319d),
+  mirror + rollout; live checks passed (see MAINTENANCE_LOG); Test-Build 8/8, Set-KnownGood Build #281. Rollback:
+  images from f11cb28 (api 0e860bfc, web 3b85e60c, worker 62ac74be) + git revert b8fc0fa, then reverse.sql.
+  Open: first video added in /admin/facebook and the "Lire" click checked in the owner's Chrome.
 
 ### CR-2026-11-26-02  NDP /youtube: fresher "Dernières vidéos" + independent creators as a carousel, moved up
 - Requested by: owner 11-26 ("make Latest videos always up to date then make African independent creators design

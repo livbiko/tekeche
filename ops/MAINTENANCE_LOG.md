@@ -5,6 +5,23 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-27 15:03–15:48 UTC | MAINTENANCE WINDOW (HIGH) | CR-2026-11-27-01: /facebook (migration 023) — DONE (Build #281)
+- **Approval**: owner 11-27 "approve CR-2026-11-27-01 window now".
+- **Recovery points**: tekeche 2026-11-27_15-03-58; NDP 2026-11-27_15-05-11 (on-prem DB dump 1.3G, pg_restore -l checked).
+- **Built** on branch cr-2026-11-27-01 (f096449), merged into main b8fc0fa: API tests 182/182 (facebook 4/4), web tsc clean,
+  web tests 10/10, next build OK; local preview (test DB): /facebook, /en, /ar (rtl), places 200, unknown 404, /fr 308,
+  hreflang 10, sitemap entries, no iframe before click; layout checked at 1366 px and a true 390 px (no sideways scroll).
+- **Migration 023 on production**: rehearsal BEGIN..ROLLBACK (table + 16 columns, gone after rollback), applied ~15:40
+  (facebook_videos, 0 rows); live site unchanged (/, /youtube, /api/countries 200 via the public IP).
+- **Deploy**: owner push b8fc0fa -> GitHub run 46027396456 OK, GHCR :main = commit (api 7a945a26, web 811ec4ff, worker
+  33dd319d); mirror job mirror-cr271127 (digests equal); rollout restart api/web; checked only with the new pods.
+- **Live** (public IP): /facebook 200 French empty state, /en + /ar (rtl) 200, /fr/facebook 308, /facebook/afrique 200,
+  /facebook/xyz 404, /admin/facebook 200, en browser 307 -> /en/facebook, hreflang 10, no iframe before a click,
+  /api/facebook/latest total 0, admin API without token 401; /, /youtube 200. Test-Build 8/8, Set-KnownGood Build #281.
+- **Open**: first real video + "Lire" check in the owner's Chrome (needs a public Facebook video link from the owner).
+- **Rollback**: images from f11cb28 (api 0e860bfc, web 3b85e60c, worker 62ac74be) + git revert b8fc0fa; then
+  nouvellesdupays/ops/release-facebook-videos/reverse.sql (drops the table) only after the old images are back.
+
 ## 2026-11-27 01:14–01:39 UTC | CHANGE (MEDIUM) | CR-2026-11-26-02: latest uploads every 3 h + independent creators carousel
 - **Deploy**: owner push f11cb28 -> GitHub build -> mirror -> rollout restart api/web; worker image used by the next CronJob run.
 - **Verified**: section order + carousel live in fr/en/ar; uploads run by hand 01:35 (298/305 channels, 305 units); Test-Build 11/11; Build #69.
