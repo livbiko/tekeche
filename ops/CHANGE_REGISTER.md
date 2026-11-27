@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-27-03 | NDP web: no empty tab bar on /facebook; cookie banner in the page's language on /<lang>/youtube and /<lang>/facebook | Claude (owner 11-27 "write them up as one CR") | MEDIUM | — | — | requested |
+| CR-2026-11-27-03 | NDP web: no empty tab bar on /facebook; cookie banner in the page's language on /<lang>/youtube and /<lang>/facebook | Claude (owner 11-27 "write them up as one CR") | MEDIUM | owner 11-27 "approve CR-2026-11-27-03" | — | done (Build #283) |
 | CR-2026-11-27-02 | NDP worker: "Dernières vidéos" refresh really every 3 h (start-time tolerance) + a skipped refresh says why | Claude (owner 11-27 "write it up as a CR") | MEDIUM | owner 11-27 "approve CR-2026-11-27-02" | — | done (Build #282) |
 | CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | owner 11-27 | 2026-11-27 15:03-15:48 UTC | done (Build #281); click-to-load checked live |
 | CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | deployed 11-27 01:30-01:39 | done (Build #69) |
@@ -147,6 +147,17 @@ done / rolled back / rejected / EMERGENCY.
 - Deploy: web image only (merge -> owner push -> GitHub build -> mirror -> rollout restart web). Recovery point before.
   Rollback: previous web image + git revert. No migration.
 - Class: MEDIUM (Get-ChangeRisk; touches the consent banner). Approval: "approve CR-2026-11-27-03".
+- Approved 11-27 ("approve CR-2026-11-27-03"). Get-ChangeRisk MEDIUM; NDP recovery point 2026-11-27_20-17-54 (DB dump
+  1.3G). Branch cr-2026-11-27-03 (6eda831), merged into main 51fce2d: tsc OK, web tests 10/10, next build OK; local
+  preview: empty /facebook without tab bar, banner in fr (text word for word as before) / en / ar (rtl) / zh; diff
+  touches no consent handler line.
+- Deploy 11-27 20:31-20:38: owner pushed 51fce2d -> GitHub run 46064345358 OK, GHCR :main == :<sha> (web dfc9bd62),
+  mirror job, rollout restart web only (old web 811ec4ff). Live: /, /youtube, /en/youtube, /facebook, /en/facebook,
+  /ar/facebook 200, /facebook/xyz 404; /facebook no tab bar (/youtube keeps its own); banner English on /en/facebook,
+  Arabic rtl on /ar/youtube. Owner's Chrome on /en/facebook: Reject all -> analytics false / advertising false;
+  Accept all -> true / true; Customise + save (audience only) -> true / false; version 1 each time; the owner's own
+  stored choice put back exactly. Test-Build 8/8, Set-KnownGood Build #283. Rollback: web image 811ec4ff + git revert
+  51fce2d.
 
 ### CR-2026-11-27-02  NDP worker: "Dernières vidéos" refresh really every 3 h
 - Requested by: owner 11-27 ("check the YouTube quota usage", then "yes, write it up as a CR").

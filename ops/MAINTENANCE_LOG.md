@@ -5,6 +5,15 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-27 20:17–20:38 UTC | CHANGE (MEDIUM) | CR-2026-11-27-03: /facebook tab bar + cookie banner language
+- **Change**: web only. Empty /facebook has no tab bar; the cookie banner follows the address language
+  (/<lang>/youtube, /<lang>/facebook; French elsewhere, text unchanged); consent logic unchanged.
+- **Deploy**: recovery point 2026-11-27_20-17-54; owner push 51fce2d -> GitHub build -> mirror (web dfc9bd62) ->
+  rollout restart web.
+- **Verified**: live pages 200/404 as expected, banner en / ar (rtl), buttons save the same consent values (owner's
+  Chrome, original choice restored); Test-Build 8/8.
+- **Outcome**: OK, Build #283. Rollback: web 811ec4ff + git revert 51fce2d.
+
 ## 2026-11-27 17:08–17:31 UTC | CHANGE (MEDIUM) | CR-2026-11-27-02: "Dernières vidéos" refresh timing
 - **Change**: worker uploads refresh due from 2 h 50 (was exactly 3 h, slipped an hour on start-time jitter); a budget
   skip is recorded as a 'skipped' agent_runs row (0 units).
