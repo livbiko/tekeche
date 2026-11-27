@@ -5,6 +5,14 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-27 17:08–17:31 UTC | CHANGE (MEDIUM) | CR-2026-11-27-02: "Dernières vidéos" refresh timing
+- **Change**: worker uploads refresh due from 2 h 50 (was exactly 3 h, slipped an hour on start-time jitter); a budget
+  skip is recorded as a 'skipped' agent_runs row (0 units).
+- **Deploy**: owner push aef0391 -> GitHub build -> mirror (worker 5b012af8); next hourly CronJob uses it.
+- **Verified**: 17:25 run on the new worker refreshed at 17:25:15 (old rule would have waited to 18:25), 305 units,
+  Succeeded; Test-Build 8/8; Build #282.
+- **Rollback**: worker image 33dd319d + git revert aef0391.
+
 ## 2026-11-27 15:03–15:48 UTC | MAINTENANCE WINDOW (HIGH) | CR-2026-11-27-01: /facebook (migration 023) — DONE (Build #281)
 - **Approval**: owner 11-27 "approve CR-2026-11-27-01 window now".
 - **Recovery points**: tekeche 2026-11-27_15-03-58; NDP 2026-11-27_15-05-11 (on-prem DB dump 1.3G, pg_restore -l checked).

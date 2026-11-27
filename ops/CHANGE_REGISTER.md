@@ -5,7 +5,7 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-27-02 | NDP worker: "Dernières vidéos" refresh really every 3 h (start-time tolerance) + a skipped refresh says why | Claude (owner 11-27 "write it up as a CR") | MEDIUM | — | — | requested |
+| CR-2026-11-27-02 | NDP worker: "Dernières vidéos" refresh really every 3 h (start-time tolerance) + a skipped refresh says why | Claude (owner 11-27 "write it up as a CR") | MEDIUM | owner 11-27 "approve CR-2026-11-27-02" | — | done (Build #282) |
 | CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | owner 11-27 | 2026-11-27 15:03-15:48 UTC | done (Build #281); click-to-load checked live |
 | CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | deployed 11-27 01:30-01:39 | done (Build #69) |
 | CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-01" (11-26 ~14:05) | deployed 11-26 20:28-20:34 | done (Build #68) |
@@ -147,6 +147,14 @@ done / rolled back / rejected / EMERGENCY.
 - Deploy: worker image only (merge -> owner push -> GitHub build -> mirror; the hourly CronJob pulls :local, Always).
   Rollback: previous worker image + git revert. Recovery point before. No migration.
 - Class: MEDIUM (Get-ChangeRisk). Approval: "approve CR-2026-11-27-02".
+- Approved 11-27 ("approve CR-2026-11-27-02"). Get-ChangeRisk MEDIUM; NDP recovery point before the change. Built on
+  branch cr-2026-11-27-02 (d2815b4), merged into main aef0391: worker tests 129/129 (new: not due at 2 h 45, due at
+  2 h 55, budget skip recorded as 'skipped' 0 units and not counted).
+- Deploy 11-27 17:14-17:31: owner pushed aef0391 -> GitHub run 46040529615 OK (worker 5b012af8; api c9a4833a and web
+  fdde9b19 rebuilt from unchanged code, picked up by the 04:40 rollout), mirror job (digests equal). Recovery point
+  2026-11-27_17-08-39 (DB dump 1.3G). The 17:25 CronJob ran the new worker: uploads refresh started 17:25:15 (old rule:
+  not due before 17:25:34 -> would have slipped to 18:25), 1291 uploads from 298 of 305 channels, 305 units, pod
+  Succeeded. Test-Build 8/8, Set-KnownGood Build #282. Rollback: worker image 33dd319d + git revert aef0391.
 
 ### CR-2026-11-27-01  NDP /facebook: Facebook videos page like /youtube (videos added by the team)
 - Requested by: owner 11-26/27 ("build https://nouvellesdupays.com/facebook for facebook videos similare to
