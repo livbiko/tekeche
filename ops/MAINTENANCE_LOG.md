@@ -5,6 +5,11 @@ Format: Date | Type | Duration | Description | Outcome
 
 ---
 
+## 2026-11-27 01:14–01:39 UTC | CHANGE (MEDIUM) | CR-2026-11-26-02: latest uploads every 3 h + independent creators carousel
+- **Deploy**: owner push f11cb28 -> GitHub build -> mirror -> rollout restart api/web; worker image used by the next CronJob run.
+- **Verified**: section order + carousel live in fr/en/ar; uploads run by hand 01:35 (298/305 channels, 305 units); Test-Build 11/11; Build #69.
+- **Rollback**: images api 0e860bfc / web 3b85e60c / worker 62ac74be + git revert f11cb28.
+
 ## 2026-11-26 20:28–20:34 UTC | CHANGE (MEDIUM) | CR-2026-11-26-01: /youtube one address per language + hreflang
 - **Deploy**: owner push d6c6798 -> GitHub build -> mirror -> rollout restart api/web (old pods gone before tests).
 - **Verified**: redirects/rewrites, canonical + 10 hreflang, links keep language, sitemap alternates; Test-Build 11/11; Build #68.

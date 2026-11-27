@@ -674,3 +674,13 @@ A Known Good Build has passed the full `Test-Build.ps1` verification checklist.
 - **Production-safe**: Yes
 - **Note**: CR-2026-11-26-01 NDP /youtube language addresses + hreflang live (d6c6798; api 0e860bfc, web 3b85e60c)
 
+
+## Build #69 — 2026-11-27 01:35
+
+- **API commit**: 0974b398 (master)
+- **Mobile commit**: f73c1ebb
+- **API version**: 1.0.0
+- **Tests**: passed
+- **Production-safe**: Yes
+- **Note**: CR-2026-11-26-02 NDP latest uploads every 3 h + independent creators carousel (f11cb28; api 9794f84d, web da848cc9, worker 1a992216)
+

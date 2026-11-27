@@ -5,7 +5,8 @@ done / rolled back / rejected / EMERGENCY.
 
 | CR | Title | Requested by | Class | Approved (owner's words, time UTC) | Window | Status |
 |---|---|---|---|---|---|---|
-| CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | — | in progress: merged, waiting for push |
+| CR-2026-11-27-01 | NDP /facebook: Facebook video page like /youtube, videos added by the team (no Facebook fetching), click-to-load official Facebook player, 9 languages | Claude (owner 11-27 "1") | HIGH (Get-ChangeRisk said MEDIUM; has a DB migration) | — | — | requested |
+| CR-2026-11-26-02 | NDP /youtube: uploads refreshed every 3 h (within the 8,000-unit YouTube budget), independent creators as a carousel like the banner, moved above "Chaînes YouTube par pays" | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-02" (11-27 ~01:10) | deployed 11-27 01:30-01:39 | done (Build #69) |
 | CR-2026-11-26-01 | NDP /youtube phase 3: one address per language (/en/youtube...), redirect from /youtube by chosen language, canonical + hreflang, sitemap alternates | Claude (owner 11-26) | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-26-01" (11-26 ~14:05) | deployed 11-26 20:28-20:34 | done (Build #68) |
 | CR-2026-11-25-06 | NDP /youtube phase 2: translation system, language selector + detection; 2a French/English, 2b PT/ES/AR(RTL)/DE/IT/ZH/SW + category names migration | Claude (owner 11-25) | MEDIUM (Get-ChangeRisk said LOW) | 2a: "approve CR-2026-11-25-06 part 2a" (11-25 ~23:40) | 2a deployed 11-26 13:05; 2b: "approve CR-2026-11-25-06 part 2b" (11-26 ~13:15) | 2a done (Build #279); 2b done (Build #280) |
 | CR-2026-11-25-05 | Temporary BikoDC firewall rule TCP 3100 from 192.168.1.0/24 for the /youtube preview browser check (removed after) | Claude (owner 11-25 "open port 3100") | MEDIUM (Get-ChangeRisk) | "approve CR-2026-11-25-05" (11-25) | 22:50-22:52 | done - rule removed |
@@ -118,6 +119,39 @@ done / rolled back / rejected / EMERGENCY.
   their delete failed - which rule wins after a Hub reboot is UNKNOWN. No further Hub edits without the owner.
   Status: partially done (HTTPS) - incident CR-2026-11-19-05.
 
+### CR-2026-11-27-01  NDP /facebook: Facebook videos page like /youtube (videos added by the team)
+- Requested by: owner 11-26/27 ("build https://nouvellesdupays.com/facebook for facebook videos similare to
+  https://nouvellesdupays.com/youtube"); data source option 1 chosen 11-27 ("1").
+- Facts (production, read-only 11-27): 335 Facebook page links in social_accounts (publishers, status unknown), no
+  Facebook videos stored, no creator linked to Facebook. Standing rule: nothing is fetched from facebook.com or
+  instagram.com by our servers or crawlers - kept: every video is entered by an admin.
+- What changes:
+  1. Migration 023 (additive): table facebook_videos (id, facebook url (facebook.com / fb.watch only), page name,
+     page url, title, published_at, country, category, type like /youtube, language, thumbnail uploaded by the admin
+     (optional, stored by us), added_by, review_status, created_at) + indexes. No change to existing tables.
+  2. Admin /admin/facebook: add / edit / hide a video (paste the link, type title, page, date, country, category);
+     the server only checks the link's form, it never opens it. Behind the existing admin login.
+  3. API: GET /api/facebook/latest, /api/facebook/directory (filters country/continent/category/type, as
+     /api/youtube/directory), /api/facebook/explorer; admin POST/PATCH/DELETE (soft hide).
+  4. Public /facebook (and /<lang>/facebook): same layout as /youtube - banner of the newest videos, "Dernières
+     vidéos", "Créateurs indépendants africains" carousel, pages by country, "Explorer par pays", categories, filters;
+     9 languages, address per language + hreflang + sitemap like CR-2026-11-26-01. No subscriber numbers or rankings
+     (no Facebook data). Video: a card with the admin's thumbnail (or a neutral tile); the official Facebook player
+     (facebook.com/plugins/video.php) loads only when the visitor clicks "Lire" - before that the visitor's browser
+     contacts no Facebook address (privacy, like LitePlayer); "Voir sur Facebook ↗" link always there.
+  5. Links: /facebook in the site menu next to /youtube; nothing else on the site changes.
+- Impact: new table and pages only; the page is empty until the team adds videos (empty state says so; it can stay
+  out of the menu until N videos exist - owner to say the number, default 20).
+- Tests: migration rehearsal BEGIN...ROLLBACK on production then apply; API tests (link validation incl. lookalike
+  hosts, filters, admin auth, soft hide); web i18n test (keys in 9 files), proxy routing test for /<lang>/facebook;
+  local browser check desktop + phone + Arabic; live: empty state, add 1 test video in admin, player loads only on
+  click, hide it again; Test-Build.
+- Deploy: maintenance window (HIGH): recovery point, migration, push -> GitHub build -> mirror -> rollout; ~45 min,
+  site stays up (new pages only). Rollback: previous images + git revert; reverse.sql drops facebook_videos (only
+  if it holds no videos the owner wants kept).
+- Class: HIGH (database migration per CHANGE_MGMT; the script said MEDIUM - the higher class is used).
+  Approval: "approve CR-2026-11-27-01 window <time|now>".
+
 ### CR-2026-11-26-02  NDP /youtube: fresher "Dernières vidéos" + independent creators as a carousel, moved up
 - Requested by: owner 11-26 ("make Latest videos always up to date then make African independent creators design
   same as African independent voices and move it on top of YouTube channels by country").
@@ -157,6 +191,13 @@ done / rolled back / rejected / EMERGENCY.
   worker 129/129 (new uploads tests), web tsc + 9/9, next build ok; local render (public API) fr + ar: order
   decouvrir, dernieres-videos, independants, pages-pays; 4/4 creators as cards. Waiting for the owner's push.
   Rollback images: api 0e860bfc, web 3b85e60c, worker 62ac74be + git revert f11cb28.
+- Deployed 11-27 01:30-01:39 UTC: owner push d6c6798..f11cb28, GitHub run 45922923302 ok, GHCR :main = :f11cb28
+  (api 9794f84d, web da848cc9, worker 1a992216), mirror, rollout restart api/web, old pods gone. Live fr/en/ar:
+  order decouvrir, dernieres-videos, independants, pages-pays; 4 creator cards + 24 banner cards; "Mis à jour" and
+  "3 heures" text; desktop screenshot ok, no horizontal page scroll. One creator-agents run by hand 01:35:
+  "channel-uploads: 1292 uploads from 298 of 305 channels (7 failed: playlistNotFound), quota 305"; latest-videos
+  updated_at 01:35:44. Discovery got 0 units that run (rolling 24 h still near 8,000 from before the change).
+  Test-Build 11/11, Set-KnownGood Build #69. Still to watch: quota over the next 24 h <= 8,000.
 
 ### CR-2026-11-26-01  NDP /youtube phase 3: one address per language + hreflang (search engines)
 - Requested by: owner 11-26 ("write the CR for YouTube phase 3"); brief section 8 (localised titles, language
